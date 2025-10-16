@@ -1,993 +1,790 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Maiko Survival NYC 🗽</title>
-  <!-- Favicon inline pour éviter le 404 -->
-  <link rel="icon" href="data:,">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height: 100vh; color: #fff; overflow-x: hidden; touch-action: pan-y; }
-    .game-container { max-width: 500px; margin: 0 auto; padding: 15px; min-height: 100vh; }
-    .header { text-align: center; padding: 20px 10px; animation: fadeIn .5s ease-in; }
-    .header h1 { font-size: 2em; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,.3); }
-    .mood-indicator { font-size: 3em; margin: 10px 0; animation: bounce 1s ease-in-out infinite; }
-    .stats-container { background: rgba(255,255,255,.15); backdrop-filter: blur(10px); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.2); }
-    .stat { margin-bottom: 12px; position: relative; }
-    .stat-label { display:flex; justify-content: space-between; margin-bottom:5px; font-size:.95em; font-weight:600; }
-    .stat-warning { animation: shake .5s ease-in-out infinite; color:#ff6b6b; }
-    .stat-bar { width:100%; height:20px; background:rgba(0,0,0,.3); border-radius:10px; overflow:hidden; position:relative; }
-    .stat-fill { height:100%; border-radius:10px; transition: width .5s ease, background .3s ease; position:relative; overflow:hidden; }
-    .stat-fill::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent); animation: shimmer 2s infinite; }
-    .money-fill{background:linear-gradient(90deg,#ffd700,#ffed4e);} .energy-fill{background:linear-gradient(90deg,#4ecdc4,#44a8a0);} .hunger-fill{background:linear-gradient(90deg,#ff6b6b,#ee5a52);} .patience-fill{background:linear-gradient(90deg,#a8e6cf,#7bc9a0);} .yamy-fill{background:linear-gradient(90deg,#ff69b4,#ff1493);}
-    .day-counter { text-align:center; font-size:1.8em; font-weight:bold; margin:15px 0; text-shadow:2px 2px 6px rgba(0,0,0,.3); animation:pulse 2s ease-in-out infinite; }
-    .action-counter { text-align:center; font-size:.9em; opacity:.8; margin-top:-10px; margin-bottom:15px; }
-    .event-card { background:rgba(255,255,255,.2); backdrop-filter: blur(10px); border-radius:20px; padding:20px; margin-bottom:15px; border:2px solid rgba(255,255,255,.3); animation: slideUp .5s ease-out; box-shadow:0 8px 32px rgba(0,0,0,.1); }
-    .event-rare { border:3px solid #ffd700; background:rgba(255,215,0,.15); animation: glow 1s ease-in-out infinite alternate; }
-    .event-emoji { font-size:3em; text-align:center; margin-bottom:15px; animation:bounce 1s ease-in-out; }
-    .event-title { font-size:1.3em; font-weight:bold; margin-bottom:10px; text-align:center; }
-    .event-description { font-size:1em; line-height:1.5; margin-bottom:20px; text-align:center; opacity:.95; }
-    .choices { display:flex; flex-direction:column; gap:10px; }
-    .choice-btn { background:rgba(255,215,0,.3); border:2px solid #ffd700; border-radius:15px; padding:15px; font-size:1em; font-weight:600; color:#fff; cursor:pointer; transition:all .3s ease; text-align:left; position:relative; overflow:hidden; }
-    .choice-btn:active{ transform: scale(.95); }
-    .choice-btn::before{ content:''; position:absolute; top:50%; left:50%; width:0; height:0; border-radius:50%; background:rgba(255,255,255,.3); transform:translate(-50%,-50%); transition: width .6s, height .6s; }
-    .choice-btn:active::before{ width:300px; height:300px; }
-    .choice-effects{ font-size:.85em; margin-top:5px; opacity:.8; }
-    .game-over { text-align:center; padding:30px; }
-    .game-over h2 { font-size:2.5em; margin-bottom:20px; animation: shake .5s ease-in-out; }
-    .game-over-reason { font-size:1.2em; margin-bottom:30px; line-height:1.6; }
-    .restart-btn,.start-btn{ background:linear-gradient(135deg,#ffd700,#ff6b6b); border:none; border-radius:25px; padding:15px 40px; font-size:1.2em; font-weight:bold; color:#fff; cursor:pointer; box-shadow:0 5px 20px rgba(0,0,0,.3); transition:all .3s ease; }
-    .restart-btn:active,.start-btn:active{ transform: scale(.95); }
-    .stats-final{ background:rgba(255,255,255,.15); backdrop-filter: blur(10px); border-radius:15px; padding:20px; margin:20px 0; }
-    .achievements-final{ margin-top:20px; }
-    .achievement-badge{ display:inline-block; background:rgba(255,215,0,.3); border:2px solid #ffd700; border-radius:10px; padding:5px 10px; margin:5px; font-size:.9em; }
-    .start-screen{ text-align:center; padding:20px; }
-    .start-btn{ margin-top:30px; padding:20px 50px; font-size:1.3em; animation:pulse 2s ease-in-out infinite; }
-    .start-rules{ background:rgba(255,255,255,.15); backdrop-filter: blur(10px); border-radius:15px; padding:20px; margin:20px 0; text-align:left; }
-    .start-rules h3{ margin-bottom:15px; text-align:center; }
-    .start-rules ul{ list-style:none; }
-    .start-rules li{ padding:8px 0; border-bottom:1px solid rgba(255,255,255,.2); }
-    .bottom-nav{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); max-width:500px; width:100%; background:rgba(0,0,0,.8); backdrop-filter: blur(10px); padding:10px; display:flex; justify-content:space-around; border-radius:20px 20px 0 0; z-index:1000; }
-    .nav-btn{ background:rgba(255,215,0,.3); border:2px solid #ffd700; border-radius:15px; padding:12px 20px; font-size:1.1em; color:#fff; cursor:pointer; transition:all .3s ease; position:relative; }
-    .nav-btn:active{ transform: scale(.95); }
-    .badge-count{ position:absolute; top:-8px; right:-8px; background:#ff6b6b; color:#fff; border-radius:50%; width:24px; height:24px; font-size:.7em; display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid #fff; }
-    .journal-overlay,.achievements-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:2000; overflow-y:auto; animation:fadeIn .3s ease-in; }
-    .overlay-container{ max-width:500px; margin:20px auto; padding-bottom:80px; background:rgba(255,255,255,.95); border-radius:20px; padding:30px; color:#333; animation: slideUp .5s ease-out; }
-    .overlay-header{ text-align:center; margin-bottom:30px; border-bottom:3px solid #667eea; padding-bottom:20px; }
-    .overlay-header h2{ font-size:2em; color:#667eea; margin-bottom:10px; }
-    .journal-filters{ display:flex; gap:8px; margin:15px 0; flex-wrap:wrap; justify-content:center; }
-    .filter-btn{ background:rgba(102,126,234,.1); border:2px solid #667eea; border-radius:20px; padding:8px 15px; font-size:.9em; color:#667eea; cursor:pointer; transition:all .3s ease; }
-    .filter-btn.active{ background:#667eea; color:#fff; }
-    .journal-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; font-size:.9em; margin-top:15px; }
-    .journal-stat{ background:rgba(102,126,234,.1); padding:8px; border-radius:8px; text-align:center; }
-    .journal-entry{ background:rgba(102,126,234,.05); border-left:4px solid #667eea; padding:15px; margin-bottom:15px; border-radius:10px; animation: slideUp .3s ease-out; }
-    .journal-entry-header{ display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; color:#667eea; }
-    .journal-quote{ font-style:italic; line-height:1.6; color:#555; font-size:1.05em; margin:10px 0; }
-    .journal-category{ display:inline-block; background:rgba(102,126,234,.2); padding:4px 8px; border-radius:10px; font-size:.8em; margin-right:5px; }
-    .close-btn{ position:sticky; top:10px; float:right; background:#ff6b6b; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5em; color:#fff; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.3); z-index:10; }
-    .close-btn:active{ transform: scale(.9); }
-    .achievement-item{ background:rgba(102,126,234,.05); border-left:4px solid #667eea; padding:15px; margin-bottom:15px; border-radius:10px; display:flex; align-items:center; gap:15px; }
-    .achievement-item.locked{ opacity:.4; border-left-color:#999; }
-    .achievement-icon{ font-size:2.5em; filter:grayscale(100%); }
-    .achievement-item:not(.locked) .achievement-icon{ filter:grayscale(0%); animation:bounce .5s ease-in-out; }
-    .achievement-info{ flex:1; }
-    .achievement-title{ font-weight:bold; color:#667eea; margin-bottom:5px; }
-    .achievement-desc{ font-size:.9em; color:#666; }
-    .notification{ position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(255,215,0,.95); backdrop-filter: blur(10px); padding:15px 25px; border-radius:15px; border:2px solid #ffd700; box-shadow:0 5px 20px rgba(0,0,0,.3); z-index:3000; animation: slideDown .5s ease-out, fadeOut .5s ease-in 2.5s; max-width:90%; text-align:center; }
-    .notification-icon{ font-size:2em; margin-bottom:5px; }
-    .notification-text{ font-weight:bold; color:#333; }
-    .combo-indicator{ position:fixed; top:100px; right:20px; background:rgba(255,107,107,.9); backdrop-filter: blur(10px); padding:10px 15px; border-radius:15px; border:2px solid #ff6b6b; font-weight:bold; animation:pulse 1s ease-in-out infinite; z-index:1500; }
-    .mini-game-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.95); z-index:4000; display:flex; align-items:center; justify-content:center; animation:fadeIn .3s ease-in; }
-    .mini-game-container{ background:rgba(255,255,255,.95); border-radius:20px; padding:30px; max-width:400px; width:90%; text-align:center; color:#333; }
-    .mini-game-timer{ font-size:2em; font-weight:bold; color:#667eea; margin:20px 0; }
-    .photo-target{ width:200px; height:200px; margin:20px auto; border:3px dashed #667eea; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:4em; cursor:pointer; transition:all .3s ease; position:relative; }
-    .photo-target:hover{ transform: scale(1.05); border-color:#ffd700; }
-    .photo-perfect{ position:absolute; top:50%; left:10px; width:20px; height:20px; background:#ffd700; border-radius:50%; transform:translateY(-50%); }
-    .hidden{ display:none; }
-    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
-    @keyframes slideUp{ from{ opacity:0; transform:translateY(50px);} to{opacity:1; transform:translateY(0);} }
-    @keyframes slideDown{ from{ opacity:0; transform:translate(-50%,-100px);} to{opacity:1; transform:translate(-50%,0);} }
-    @keyframes fadeOut{ from{opacity:1} to{opacity:0} }
-    @keyframes bounce{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
-    @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
-    @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
-    @keyframes shimmer{ 0%{ transform:translateX(-100%);} 100%{ transform:translateX(100%);} }
-    @keyframes glow{ from{ box-shadow:0 0 10px rgba(255,215,0,.5);} to{ box-shadow:0 0 20px rgba(255,215,0,.9);} }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Maiko Survival NYC 🗽</title>
+<link rel="icon" href="data:,">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --glass: rgba(255,255,255,.15);
+    --glass-2: rgba(255,255,255,.22);
+    --ink:#fff; --ink-dark:#333;
+    --brand1:#667eea; --brand2:#764ba2;
+    --warn:#ff6b6b; --ok:#22c55e; --gold:#ffd700;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;background:linear-gradient(135deg,var(--brand1),var(--brand2));min-height:100vh;color:var(--ink);overflow-x:hidden;touch-action:pan-y}
+  .game-container{max-width:540px;margin:0 auto;padding:16px 16px 88px}
+  .header{text-align:center;padding:16px 10px;animation:fadeIn .5s ease-in}
+  .header h1{font-size:1.9em;margin-bottom:6px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+  .sub{opacity:.85}
+  .mood-indicator{font-size:2.2em;margin:8px 0}
+  .row{display:flex;align-items:center;gap:8px;justify-content:space-between}
+  .stats-container{background:var(--glass);backdrop-filter:blur(10px);border-radius:16px;padding:14px;margin:12px 0;border:1px solid rgba(255,255,255,.2)}
+  .stat{margin-bottom:10px}
+  .stat:last-child{margin-bottom:0}
+  .stat-label{display:flex;justify-content:space-between;font-weight:600;font-size:.95em;margin-bottom:6px}
+  .stat-label.crit{color:var(--gold);text-shadow:0 0 8px rgba(255,215,0,.6)}
+  .stat-bar{width:100%;height:16px;background:rgba(0,0,0,.28);border-radius:10px;overflow:hidden}
+  .stat-fill{height:100%;border-radius:10px;transition:width .35s ease}
+  .money-fill{background:linear-gradient(90deg,#ffd700,#ffed4e)}
+  .energy-fill{background:linear-gradient(90deg,#4ecdc4,#44a8a0)}
+  .hunger-fill{background:linear-gradient(90deg,#ff6b6b,#ee5a52)}
+  .patience-fill{background:linear-gradient(90deg,#a8e6cf,#7bc9a0)}
+  .yamy-fill{background:linear-gradient(90deg,#ff69b4,#ff1493)}
+  .topline{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:10px 0 0}
+  .turns{font-size:.9em;opacity:.9}
+  .turns b{font-size:1.05em}
+  .day-counter{text-align:center;font-size:1.35em;font-weight:700;margin:6px 0}
+  .event-card{background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border-radius:16px;padding:16px;border:2px solid rgba(255,255,255,.28);box-shadow:0 8px 28px rgba(0,0,0,.1);margin-top:10px}
+  .event-rare{border-color:#ffd700;box-shadow:0 0 0 2px rgba(255,215,0,.3)}
+  .event-emoji{font-size:2.2em;text-align:center;margin-bottom:8px}
+  .event-title{text-align:center;font-weight:800;margin-bottom:6px}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:.8em;background:rgba(0,0,0,.25);padding:4px 8px;border-radius:999px;margin:6px auto 10px}
+  .event-description{text-align:center;opacity:.95;margin-bottom:12px}
+  .choices{display:flex;flex-direction:column;gap:10px}
+  .choice-btn{position:relative;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.35);border-radius:14px;padding:12px 14px;text-align:left;color:#fff;font-weight:650;cursor:pointer}
+  .choice-btn[disabled]{opacity:.6;cursor:not-allowed}
+  .choice-line{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .effects{font-size:.85em;opacity:.9;margin-top:4px;line-height:1.25}
+  .mini{font-size:.85em;opacity:.9}
+  .start-screen,.game-over{text-align:center}
+  .start-box{background:var(--glass);backdrop-filter:blur(10px);border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,.2);margin-top:12px}
+  .select{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+  .pill{padding:8px 12px;border-radius:999px;border:2px solid #ffd700;background:rgba(255,215,0,.18);cursor:pointer;font-weight:700}
+  .pill.active{background:#ffd700;color:#333}
+  .start-btn,.restart-btn{margin-top:14px;background:linear-gradient(135deg,#ffd700,#ff6b6b);border:none;border-radius:22px;padding:12px 28px;font-size:1.05em;color:#fff;font-weight:800;cursor:pointer}
+  .bottom-nav{position:fixed;inset:auto 0 0 0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);padding:10px;display:flex;justify-content:space-around;z-index:1000}
+  .nav-btn{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);border-radius:12px;padding:10px 14px;font-size:1.05em;color:#fff;cursor:pointer;position:relative}
+  .badge-count{position:absolute;top:-7px;right:-7px;background:#ff6b6b;color:#fff;border-radius:999px;width:22px;height:22px;font-size:.7em;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-weight:800}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:1500;display:none}
+  .overlay.show{display:block;animation:fadeIn .2s}
+  .overlay .panel{max-width:540px;margin:18px auto;background:#fff;color:#333;border-radius:16px;padding:22px;position:relative}
+  .close-btn{position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:#fff;border-radius:999px;width:36px;height:36px;font-size:1.1em;cursor:pointer}
+  .journal-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+  .filter-btn{border:2px solid #667eea;background:rgba(102,126,234,.08);color:#667eea;padding:6px 10px;border-radius:999px;cursor:pointer}
+  .filter-btn.active{background:#667eea;color:#fff}
+  .journal-entry{background:rgba(102,126,234,.06);border-left:4px solid #667eea;padding:12px;border-radius:10px;margin-bottom:10px}
+  .notification{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(255,215,0,.96);color:#333;border:2px solid #ffd700;border-radius:14px;padding:10px 14px;z-index:2000;animation:slideDown .25s ease}
+  .combo-indicator{position:fixed;top:90px;right:16px;background:rgba(255,107,107,.92);border:2px solid #ff6b6b;color:#fff;border-radius:12px;padding:8px 10px;font-weight:800;z-index:1200}
+  .tooltip{font-size:.85em;opacity:.85;margin-top:4px;text-align:right}
+  .crit-msg{margin-top:8px;font-size:.9em}
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
+</style>
 </head>
 <body>
-  <div class="game-container">
-    <div id="startScreen" class="start-screen">
-      <div class="header">
-        <div style="font-size:4em; margin-bottom:20px;">🗽</div>
-        <h1>MAIKO SURVIVAL NYC</h1>
-        <p>Édition ULTRA Complète</p>
-      </div>
-      <div class="start-rules">
-        <h3>🎮 NOUVEAU DANS CETTE VERSION</h3>
-        <ul>
-          <li>🏆 <strong>25 Achievements</strong> à débloquer</li>
-          <li>📔 <strong>Journal amélioré</strong> avec filtres et catégories</li>
-          <li>🎯 <strong>60+ événements</strong> dont des rares et conditionnels</li>
-          <li>🔥 <strong>Système de combos</strong> pour les bonus</li>
-          <li>🎮 <strong>Mini-jeux</strong> intégrés (Photo Challenge, Négociation)</li>
-          <li>⚖️ <strong>Équilibrage réaliste</strong> et difficulté progressive</li>
-          <li>📈 <strong>Stats visuelles</strong> et graphiques</li>
-          <li>🎵 <strong>Sons d'ambiance</strong> (activables)</li>
-        </ul>
-      </div>
-      <div class="start-rules">
-        <h3>🔥 SYSTÈME DE COMBOS</h3>
-        <ul>
-          <li>Faire des choix similaires donne des bonus</li>
-          <li>Combo x2 : +5% aux effets positifs</li>
-          <li>Combo x3 : +10% aux effets positifs</li>
-          <li>Combo x5 : Achievement débloqué !</li>
-        </ul>
-      </div>
-      <div class="start-rules">
-        <h3>📊 LES JAUGES</h3>
-        <ul>
-          <li>💰 <strong>Argent:</strong> 400$ de budget (réaliste NYC)</li>
-          <li>⚡ <strong>Énergie:</strong> Baisse avec les activités, récupère en dormant</li>
-          <li>🍔 <strong>Faim:</strong> Monte naturellement (+5 toutes les 2 actions)</li>
-          <li>😤 <strong>Patience:</strong> Les autres élèves sont relous</li>
-          <li>💕 <strong>Yamy:</strong> Son copain lui manque (baisse avec le temps)</li>
-        </ul>
-      </div>
-      <button class="start-btn" id="startBtn">🚀 COMMENCER L'AVENTURE</button>
+<div class="game-container">
+  <!-- START -->
+  <div id="startScreen" class="start-screen">
+    <div class="header">
+      <div style="font-size:3.2em;margin-bottom:10px">🗽</div>
+      <h1>MAIKO SURVIVAL NYC</h1>
+      <div class="sub">Version équilibrée & difficile</div>
     </div>
-
-    <div id="gameScreen" class="hidden">
-      <div class="header">
-        <h1>🗽 MAIKO À NYC</h1>
-        <div class="mood-indicator" id="moodIcon">😊</div>
+    <div class="start-box">
+      <div><strong>Choisis la difficulté</strong></div>
+      <div class="select" id="diffSelect">
+        <button class="pill" data-diff="easy">Facile</button>
+        <button class="pill active" data-diff="normal">Normal</button>
+        <button class="pill" data-diff="hard">Difficile</button>
       </div>
-      <div class="day-counter">Jour <span id="day">1</span>/5</div>
-      <div class="action-counter">Action <span id="actionCount">0</span></div>
-
-      <div class="stats-container">
-        <div class="stat">
-          <div class="stat-label" id="moneyLabel"><span>💰 Argent</span><span id="money">400</span>$</div>
-          <div class="stat-bar"><div class="stat-fill money-fill" id="moneyBar" style="width:100%"></div></div>
-        </div>
-        <div class="stat">
-          <div class="stat-label" id="energyLabel"><span>⚡ Énergie</span><span id="energy">100</span>%</div>
-          <div class="stat-bar"><div class="stat-fill energy-fill" id="energyBar" style="width:100%"></div></div>
-        </div>
-        <div class="stat">
-          <div class="stat-label" id="hungerLabel"><span>🍔 Faim</span><span id="hunger">30</span>%</div>
-          <div class="stat-bar"><div class="stat-fill hunger-fill" id="hungerBar" style="width:30%"></div></div>
-        </div>
-        <div class="stat">
-          <div class="stat-label" id="patienceLabel"><span>😤 Patience</span><span id="patience">100</span>%</div>
-          <div class="stat-bar"><div class="stat-fill patience-fill" id="patienceBar" style="width:100%"></div></div>
-        </div>
-        <div class="stat">
-          <div class="stat-label" id="yamyLabel"><span>💕 Yamy</span><span id="yamy">100</span>%</div>
-          <div class="stat-bar"><div class="stat-fill yamy-fill" id="yamyBar" style="width:100%"></div></div>
-        </div>
+      <div style="margin-top:8px;font-size:.95em;opacity:.9">
+        <div>• Prix & taxes réelles · faim naturelle · fatigue progressive</div>
+        <div>• Rares moins “OP”, punition des mauvais enchaînements</div>
       </div>
-
-      <div id="eventContainer"></div>
-    </div>
-
-    <div id="gameOverScreen" class="hidden game-over">
-      <h2>💀 GAME OVER 💀</h2>
-      <div class="game-over-reason" id="gameOverReason"></div>
-      <div class="stats-final">
-        <h3 style="margin-bottom:15px;">📊 STATISTIQUES FINALES</h3>
-        <p>🗓️ Survécu : <strong><span id="finalDays">0</span> jours</strong></p>
-        <p>⚡ Actions : <strong><span id="finalActions">0</span></strong></p>
-        <p>💰 Argent restant : <strong>$<span id="finalMoney">0</span></strong></p>
-        <p>📸 Photos prises : <strong><span id="finalPhotos">0</span></strong></p>
-        <p>🏆 Achievements : <strong><span id="finalAchievements">0</span>/25</strong></p>
-      </div>
-      <div class="achievements-final" id="unlockedAchievements"></div>
-      <button class="restart-btn" id="restartBtn">🔄 RECOMMENCER</button>
-    </div>
-
-    <div id="bottomNav" class="bottom-nav hidden">
-      <button class="nav-btn" id="journalBtn">📔<span class="badge-count" id="journalBadge">0</span></button>
-      <button class="nav-btn" id="achievementsBtn">🏆<span class="badge-count" id="achievementsBadge">0</span></button>
-      <button class="nav-btn" id="statsBtn">📊</button>
-      <button class="nav-btn" id="soundBtn">🔇</button>
-    </div>
-
-    <div id="journalOverlay" class="journal-overlay hidden">
-      <div class="overlay-container">
-        <button class="close-btn" id="closeJournalBtn">×</button>
-        <div class="overlay-header">
-          <h2>📔 Journal de Maiko</h2>
-          <p style="font-style:italic; opacity:.7;">Son voyage à NYC en citations</p>
-          <div class="journal-filters">
-            <button class="filter-btn active" data-filter="all">Tout</button>
-            <button class="filter-btn" data-filter="yamy">💕 Yamy</button>
-            <button class="filter-btn" data-filter="food">🍔 Bouffe</button>
-            <button class="filter-btn" data-filter="photos">📸 Photos</button>
-            <button class="filter-btn" data-filter="mood">😤 Mood</button>
-          </div>
-          <div class="journal-stats">
-            <div class="journal-stat"><div style="font-size:1.5em;">🗓️</div><div>Jour <span id="journalDay">1</span></div></div>
-            <div class="journal-stat"><div style="font-size:1.5em;">📝</div><div><span id="journalCount">0</span> entrées</div></div>
-            <div class="journal-stat"><div style="font-size:1.5em;">💰</div><div>$<span id="journalMoney">400</span></div></div>
-            <div class="journal-stat"><div style="font-size:1.5em;">📸</div><div><span id="journalPhotos">0</span> photos</div></div>
-          </div>
-        </div>
-        <div id="journalEntries"></div>
-      </div>
-    </div>
-
-    <div id="achievementsOverlay" class="achievements-overlay hidden">
-      <div class="overlay-container">
-        <button class="close-btn" id="closeAchievementsBtn">×</button>
-        <div class="overlay-header">
-          <h2>🏆 Achievements</h2>
-          <p style="font-style:italic; opacity:.7;"><span id="achievementsUnlocked">0</span>/25 débloqués</p>
-        </div>
-        <div id="achievementsList"></div>
-      </div>
-    </div>
-
-    <div id="statsOverlay" class="achievements-overlay hidden">
-      <div class="overlay-container">
-        <button class="close-btn" id="closeStatsBtn">×</button>
-        <div class="overlay-header">
-          <h2>📊 Statistiques Détaillées</h2>
-          <p style="font-style: italic; opacity:.7;">Progression du voyage</p>
-        </div>
-        <div id="statsContent">
-          <div style="margin:20px 0;">
-            <h3 style="color:#667eea;margin-bottom:10px;">📈 Évolution des Stats</h3>
-            <div id="statsHistory"></div>
-          </div>
-          <div style="margin:20px 0;">
-            <h3 style="color:#667eea;margin-bottom:10px;">💰 Dépenses par Catégorie</h3>
-            <div id="spendingBreakdown"></div>
-          </div>
-          <div style="margin:20px 0;">
-            <h3 style="color:#667eea;margin-bottom:10px;">🎯 Statistiques Générales</h3>
-            <div id="generalStats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
-          </div>
-        </div>
-      </div>
+      <button class="start-btn" id="startBtn">🚀 Démarrer</button>
     </div>
   </div>
 
-  <div id="notificationContainer"></div>
-  <div id="comboIndicator" class="combo-indicator hidden"></div>
-  <div id="miniGameContainer"></div>
+  <!-- GAME -->
+  <div id="gameScreen" class="hidden">
+    <div class="header">
+      <h1>🗽 MAIKO À NYC</h1>
+      <div class="sub">Difficulté: <span id="diffLabel">Normal</span></div>
+      <div class="mood-indicator" id="moodIcon">😊</div>
+    </div>
+    <div class="row topline">
+      <div class="day-counter">Jour <b id="day">1</b>/5</div>
+      <div class="turns">Actions restantes: <b id="turnsLeft">8</b>/8</div>
+    </div>
 
-  <script>
-    // ====== AUDIO ======
-    let soundEnabled = false;
-    const sounds = {
-      click: () => playSound(500, 0.1, 0.05),
-      success: () => playSound(800, 0.15, 0.1),
-      fail: () => playSound(200, 0.2, 0.1),
-      achievement: () => { playSound(600, 0.1, 0.05); setTimeout(() => playSound(800, 0.1, 0.05), 100); setTimeout(() => playSound(1000, 0.15, 0.1), 200); }
-    };
-    function playSound(freq, duration, volume){
-      if(!soundEnabled) return;
-      try{
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if(!Ctx) return;
-        const ctx=new Ctx();
-        const osc=ctx.createOscillator();
-        const gain=ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value=freq; gain.gain.value=volume;
-        osc.start(); osc.stop(ctx.currentTime+duration);
-      }catch(e){ /* ignore audio errors */ }
-    }
-    function toggleSound(){
-      soundEnabled = !soundEnabled;
-      document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
-      if(soundEnabled) sounds.success();
-    }
+    <div class="stats-container">
+      <div class="stat">
+        <div class="stat-label" id="moneyLabel"><span>💰 Argent</span><span><b id="money">300</b>$</span></div>
+        <div class="stat-bar"><div class="stat-fill money-fill" id="moneyBar" style="width:100%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="energyLabel"><span>⚡ Énergie</span><span><b id="energy">100</b>%</span></div>
+        <div class="stat-bar"><div class="stat-fill energy-fill" id="energyBar" style="width:100%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="hungerLabel"><span>🍔 Faim</span><span><b id="hunger">40</b>%</span></div>
+        <div class="stat-bar"><div class="stat-fill hunger-fill" id="hungerBar" style="width:40%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="patienceLabel"><span>😤 Patience</span><span><b id="patience">100</b>%</span></div>
+        <div class="stat-bar"><div class="stat-fill patience-fill" id="patienceBar" style="width:100%"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label" id="yamyLabel"><span>💕 Yamy</span><span><b id="yamy">100</b>%</span></div>
+        <div class="stat-bar"><div class="stat-fill yamy-fill" id="yamyBar" style="width:100%"></div></div>
+      </div>
+      <div id="critBox" class="crit-msg"></div>
+    </div>
 
-    // ====== STATE ======
-    const game = {
-      state: { day:1, actionCount:0, money:400, energy:100, hunger:30, patience:100, yamy:100, photos:0, maxMoney:400, combo:0, lastChoiceType:null, statsHistory:[] },
-      journal: [], achievements: [], usedEvents: [], availableEvents: [], currentFilter:'all',
-      spending: { food:0, transport:0, culture:0, shopping:0, other:0 }
-    };
+    <div id="eventContainer"></div>
+  </div>
 
-    // ====== QUOTES ======
-    const quotes = {
-      hungry:["Là sérieux j'ai trop faim, je pourrais manger un éléphant","Mon ventre fait des bruits bizarres","J'ai l'impression que je vais faire un malaise","Comment les gens font pour tenir sans manger ??","Je pense qu'à la bouffe là"],
-      tired:["Je suis DEAD, mes yeux se ferment tout seuls","Pourquoi on se lève aussi tôt... inhumain","Mes pieds existent plus","Je marche comme un zombie","J'ai besoin de dormir 48h"],
-      broke:["Comment j'ai claqué tout mon budget wtf","Je vais manger des pâtes pendant 3 mois","Plus d'argent GG","J'aurais dû écouter mes parents","NYC m'a ruinée"],
-      impatient:["JE VAIS PÉTER UN CÂBLE","Pourquoi tout le monde m'énerve ??","J'en ai MARRE","Comment ils sont aussi relous","Je supporte plus personne"],
-      happy:["Ok là je kiffe grave","New York c'est stylé en vrai","Cette journée était incroyable","Je commence à comprendre le hype","Moment de bonheur rare"],
-      photos:["J'ai pris 200 photos, téléphone va exploser","Faut que je trouve LE spot parfait","Mes photos sont trop belles","Yeux fermés sur 90% des photos","Je vis à travers mon écran"],
-      food:["Cette bouffe américaine c'est pas ça","ENFIN un truc correct !","Les portions sont DÉMESURÉES","Je rêve d'une quiche","Comment ils mangent aussi gras"],
-      kevin:["Kevin m'a SAOULÉ","Si Kevin me parle je le bloque","Kevin insupportable","J'ai évité Kevin, victoire !","Kevin a dit un truc drôle, choquée"],
-      subway:["Métro traumatisant","Pourquoi ça pue dans le métro","Perdue 30min dans le métro","Le métro de Clermont me manque","Mec bizarre m'a parlé, peur"],
-      spending:["Dépensé 50$ en conneries","Pourquoi tout est cher ??","J'ai craqué sur des trucs inutiles","Mon compte pleure","Je regrette déjà"],
-      timesSquare:["Times Square INCROYABLE mais trop de monde","Failli me faire piétiner","Écrans géants mal aux yeux","Times Square de nuit >>","1000 photos floues"],
-      nyc:["NYC c'est grand, bruyant, fatiguant","NYC ne dort jamais","C'est cool mais pas Clermont","Buildings ÉNORMES","NYC en vrai > films"],
-      group:["Le groupe me saoule","Bien marrés avec les copains","Tout le monde est fatigué","Profs nous lâchent pas","Photo de groupe, horrible"],
-      jetlag:["Décalage horaire me tue","3h du mat réveillée","Mon corps comprend rien","2 semaines pour récupérer","Jet lag = pire truc"],
-      yamy:["Yamy me manque trop","Envoyé 50 messages à Yamy","Photo de Yamy trop mignon","Acheté Labubu pour Yamy","Vivement voir Yamy","Yamy appelée, trop content","Photos de Yamy, il manque","Yamy jaloux mdr"],
-      missYamy:["Yamy TROP là j'en peux plus","Nul d'être loin de Yamy","Je veux rentrer voir Yamy","Pourquoi Yamy pas là ??","Triste sans Yamy"]
-    };
+  <!-- GAME OVER -->
+  <div id="gameOverScreen" class="hidden game-over">
+    <h2>💀 GAME OVER 💀</h2>
+    <div id="gameOverReason" style="margin:10px 0 6px"></div>
+    <div class="start-box" style="color:#333">
+      <div><b>Jours:</b> <span id="finalDays">0</span></div>
+      <div><b>Actions:</b> <span id="finalActions">0</span></div>
+      <div><b>Argent:</b> $<span id="finalMoney">0</span></div>
+      <div><b>Photos:</b> <span id="finalPhotos">0</span></div>
+      <div><b>Achievements:</b> <span id="finalAchievements">0</span>/25</div>
+    </div>
+    <button class="restart-btn" id="restartBtn">🔄 Recommencer</button>
+  </div>
 
-    // ====== ACHIEVEMENTS ======
-    const achievementsList = [
-      {id:'first_day', icon:'🗓️', title:'Premier Jour', desc:'Survivre au jour 1', condition:()=>game.state.day>=2},
-      {id:'survivor', icon:'🏆', title:'Survivor', desc:'Terminer le voyage', condition:()=>game.state.day>5},
-      {id:'broke', icon:'💸', title:'Fauchée', desc:'Avoir moins de 50$', condition:()=>game.state.money<50},
-      {id:'rich', icon:'💰', title:'Économe', desc:'Finir avec plus de 200$', condition:()=>game.state.day>5 && game.state.money>200},
-      {id:'photographer', icon:'📸', title:'Photographe', desc:'Prendre 50 photos', condition:()=>game.state.photos>=50},
-      {id:'paparazzi', icon:'📷', title:'Paparazzi', desc:'Prendre 100 photos', condition:()=>game.state.photos>=100},
-      {id:'foodie', icon:'🍔', title:'Foodie', desc:'Manger 10 fois', condition:()=>game.journal.filter(e=>e.category==='food').length>=10},
-      {id:'starving', icon:'😵', title:'Affamée', desc:'Avoir 90%+ de faim', condition:()=>game.state.hunger>=90},
-      {id:'energizer', icon:'⚡', title:'Énergique', desc:'80%+ énergie pendant 5 actions', condition:()=>false},
-      {id:'zen', icon:'🧘', title:'Zen Master', desc:'90%+ patience pendant un jour', condition:()=>false},
-      {id:'love_birds', icon:'💕', title:'Love Birds', desc:'Maintenir Yamy à 90%+', condition:()=>game.state.yamy>=90 && game.state.actionCount>10},
-      {id:'heartbroken', icon:'💔', title:'Heartbroken', desc:'Yamy descend sous 20%', condition:()=>game.state.yamy<=20},
-      {id:'labubu', icon:'🧸', title:'Best GF', desc:'Acheter le Labubu pour Yamy', condition:()=>false},
-      {id:'spender', icon:'💳', title:'Dépensière', desc:'Dépenser 300$ en un jour', condition:()=>false},
-      {id:'walker', icon:'🚶‍♀️', title:'Marcheuse', desc:'Refuser 5 transports', condition:()=>false},
-      {id:'metro_master', icon:'🚇', title:'Metro Master', desc:'Prendre le métro 10 fois', condition:()=>false},
-      {id:'tourist', icon:'🗽', title:'Touriste Ultime', desc:'Visiter des spots iconiques', condition:()=>false},
-      {id:'night_owl', icon:'🌙', title:'Night Owl', desc:'Avoir un jet lag sévère', condition:()=>false},
-      {id:'social', icon:'👥', title:'Sociale', desc:'Bonne relation avec le groupe', condition:()=>false},
-      {id:'loner', icon:'😤', title:'Solitaire', desc:'Éviter Kevin 5 fois', condition:()=>false},
-      {id:'combo_master', icon:'🔥', title:'Combo Master', desc:'Faire un combo x5', condition:()=>false},
-      {id:'lucky', icon:'🍀', title:'Chanceuse', desc:'Voir un événement rare', condition:()=>false},
-      {id:'minigame_master', icon:'🎮', title:'Mini-jeu Pro', desc:'Réussir 3 mini-jeux', condition:()=>false},
-      {id:'photo_perfectionist', icon:'📸', title:'Perfectionniste Photo', desc:'Réussir le Photo Challenge', condition:()=>false},
-      {id:'negotiator', icon:'💰', title:'Négociatrice', desc:'Réussir une négociation', condition:()=>false},
-      {id:'journal_writer', icon:'📔', title:'Écrivaine', desc:'30 entrées dans le journal', condition:()=>game.journal.length>=30},
-      {id:'balanced', icon:'⚖️', title:'Équilibrée', desc:'Toutes les stats > 50% en fin', condition:()=>game.state.day>5 && game.state.money>100 && game.state.energy>50 && game.state.hunger<50 && game.state.patience>50 && game.state.yamy>50},
-      {id:'perfectionist', icon:'💎', title:'Perfectionniste', desc:'Finir avec toutes stats > 70%', condition:()=>game.state.day>5 && game.state.energy>70 && game.state.hunger<30 && game.state.patience>70 && game.state.yamy>70}
-    ];
+  <!-- NAV -->
+  <div id="bottomNav" class="bottom-nav hidden">
+    <button class="nav-btn" id="journalBtn" title="J">📔<span class="badge-count" id="journalBadge">0</span></button>
+    <button class="nav-btn" id="achievementsBtn" title="A">🏆<span class="badge-count" id="achievementsBadge">0</span></button>
+    <button class="nav-btn" id="statsBtn" title="S">📊</button>
+    <button class="nav-btn" id="soundBtn" title="Son">🔇</button>
+  </div>
+</div>
 
-    // ====== EVENTS (extraits principaux + rares + conditionnels) ======
-    const allEvents = [
-      // Base
-      {emoji:"🍕",title:"Pizzeria",desc:"Pizzeria chère. Maiko a FAIM.",rare:false,choices:[{text:"🍕 Part à 8$",effects:{money:-8,hunger:-25,energy:5},msg:"Part MASSIVE pas finie"},{text:"🚫 Refuser",effects:{hunger:8,patience:-12},msg:"Elle boude"}],category:'food'},
-      {emoji:"📸",title:"Spot Instagram",desc:"Endroit stylé pour photo.",rare:false,choices:[{text:"📱 50 photos",effects:{energy:-12,patience:8,photos:6},msg:"'Encore une !'"},{text:"⏭️ Skip",effects:{patience:-15},msg:"'Relous !'"}],category:'photos'},
-      {emoji:"🚶‍♀️",title:"Marche 2h",desc:"Prof veut marcher. Pieds mal.",rare:false,choices:[{text:"🚇 Métro 3$",effects:{money:-3,patience:-8,energy:8},msg:"Métro puait"},{text:"👟 Marcher",effects:{energy:-20,patience:-12},msg:"'MES PIEDS'"}],category:'transport'},
-      {emoji:"☕",title:"Starbucks",desc:"Starbucks à 7$.",rare:false,choices:[{text:"☕ Café 7$",effects:{money:-7,energy:12,patience:8},msg:"10 photos avec"},{text:"💧 Eau",effects:{patience:-8,energy:4},msg:"'Pas drôles'"}],category:'food'},
-      {emoji:"😴",title:"Réveil 6h",desc:"Réveil 6h. Dur.",rare:false,choices:[{text:"☕ Café 6$",effects:{money:-6,energy:18},msg:"A survécu"},{text:"😫 Sans café",effects:{energy:-18,patience:-12},msg:"MAUVAISE HUMEUR"}],category:'energy'},
-      {emoji:"🥢",title:"Resto Asiat",desc:"ENFIN bouffe asiat !",rare:false,choices:[{text:"🍜 Asiat 15$",effects:{money:-15,hunger:-35,patience:18,energy:8},msg:"'VRAIE BOUFFE'"},{text:"🍔 US",effects:{patience:-20,hunger:-8},msg:"Elle boude"}],category:'food'},
-      {emoji:"🧋",title:"Bubble Tea",desc:"Bubble tea trouvé !",rare:false,choices:[{text:"🧋 6$",effects:{money:-6,patience:12,hunger:-5},msg:"'J'AVAIS BESOIN'"},{text:"🚫 Passer",effects:{patience:-15},msg:"Yeux chien battu"}],category:'food'},
-      {emoji:"😤",title:"Kevin Relou",desc:"Kevin la saoule.",rare:false,choices:[{text:"🎮 Changer groupe",effects:{patience:12,energy:-4},msg:"Esquivé Kevin"},{text:"😡 Crier dessus",effects:{patience:-8,energy:-12},msg:"Épuisée"}],category:'mood'},
-      {emoji:"🌭",title:"Hot Dog",desc:"Vendeur hot dogs.",rare:false,choices:[{text:"🌭 4$",effects:{money:-4,hunger:-12,patience:4},msg:"'Pas ouf'"},{text:"🤢 Refuser",effects:{hunger:8,patience:-4},msg:"Évité intox"}],category:'food'},
+<!-- Overlays -->
+<div id="journalOverlay" class="overlay"><div class="panel">
+  <button class="close-btn" data-close>×</button>
+  <h2 style="color:#667eea;text-align:center">📔 Journal</h2>
+  <div class="journal-filters" id="filters">
+    <button class="filter-btn active" data-filter="all">Tout</button>
+    <button class="filter-btn" data-filter="yamy">💕 Yamy</button>
+    <button class="filter-btn" data-filter="food">🍔 Bouffe</button>
+    <button class="filter-btn" data-filter="photos">📸 Photos</button>
+    <button class="filter-btn" data-filter="mood">😤 Mood</button>
+  </div>
+  <div id="journalStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;font-size:.95em"></div>
+  <div id="journalEntries"></div>
+</div></div>
 
-      // Yamy
-      {emoji:"🧸",title:"Labubu Shop",desc:"Labubu ! Yamy en veut !",rare:false,choices:[{text:"💝 35$",effects:{money:-35,patience:18,energy:8,yamy:28},msg:"Yamy content 🥰",achievement:'labubu'},{text:"💸 Trop cher",effects:{patience:-18,yamy:-12},msg:"Culpabilise"}],category:'yamy'},
-      {emoji:"📱",title:"Appel Yamy",desc:"Yamy appelle !",rare:false,choices:[{text:"💕 30min",effects:{energy:-8,patience:18,yamy:22},msg:"Sourit idiote"},{text:"⏱️ Vite",effects:{yamy:-12,patience:-8},msg:"Il boude"}],category:'yamy'},
-      {emoji:"💔",title:"Manque Yamy",desc:"Coup de blues.",rare:false,condition:()=>game.state.yamy<60,choices:[{text:"😢 Message",effects:{energy:-4,yamy:18,patience:8},msg:"Répondu avec cœurs"},{text:"😤 Oublier",effects:{yamy:-8,patience:-12},msg:"C'est dur"}],category:'yamy'},
-      {emoji:"📸",title:"Photo Yamy",desc:"Photo pour Yamy.",rare:false,choices:[{text:"🤳 100 selfies",effects:{energy:-12,yamy:12,photos:8},msg:"LA photo trouvée"},{text:"📱 Vite",effects:{yamy:5,photos:1},msg:"'Belle bébé'"}],category:'yamy'},
-      {emoji:"🎁",title:"Cadeau Yamy",desc:"Truc stylé pour Yamy.",rare:false,choices:[{text:"🎁 40$",effects:{money:-40,yamy:22,patience:12},msg:"Va kiffer"},{text:"💰 Cher",effects:{yamy:-8,patience:-8},msg:"Regrette"}],category:'yamy'},
-      {emoji:"💬",title:"Message Yamy",desc:"Message mignon.",rare:false,choices:[{text:"💕 Cœurs",effects:{yamy:18,patience:12,energy:8},msg:"'Je t'aime'"},{text:"😊 Émoji",effects:{yamy:8},msg:"❤️"}],category:'yamy'},
-      {emoji:"🕐",title:"Décalage",desc:"3h en France, Yamy dort.",rare:false,choices:[{text:"😢 Messages",effects:{yamy:8,energy:-4},msg:"10 messages"},{text:"⏰ Attendre",effects:{yamy:-4,patience:-8},msg:"Attend impatiemment"}],category:'yamy'},
-      {emoji:"🎵",title:"Leur Chanson",desc:"Leur chanson préférée.",rare:false,choices:[{text:"💕 Vidéo",effects:{yamy:18,energy:-4,photos:1},msg:"Trop aimé"},{text:"😢 Nostalgique",effects:{yamy:-8,patience:-8},msg:"Devient triste"}],category:'yamy'},
-      {emoji:"👕",title:"Hoodie Yamy",desc:"Hoodie de Yamy.",rare:false,choices:[{text:"🥰 Photo",effects:{yamy:22,energy:8,photos:1},msg:"Yamy fond"},{text:"😴 Dormir",effects:{yamy:12,energy:12},msg:"Sent encore lui"}],category:'yamy'},
-      {emoji:"💍",title:"Couple Mignon",desc:"Couple trop mignon.",rare:false,choices:[{text:"💕 Message",effects:{yamy:18,patience:-4},msg:"'Moi aussi'"},{text:"😢 Triste",effects:{yamy:-12,patience:-12,energy:-8},msg:"Déprimée"}],category:'yamy'},
-      {emoji:"✈️",title:"2 Jours",desc:"Plus que 2 jours !",rare:false,condition:()=>game.state.day>=3,choices:[{text:"🥰 Message",effects:{yamy:18,patience:12,energy:8},msg:"Trop hâte"},{text:"⏰ Attendre",effects:{yamy:4},msg:"Bientôt"}],category:'yamy'},
+<div id="achievementsOverlay" class="overlay"><div class="panel">
+  <button class="close-btn" data-close>×</button>
+  <h2 style="color:#667eea;text-align:center">🏆 Achievements</h2>
+  <div id="achievementsList"></div>
+</div></div>
 
-      // Iconiques (extraits)
-      {emoji:"🗽",title:"Statue Liberté",desc:"LE moment.",rare:false,choices:[{text:"📸 Pose cliché",effects:{energy:-8,patience:12,photos:12},msg:"3M avant elle"},{text:"😎 Original",effects:{energy:-15,patience:8,photos:6},msg:"Créativité..."}],category:'photos',achievement:'tourist'},
-      {emoji:"🍔",title:"Shake Shack",desc:"THE burger US.",rare:false,choices:[{text:"🍔 12$",effects:{money:-12,hunger:-30,patience:8},msg:"7/10"},{text:"💵 McDo 8$",effects:{money:-8,hunger:-22,patience:-4},msg:"Pas de flex"}],category:'food'},
-      {emoji:"🚕",title:"Taxi Jaune",desc:"UN taxi jaune !",rare:false,choices:[{text:"🚖 15$",effects:{money:-15,patience:18,energy:12,photos:4},msg:"Chauffeur fou"},{text:"🚇 Métro 3$",effects:{money:-3,patience:-8},msg:"'Pas pareil'"}],category:'transport'},
-      {emoji:"🌆",title:"Times Square Nuit",desc:"Illuminé !",rare:false,choices:[{text:"📸 1h photos",effects:{energy:-18,patience:-8,photos:25},msg:"Bousculée 47x",achievement:'paparazzi'},{text:"🏃‍♀️ Vite",effects:{energy:-4,patience:-12,photos:4},msg:"'TROP monde'"}],category:'photos'},
+<div id="statsOverlay" class="overlay"><div class="panel">
+  <button class="close-btn" data-close>×</button>
+  <h2 style="color:#667eea;text-align:center">📊 Statistiques</h2>
+  <div id="statsHistory"></div>
+  <div id="spendingBreakdown" style="margin-top:12px"></div>
+  <div id="generalStats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"></div>
+</div></div>
 
-      // Quotidiens / divers (extraits)
-      {emoji:"☔",title:"Pluie",desc:"Pluie ! Pas de parapluie.",rare:false,choices:[{text:"☂️ 15$",effects:{money:-15,patience:4},msg:"Va perdre"},{text:"💦 Courir",effects:{energy:-12,patience:-18},msg:"TREMPÉE"}],category:'weather'},
-      {emoji:"💰",title:"Négociation",desc:"Vendeur rue. Négocier ?",rare:false,minigame:'negotiate',choices:[{text:"🤝 Négocier",effects:{},msg:"Mini-jeu lancé"},{text:"❌ Passer",effects:{},msg:"Elle passe"}],category:'spending'},
+<div id="notificationContainer"></div>
+<div id="comboIndicator" class="combo-indicator hidden">
+  🔥 COMBO <span id="comboX">x1</span>
+  <div class="tooltip">Bonus positifs +5% par niveau</div>
+</div>
 
-      // Conditionnels
-      {emoji:"😴",title:"Sieste",desc:"Trop fatiguée.",rare:false,condition:()=>game.state.energy<40,choices:[{text:"💤 Dormir 2h",effects:{energy:35,hunger:15,yamy:-5},msg:"Récupérée mais temps perdu"},{text:"☕ Café 8$",effects:{money:-8,energy:15},msg:"Tient le coup"}],category:'energy'},
-      {emoji:"🍕",title:"Pizza Slice",desc:"1$ pizza slice.",rare:false,condition:()=>game.state.money<100,choices:[{text:"🍕 1$",effects:{money:-1,hunger:-15},msg:"Pas ouf mais cheap"},{text:"🚫 Rien",effects:{hunger:10},msg:"Économise"}],category:'food'},
-      {emoji:"💰",title:"ATM",desc:"ATM nearby. Retirer ?",rare:false,condition:()=>game.state.money<50,choices:[{text:"💵 50$ (5$ frais)",effects:{money:45},msg:"Frais abusés"},{text:"❌ Continuer",effects:{patience:-8},msg:"Va devoir gérer"}],category:'money'},
+<script>
+/* ================== SETTINGS & UTILS ================== */
+const TAX = 0.08875; // NYC sales tax approx
+const TIP_MIN = 0.10, TIP_MAX = 0.20; // typical tips on food
+const DAY_ACTIONS = 8;
 
-      // Rares
-      {emoji:"⭐",title:"Célébrité!",desc:"Une célébrité !",rare:true,choices:[{text:"📱 Photo",effects:{energy:-4,patience:25,photos:5},msg:"Va flex 6 mois",achievement:'lucky'},{text:"👀 Loin",effects:{patience:-12},msg:"'Dû demander'"}],category:'rare'},
-      {emoji:"💸",title:"50$ Trouvés",desc:"50$ par terre !",rare:true,choices:[{text:"💰 Prendre",effects:{money:50,patience:20},msg:"Jackpot !",achievement:'lucky'},{text:"🚔 Rapporter",effects:{patience:10},msg:"Honnête"}],category:'rare'}
-    ];
+const DIFFS = {
+  easy:   { label:'Facile',  price:0.95, hungerTick:5, energyDaily:0, yamyWear:2, rareBuff:1.0 },
+  normal: { label:'Normal',  price:1.00, hungerTick:7, energyDaily:2, yamyWear:3, rareBuff:1.0 },
+  hard:   { label:'Difficile', price:1.15, hungerTick:10, energyDaily:4, yamyWear:5, rareBuff:1.15 }
+};
 
-    // ====== HELPERS ======
-    const getQuote = cat => quotes[cat][Math.floor(Math.random()*quotes[cat].length)];
-    function getMood(){
-      const s=game.state;
-      const avg=(s.energy+s.patience+(100-s.hunger)+s.yamy)/4;
-      if(avg<25) return '😭'; if(avg<40) return '😫'; if(avg<60) return '😐'; if(avg<80) return '😊'; return '😄';
-    }
-    function vibrate(ms=60){ if('vibrate' in navigator) navigator.vibrate(ms); }
+let soundEnabled = JSON.parse(localStorage.getItem('msnyc_sound')||'false');
+let selectedDiff = localStorage.getItem('msnyc_diff') || 'normal';
 
-    function addJournal(title,category){
-      const s=game.state; let q="";
-      if(s.yamy<40) q=getQuote('missYamy');
-      else if(s.hunger>70) q=getQuote('hungry');
-      else if(s.energy<30) q=getQuote('tired');
-      else if(s.money<50) q=getQuote('broke');
-      else if(s.patience<30) q=getQuote('impatient');
-      else if(s.energy>60 && s.patience>60 && s.hunger<40) q=getQuote('happy');
-      else if(category==='yamy') q=getQuote('yamy');
-      else if(category==='photos') q=getQuote('photos');
-      else if(category==='food') q=getQuote('food');
-      else if(category==='spending') q=getQuote('spending');
-      else q = Math.random()>0.5 ? getQuote('nyc') : getQuote('group');
+function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+function vibrate(ms=50){ if('vibrate' in navigator) navigator.vibrate(ms); }
+function fmt(n){ return Math.round(n); }
+function showNote(icon, text){
+  const n = document.createElement('div');
+  n.className='notification'; n.innerHTML=`<b style="margin-right:6px">${icon}</b>${text}`;
+  document.getElementById('notificationContainer').appendChild(n);
+  setTimeout(()=>n.remove(), 2500);
+}
 
-      game.journal.unshift({
-        day:s.day, action:s.actionCount, quote:q, category:category||'general',
-        money:Math.floor(s.money), energy:Math.floor(s.energy), hunger:Math.floor(s.hunger),
-        patience:Math.floor(s.patience), yamy:Math.floor(s.yamy),
-        time:new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})
-      });
-      document.getElementById('journalBadge').textContent = game.journal.length;
-      checkAchievements();
-    }
+/* ================== AUDIO ================== */
+const sounds = {
+  click: () => play(500, .08, .05),
+  success: () => play(820, .12, .09),
+  fail: () => play(220, .14, .1),
+  achievement: () => { play(600,.08,.06); setTimeout(()=>play(820,.08,.06),100); setTimeout(()=>play(1000,.12,.08),220); }
+};
+function play(freq, duration, volume){
+  if(!soundEnabled) return;
+  try{
+    const Ctx = window.AudioContext||window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx = new Ctx(), osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.value=freq; g.gain.value=volume;
+    osc.start(); osc.stop(ctx.currentTime+duration);
+  }catch(e){}
+}
 
-    function getCategoryEmoji(cat){
-      const map={yamy:'💕',food:'🍔',photos:'📸',mood:'😤',transport:'🚇',spending:'💳',culture:'🎨',rare:'⭐',energy:'⚡',weather:'☔',social:'👥',fun:'🎮',need:'🚻',money:'💰'};
-      return map[cat]||'📝';
-    }
+/* ================== STATE ================== */
+const game = {
+  state: { day:1, actionCount:0, money:300, energy:100, hunger:40, patience:100, yamy:100, photos:0, maxMoney:300, combo:0, lastChoiceType:null, statsHistory:[] },
+  journal: [], achievements: [], usedEvents: [], availableEvents: [], currentFilter:'all',
+  spending: { food:0, transport:0, culture:0, shopping:0, other:0 },
+  energyStreak:0, patienceStreak:0, daySpending:0, miniGamesWon:0, walkCount:0, metroCount:0, kevinAvoidCount:0
+};
 
-    function updateJournal(){
-      const c=document.getElementById('journalEntries');
-      const filtered = game.currentFilter==='all' ? game.journal : game.journal.filter(e=>e.category===game.currentFilter);
-      if(!filtered.length){
-        c.innerHTML='<div style="text-align:center;padding:40px;color:#999;font-style:italic;">Aucune entrée</div>';
-      } else {
-        c.innerHTML = filtered.map(e=>`
-          <div class="journal-entry">
-            <div class="journal-entry-header">
-              <span>📅 Jour ${e.day} - Action ${e.action}</span>
-              <span>🕐 ${e.time}</span>
-            </div>
-            <span class="journal-category">${getCategoryEmoji(e.category)} ${e.category}</span>
-            <div class="journal-quote">"${e.quote}"</div>
-            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px;font-size:.75em;opacity:.7;">
-              <div style="text-align:center;">💰${e.money}</div>
-              <div style="text-align:center;">⚡${e.energy}%</div>
-              <div style="text-align:center;">🍔${e.hunger}%</div>
-              <div style="text-align:center;">😤${e.patience}%</div>
-              <div style="text-align:center;">💕${e.yamy}%</div>
-            </div>
-          </div>`).join('');
-      }
-      document.getElementById('journalDay').textContent = game.state.day;
-      document.getElementById('journalCount').textContent = game.journal.length;
-      document.getElementById('journalMoney').textContent = Math.floor(game.state.money);
-      document.getElementById('journalPhotos').textContent = game.state.photos;
-    }
+/* ================== DATA (quotes / achievements / events) ================== */
+const quotes = {
+  hungry:["Je vais croquer un taxi là","Mon ventre crie au secours","J’ai des étoiles devant les yeux","Tout est nourriture autour de moi"],
+  tired:["Mes jambes sont en carton","Sieste sur un trottoir ok?","J’ai cligné trop longtemps -> dodo","Je marche en pilote auto"],
+  broke:["NYC m’a rackettée","Je vais vendre mes chaussures","Budget évaporé","Note à moi-même: plus jamais"],
+  impatient:["Ne me parlez pas merci","Je deviens allergique aux gens","Profs = boss de fin","Je boude activement"],
+  happy:["Ok c’est stylé de ouf","C’est exactement comme dans les films","Je kiffe cette journée","Le mood est au vert"],
+  photos:["Mon stockage pleure","Encore une, juste une…","La lumière est insane","Je suis la paparazzi de moi-même"],
+  food:["Tout est XXL ici","Beurre + sucre + friture = 🇺🇸","Rien ne bat un bon ramen","Je rêve de légumes"],
+  nyc:["NYC est une machine à fatigue","Bruyant, grand, vivant","Je comprends le mythe","Clermont me manque un peu"],
+  group:["Le groupe traîne les pieds","On s’est quand même marrés","Tout le monde râle en chœur","Photo de groupe ratée x12"],
+  yamy:["Yamy me manque","Spammé de cœurs (pardon)","Une peluche pour Yamy?","Je veux lui raconter tout"],
+  missYamy:["Le manque commence à piquer","Je veux juste un câlin là","Le décalage me nargue","Reviens vite pls"]
+};
 
-    function setFilter(filter, buttonEl){
-      game.currentFilter = filter;
-      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-      if(buttonEl) buttonEl.classList.add('active');
-      updateJournal();
-    }
+const achievementsList = [
+  {id:'first_day', icon:'🗓️', title:'Premier Jour', desc:'Survivre au jour 1', condition:()=>game.state.day>=2},
+  {id:'survivor', icon:'🏆', title:'Survivor', desc:'Terminer le voyage', condition:()=>game.state.day>5},
+  {id:'broke', icon:'💸', title:'Fauchée', desc:'Avoir moins de 50$', condition:()=>game.state.money<50},
+  {id:'rich', icon:'💰', title:'Économe', desc:'Finir avec plus de 200$', condition:()=>game.state.day>5 && game.state.money>200},
+  {id:'photographer', icon:'📸', title:'Photographe', desc:'Prendre 50 photos', condition:()=>game.state.photos>=50},
+  {id:'paparazzi', icon:'📷', title:'Paparazzi', desc:'Prendre 100 photos', condition:()=>game.state.photos>=100},
+  {id:'foodie', icon:'🍔', title:'Foodie', desc:'Manger 10 fois', condition:()=>game.journal.filter(e=>e.category==='food').length>=10},
+  {id:'starving', icon:'😵', title:'Affamée', desc:'Avoir 90%+ de faim', condition:()=>game.state.hunger>=90},
+  {id:'energizer', icon:'⚡', title:'Énergique', desc:'80%+ énergie 5 actions', condition:()=>false},
+  {id:'zen', icon:'🧘', title:'Zen Master', desc:'90%+ patience un jour', condition:()=>false},
+  {id:'love_birds', icon:'💕', title:'Love Birds', desc:'Yamy 90%+ longtemps', condition:()=>game.state.yamy>=90 && game.state.actionCount>10},
+  {id:'heartbroken', icon:'💔', title:'Heartbroken', desc:'Yamy ≤ 20%', condition:()=>game.state.yamy<=20},
+  {id:'labubu', icon:'🧸', title:'Best GF', desc:'Acheter le Labubu', condition:()=>false},
+  {id:'spender', icon:'💳', title:'Dépensière', desc:'300$ en un jour', condition:()=>false},
+  {id:'walker', icon:'🚶‍♀️', title:'Marcheuse', desc:'Refuser 5 transports', condition:()=>false},
+  {id:'metro_master', icon:'🚇', title:'Metro Master', desc:'10 métros', condition:()=>false},
+  {id:'tourist', icon:'🗽', title:'Touriste Ultime', desc:'Spots iconiques', condition:()=>false},
+  {id:'combo_master', icon:'🔥', title:'Combo Master', desc:'Combo x5', condition:()=>false},
+  {id:'lucky', icon:'🍀', title:'Chanceuse', desc:'Évènement rare', condition:()=>false},
+  {id:'minigame_master', icon:'🎮', title:'Mini-jeu Pro', desc:'3 mini-jeux', condition:()=>false},
+  {id:'photo_perfectionist', icon:'📸', title:'Perfectionniste Photo', desc:'Photo parfaite', condition:()=>false},
+  {id:'negotiator', icon:'💰', title:'Négociatrice', desc:'Négociation ok', condition:()=>false},
+  {id:'journal_writer', icon:'📔', title:'Écrivaine', desc:'30 entrées', condition:()=>game.journal.length>=30},
+  {id:'balanced', icon:'⚖️', title:'Équilibrée', desc:'Stats >50% en fin', condition:()=>game.state.day>5 && game.state.money>100 && game.state.energy>50 && game.state.hunger<50 && game.state.patience>50 && game.state.yamy>50},
+  {id:'perfectionist', icon:'💎', title:'Perfectionniste', desc:'Stats >70% en fin', condition:()=>game.state.day>5 && game.state.energy>70 && game.state.hunger<30 && game.state.patience>70 && game.state.yamy>70}
+];
 
-    function updateAchievements(){
-      const c=document.getElementById('achievementsList');
-      c.innerHTML = achievementsList.map(a=>{
-        const unlocked = game.achievements.includes(a.id);
-        return `
-          <div class="achievement-item ${unlocked?'':'locked'}">
-            <div class="achievement-icon">${a.icon}</div>
-            <div class="achievement-info">
-              <div class="achievement-title">${a.title}</div>
-              <div class="achievement-desc">${a.desc}</div>
-            </div>
-          </div>`;
-      }).join('');
-      const count=game.achievements.length;
-      document.getElementById('achievementsBadge').textContent=count;
-      document.getElementById('achievementsUnlocked').textContent=count;
-    }
+const baseEvents = [
+  {emoji:"🍕",title:"Pizzeria",desc:"Pizzeria chère. Maiko a FAIM.",category:'food',
+   choices:[{text:"🍕 Part (8$)",cost:8,effects:{hunger:-25,energy:+4}},{text:"🚫 Refuser",effects:{hunger:+8,patience:-10}}]},
+  {emoji:"☕",title:"Starbucks",desc:"Café pour tenir.",category:'food',
+   choices:[{text:"☕ Latte (6.5$)",cost:6.5,effects:{energy:+14,patience:+6}},{text:"💧 Eau",effects:{energy:+3,patience:-6}}]},
+  {emoji:"🚶‍♀️",title:"Marche 2h",desc:"Le prof veut marcher longtemps.",category:'transport',
+   choices:[{text:"🚇 Métro (3$)",cost:3,effects:{energy:+6,patience:-6}},{text:"👟 Marcher",effects:{energy:-18,patience:-10}}]},
+  {emoji:"🥢",title:"Resto Asiat",desc:"ENFIN de la vraie bouffe.",category:'food',
+   choices:[{text:"🍜 Bol (15$)",cost:15,effects:{hunger:-32,patience:+14,energy:+6}},{text:"🍔 Fast-food",effects:{hunger:-10,patience:-10}}]},
+  {emoji:"📸",title:"Spot Instagram",desc:"Endroit parfait.",category:'photos',
+   choices:[{text:"📱 50 photos",effects:{energy:-10,patience:+6,photos:+8}},{text:"⏭️ Skip",effects:{patience:-10}}]},
+  {emoji:"😤",title:"Kevin Relou",desc:"Kevin la saoule.",category:'mood',
+   choices:[{text:"🎮 Changer de groupe",effects:{patience:+10,energy:-4}},{text:"😡 Le remettre",effects:{patience:-10,energy:-10}}]},
+  {emoji:"🧋",title:"Bubble Tea",desc:"Envie de sucre.",category:'food',
+   choices:[{text:"🧋 Boisson (6$)",cost:6,effects:{patience:+10,hunger:-5}},{text:"🚫 Passer",effects:{patience:-10}}]},
+  {emoji:"🌆",title:"Times Square Nuit",desc:"Illuminé !",category:'photos',
+   choices:[{text:"📸 1h photos",effects:{energy:-16,patience:-6,photos:+18},achievement:'paparazzi'},{text:"🏃‍♀️ Vite",effects:{energy:-3,patience:-10,photos:+4}}]},
+  // Yamy
+  {emoji:"🧸",title:"Labubu Shop",desc:"Peluche pour Yamy ?",category:'yamy',
+   choices:[{text:"💝 Acheter (35$)",cost:35,effects:{patience:+14,energy:+6,yamy:+26},achievement:'labubu'},{text:"💸 Trop cher",effects:{patience:-12,yamy:-10}}]},
+  {emoji:"📱",title:"Appel Yamy",desc:"Un appel ? ",category:'yamy',
+   choices:[{text:"💕 20 min",effects:{energy:-6,patience:+14,yamy:+18}},{text:"⏱️ Rapide",effects:{yamy:-10,patience:-8}}]}
+];
 
-    function toggleOverlay(id){
-      const el = document.getElementById(id);
-      el.classList.toggle('hidden');
-      if(id==='journalOverlay' && !el.classList.contains('hidden')) updateJournal();
-      if(id==='achievementsOverlay' && !el.classList.contains('hidden')) updateAchievements();
-      if(id==='statsOverlay' && !el.classList.contains('hidden')) updateStatsOverlay();
-    }
+const conditionals = [
+  {emoji:"😴",title:"Sieste",desc:"Elle vacille…",category:'energy',condition:()=>game.state.energy<35,
+   choices:[{text:"💤 Dormir 1h",effects:{energy:+28,hunger:+12,yamy:-4}},{text:"☕ Café (8$)",cost:8,effects:{energy:+14}}]},
+  {emoji:"🍕",title:"Pizza à 1$",desc:"Plan radin.",category:'food',condition:()=>game.state.money<100,
+   choices:[{text:"🍕 Slice (1$)",cost:1,effects:{hunger:-12}},{text:"🚫 Rien",effects:{hunger:+8}}]},
+  {emoji:"💰",title:"ATM",desc:"Besoin de cash ?",category:'money',condition:()=>game.state.money<50,
+   choices:[{text:"💵 50$ (+5$ frais)",cost: -45, effects:{}},{text:"❌ Continuer",effects:{patience:-6}}]} // cost négative = gain net
+];
 
-    function checkAchievements(){
-      const s=game.state;
-      achievementsList.forEach(a=>{
-        if(!game.achievements.includes(a.id) && a.condition && a.condition()){
-          game.achievements.push(a.id);
-          showNotification(a.icon,`Achievement: ${a.title}`); sounds.achievement();
-        }
-      });
-      // Streaks
-      if(s.energy>=80){
-        game.energyStreak=(game.energyStreak||0)+1;
-        if(game.energyStreak>=5 && !game.achievements.includes('energizer')){
-          game.achievements.push('energizer'); showNotification('⚡','Achievement: Énergique'); sounds.achievement();
-        }
-      } else game.energyStreak=0;
+const rares = [
+  {emoji:"⭐",title:"Célébrité!",desc:"Croisée au coin de la rue.",category:'rare',
+   choices:[{text:"📱 Photo",effects:{energy:-4,patience:+18,photos:+4}},{text:"👀 Laisser",effects:{patience:-10}}],achievement:'lucky'},
+  {emoji:"💸",title:"50$ trouvés",desc:"Par terre…",category:'rare',
+   choices:[{text:"💰 Prendre",effects:{money:+50,patience:+12}},{text:"🚔 Rapporter",effects:{patience:+8}}],achievement:'lucky'}
+];
 
-      if(s.patience>=90){
-        game.patienceStreak=(game.patienceStreak||0)+1;
-        if(game.patienceStreak>=8 && !game.achievements.includes('zen')){
-          game.achievements.push('zen'); showNotification('🧘','Achievement: Zen Master'); sounds.achievement();
-        }
-      } else game.patienceStreak=0;
+/* ================== PRICING (taxes & tips) ================== */
+function priceWithNYC(cost, category){
+  if(cost==null) return {total:0, breakdown:''};
+  let base = cost;
+  const diff = DIFFS[selectedDiff];
+  base *= diff.price;
 
-      // Reset jour (toutes les 8 actions)
-      if(s.actionCount%8===0){ game.daySpending=0; }
-      updateAchievements();
-    }
+  let tax = base * TAX;
+  let tip = 0;
+  if(category==='food') tip = base * (TIP_MIN + Math.random()*(TIP_MAX-TIP_MIN));
+  const total = base + tax + tip;
 
-    function showNotification(icon,text){
-      const n=document.createElement('div');
-      n.className='notification';
-      n.innerHTML=`<div class="notification-icon">${icon}</div><div class="notification-text">${text}</div>`;
-      document.body.appendChild(n);
-      vibrate(80);
-      setTimeout(()=>n.remove(),3000);
-    }
+  return {
+    total: Math.round(total*100)/100,
+    breakdown: `≈ ${base.toFixed(2)}$ + tax ${tax.toFixed(2)}${tip?` + tip ${tip.toFixed(2)}`:''}`
+  };
+}
 
-    // ====== GAME FLOW ======
-    function startGame(){
-      sounds.click();
-      document.getElementById('startScreen').classList.add('hidden');
-      document.getElementById('gameScreen').classList.remove('hidden');
-      document.getElementById('bottomNav').classList.remove('hidden');
+/* ================== JOURNAL / ACHIEVEMENTS ================== */
+function moodEmoji(){
+  const s=game.state;
+  const avg=(s.energy + s.patience + (100-s.hunger) + s.yamy)/4;
+  if(avg<25) return '😭'; if(avg<40) return '😫'; if(avg<60) return '😐'; if(avg<80) return '😊'; return '😄';
+}
+function addJournal(title,category){
+  const s=game.state;
+  let q="";
+  if(s.yamy<40) q = pick(quotes.missYamy);
+  else if(s.hunger>70) q = pick(quotes.hungry);
+  else if(s.energy<30) q = pick(quotes.tired);
+  else if(s.money<50) q = pick(quotes.broke);
+  else if(s.patience<30) q = pick(quotes.impatient);
+  else if(category==='yamy') q = pick(quotes.yamy);
+  else if(category==='food') q = pick(quotes.food);
+  else if(category==='photos') q = pick(quotes.photos);
+  else q = Math.random()>0.5 ? pick(quotes.nyc) : pick(quotes.group);
 
-      game.state={ day:1, actionCount:0, money:400, energy:100, hunger:30, patience:100, yamy:100, photos:0, maxMoney:400, combo:0, lastChoiceType:null, statsHistory:[] };
-      game.journal=[]; game.achievements=[]; game.usedEvents=[]; game.currentFilter='all';
-      game.availableEvents = allEvents.filter(e=>!e.rare && !e.minigame);
-      game.spending={ food:0, transport:0, culture:0, shopping:0, other:0 };
-      game.energyStreak=0; game.patienceStreak=0; game.daySpending=0; game.miniGamesWon=0; game.walkCount=0; game.metroCount=0; game.kevinAvoidCount=0;
+  game.journal.unshift({
+    day:s.day,action:s.actionCount,category:category||'general',
+    quote:q,money:fmt(s.money),energy:fmt(s.energy),hunger:fmt(s.hunger),
+    patience:fmt(s.patience),yamy:fmt(s.yamy),
+    time:new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})
+  });
+  document.getElementById('journalBadge').textContent = game.journal.length;
+  checkAchievements();
+}
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-      updateStats(); updateAchievements(); showNextEvent();
-      showNotification('🗽','Bienvenue à New York, Maiko !');
-    }
-    function restartGame(){
-      hideCombo();
-      document.getElementById('gameOverScreen').classList.add('hidden');
-      document.getElementById('gameScreen').classList.remove('hidden');
-      document.getElementById('bottomNav').classList.remove('hidden');
-      document.getElementById('journalOverlay').classList.add('hidden');
-      document.getElementById('achievementsOverlay').classList.add('hidden');
-      document.getElementById('statsOverlay').classList.add('hidden');
-      startGame();
-    }
-
-    function showNextEvent(){
-      // Rares 5%
-      if(Math.random()<0.05){
-        const rares=allEvents.filter(e=>e.rare && !game.usedEvents.includes(e));
-        if(rares.length) game.availableEvents.push(rares[Math.floor(Math.random()*rares.length)]);
-      }
-      // Mini-jeux 10% après 5 actions
-      if(game.state.actionCount>=5 && Math.random()<0.1){
-        const minis=allEvents.filter(e=>e.minigame && !game.usedEvents.includes(e));
-        if(minis.length) game.availableEvents.push(minis[Math.floor(Math.random()*minis.length)]);
-      }
-
-      const pool = game.availableEvents.filter(e=>!e.condition || e.condition());
-      if(!pool.length){
-        game.availableEvents = allEvents.filter(e=>!e.rare && !e.minigame);
-        game.usedEvents=[];
-      }
-      const list = pool.length ? pool : game.availableEvents;
-      const e = list[Math.floor(Math.random()*list.length)];
-      game.availableEvents.splice(game.availableEvents.indexOf(e),1);
-      game.usedEvents.push(e);
-
-      const rareClass = e.rare ? ' event-rare' : '';
-      document.getElementById('eventContainer').innerHTML = `
-        <div class="event-card${rareClass}">
-          <div class="event-emoji">${e.emoji}</div>
-          <div class="event-title">${e.title}</div>
-          <div class="event-description">${e.desc}</div>
-          <div class="choices" id="choices"></div>
-        </div>`;
-
-      const c=document.getElementById('choices');
-      e.choices.forEach(ch=>{
-        const b=document.createElement('button');
-        b.className='choice-btn';
-        b.innerHTML=`<div>${ch.text}</div><div class="choice-effects">${formatEffects(ch.effects)}</div>`;
-        b.addEventListener('click', ()=>{
-          sounds.click();
-          if(e.minigame) startMiniGame(e.minigame,e);
-          else makeChoice(ch,e);
-        });
-        c.appendChild(b);
-      });
-    }
-
-    function formatEffects(effects){
-      const r=[]; const e=effects||{};
-      if(e.money) r.push(`💰${e.money>0?'+':''}${e.money}$`);
-      if(e.energy) r.push(`⚡${e.energy>0?'+':''}${e.energy}%`);
-      if(e.hunger) r.push(`🍔${e.hunger>0?'+':''}${e.hunger}%`);
-      if(e.patience) r.push(`😤${e.patience>0?'+':''}${e.patience}%`);
-      if(e.yamy) r.push(`💕${e.yamy>0?'+':''}${e.yamy}%`);
-      if(e.photos) r.push(`📸+${e.photos}`);
-      return r.join(' | ');
-    }
-
-    function showCombo(combo){
-      const indicator=document.getElementById('comboIndicator');
-      indicator.textContent=`🔥 COMBO x${combo}`; indicator.classList.remove('hidden');
-    }
-    function hideCombo(){ document.getElementById('comboIndicator').classList.add('hidden'); }
-
-    function makeChoice(ch, evt){
-      const s=game.state; const choiceType=evt.category;
-
-      // Combo
-      if(s.lastChoiceType===choiceType){
-        s.combo++; showCombo(s.combo);
-        if(s.combo===5 && !game.achievements.includes('combo_master')){
-          game.achievements.push('combo_master'); showNotification('🔥','Achievement: Combo Master x5!'); sounds.achievement();
-        }
-      } else { s.combo=1; hideCombo(); }
-      s.lastChoiceType=choiceType;
-
-      const comboBonus = s.combo>=2 ? 1 + (s.combo*0.05) : 1;
-      const applyEffect = val => val ? Math.floor(val * (val>0 ? comboBonus : 1)) : 0;
-
-      // Appliquer effets
-      s.money   += applyEffect(ch.effects.money||0);
-      s.energy  += applyEffect(ch.effects.energy||0);
-      s.hunger  += applyEffect(ch.effects.hunger||0);
-      s.patience+= applyEffect(ch.effects.patience||0);
-      // usure relationnelle
-      s.yamy    += applyEffect((ch.effects.yamy||0) - 3);
-      s.photos  += ch.effects.photos||0;
-
-      // Dépenses par catégorie (suivi)
-      if(ch.effects.money && ch.effects.money<0){
-        const amount=Math.abs(ch.effects.money);
-        if(evt.category==='food') game.spending.food+=amount;
-        else if(evt.category==='transport') game.spending.transport+=amount;
-        else if(evt.category==='culture') game.spending.culture+=amount;
-        else if(evt.category==='spending') game.spending.shopping+=amount;
-        else game.spending.other+=amount;
-        game.daySpending += amount;
-        if(game.daySpending>=300 && !game.achievements.includes('spender')){
-          game.achievements.push('spender'); showNotification('💳','Achievement: Dépensière'); sounds.achievement();
-        }
-      }
-
-      // Track spéciaux
-      if((evt.title.includes('Marche')||evt.title.includes('pied')||evt.title.includes('Traverser')) && (ch.text.includes('Marcher')||ch.text.includes('pied')||ch.text.includes('Traverser'))){
-        game.walkCount++; if(game.walkCount>=5 && !game.achievements.includes('walker')){ game.achievements.push('walker'); showNotification('🚶‍♀️','Achievement: Marcheuse'); sounds.achievement(); }
-      }
-      if((evt.title.includes('Métro')||evt.category==='transport') && (ch.text.includes('Métro')||ch.text.includes('🚇'))){
-        game.metroCount++; if(game.metroCount>=10 && !game.achievements.includes('metro_master')){ game.achievements.push('metro_master'); showNotification('🚇','Achievement: Metro Master'); sounds.achievement(); }
-      }
-      if(evt.title.includes('Kevin') && (ch.text.includes('Changer')||ch.text.toLowerCase().includes('esquiver'))){
-        game.kevinAvoidCount++; if(game.kevinAvoidCount>=5 && !game.achievements.includes('loner')){ game.achievements.push('loner'); showNotification('😤','Achievement: Solitaire'); sounds.achievement(); }
-      }
-
-      // Faim naturelle / difficulté progressive
-      if(s.actionCount%2===0) s.hunger += 5;
-      if(s.day>=3) s.energy -= 2;
-      if(s.day>=4) s.hunger += 2;
-
-      // Bornes
-      s.money=Math.max(0,s.money);
-      s.energy=Math.max(0,Math.min(100,s.energy));
-      s.hunger=Math.max(0,Math.min(100,s.hunger));
-      s.patience=Math.max(0,Math.min(100,s.patience));
-      s.yamy=Math.max(0,Math.min(100,s.yamy));
-
-      s.actionCount++;
-      s.statsHistory.push({ action:s.actionCount, money:s.money, energy:s.energy, hunger:s.hunger, patience:s.patience, yamy:s.yamy });
-
-      if(ch.achievement && !game.achievements.includes(ch.achievement)){
-        game.achievements.push(ch.achievement);
-        const a=achievementsList.find(x=>x.id===ch.achievement);
-        if(a){ showNotification(a.icon,`Achievement: ${a.title}`); sounds.achievement(); }
-      }
-
-      addJournal(evt.title, evt.category);
-      let msg=ch.msg; if(s.combo>=2) msg += ` 🔥 Combo x${s.combo}! +${Math.floor((s.combo-1)*5)}% bonus`;
-      document.getElementById('eventContainer').innerHTML = `
-        <div class="event-card">
-          <div class="event-emoji">💬</div>
-          <div class="event-description">${msg}</div>
-        </div>`;
-
-      updateStats(); checkAchievements(); if(checkGameOver()) return;
-
-      // Passage de jour (8 actions)
-      if(s.actionCount%8===0){
-        s.day++; document.getElementById('day').textContent=s.day; game.daySpending=0; game.patienceStreak=0;
-        if(s.day>5){ victory(); return; }
-        showNotification('🗓️',`Jour ${s.day} commencé`); sounds.success();
-      }
-      setTimeout(showNextEvent, 1200);
-    }
-
-    // ====== MINI-JEUX ======
-    function startMiniGame(type, evt){
-      if(type==='negotiate') startNegotiateGame(evt);
-      if(type==='photo') startPhotoGame();
-    }
-
-    // Mini-jeu Photo
-    function startPhotoGame(){
-      const container=document.getElementById('miniGameContainer');
-      container.innerHTML=`
-        <div class="mini-game-overlay"><div class="mini-game-container">
-          <h2>📸 Photo Challenge</h2>
-          <p>Clique au bon moment pour la photo parfaite !</p>
-          <div class="mini-game-timer" id="photoTimer">3</div>
-          <div class="photo-target" id="photoTarget" title="Clique pour prendre la photo">
-            📸
-            <div class="photo-perfect" id="perfectZone"></div>
-          </div>
-          <p style="font-size:.9em;opacity:.7;margin-top:10px;">Clique quand le point doré est centré.</p>
-        </div></div>`;
-      let countdown=3;
-      const tEl=document.getElementById('photoTimer');
-      const timer=setInterval(()=>{
-        countdown--; tEl.textContent = countdown>0? String(countdown): 'GO!';
-        if(countdown<=0){ clearInterval(timer); startPhotoAnimation(); }
-      },1000);
-      document.getElementById('photoTarget').addEventListener('click', takePhoto);
-    }
-    function startPhotoAnimation(){
-      const target=document.getElementById('photoTarget');
-      const perfect=document.getElementById('perfectZone');
-      let x=10, dir=1;
-      const anim = setInterval(()=>{
-        x += dir*6;
-        if(x>=170 || x<=10) dir*=-1;
-        perfect.style.left = x+'px';
-      },50);
-      target.dataset.anim = 'running';
-      target.dataset.animId = String(setTimeout(()=>{
-        clearInterval(anim);
-        if(target.dataset.anim==='running'){ endPhotoGame(false); }
-      },5000));
-      target.dataset.intervalId = String(anim);
-    }
-    function takePhoto(){
-      const target=document.getElementById('photoTarget');
-      const perfect=document.getElementById('perfectZone');
-      if(target.dataset.anim!=='running') return;
-      // stop anim
-      clearInterval(Number(target.dataset.intervalId));
-      clearTimeout(Number(target.dataset.animId));
-      target.dataset.anim='stopped';
-
-      const box=target.getBoundingClientRect();
-      const perfectBox=perfect.getBoundingClientRect();
-      const centerTarget = box.left + box.width/2;
-      const centerPerfect = perfectBox.left + 10; // rayon approximatif
-      const distance = Math.abs(centerTarget - centerPerfect);
-      endPhotoGame(distance < 30);
-    }
-    function endPhotoGame(success){
-      document.getElementById('miniGameContainer').innerHTML='';
-      if(success){
-        sounds.achievement();
-        if(!game.achievements.includes('photo_perfectionist')){
-          game.achievements.push('photo_perfectionist'); showNotification('📸','Achievement: Perfectionniste Photo');
-        }
-        game.miniGamesWon=(game.miniGamesWon||0)+1;
-        if(game.miniGamesWon>=3 && !game.achievements.includes('minigame_master')){
-          game.achievements.push('minigame_master'); showNotification('🎮','Achievement: Mini-jeu Pro');
-        }
-        makeChoice({ text:'Success', effects:{energy:-5, patience:20, photos:20}, msg:'PHOTO PARFAITE ! +20 photos 📸✨' }, {title:'Photo Challenge', category:'photos'});
-      } else {
-        sounds.fail();
-        makeChoice({ text:'Failed', effects:{energy:-10, patience:-10, photos:5}, msg:'Photos ratées... Elle recommencera 😅' }, {title:'Photo Challenge', category:'photos'});
-      }
-    }
-
-    // Mini-jeu Négociation
-    function startNegotiateGame(){
-      const container=document.getElementById('miniGameContainer');
-      const originalPrice=50;
-      container.innerHTML=`
-        <div class="mini-game-overlay"><div class="mini-game-container">
-          <h2>💰 Négociation</h2>
-          <p>Le vendeur demande <strong>${originalPrice}$</strong></p>
-          <p style="font-size:.9em;margin:10px 0;">Essaie de négocier le meilleur prix !</p>
-          <div style="margin:20px 0;">
-            <input type="range" id="priceSlider" min="20" max="${originalPrice}" value="${originalPrice}" style="width:100%;">
-            <div style="font-size:2em;font-weight:bold;color:#667eea;margin:10px 0;"><span id="currentPrice">${originalPrice}</span>$</div>
-          </div>
-          <div style="display:flex; gap:8px; justify-content:center;">
-            <button id="negotiateBtn" style="background:#667eea;color:white;border:none;border-radius:15px;padding:12px 20px;font-size:1.05em;cursor:pointer;">🤝 Proposer ce prix</button>
-            <button id="cancelNegotiateBtn" style="background:#ff6b6b;color:white;border:none;border-radius:15px;padding:12px 20px;font-size:1.05em;cursor:pointer;">❌ Annuler</button>
-          </div>
-        </div></div>`;
-      const slider = document.getElementById('priceSlider');
-      const out = document.getElementById('currentPrice');
-      slider.addEventListener('input', ()=>{ out.textContent = slider.value; });
-      document.getElementById('cancelNegotiateBtn').addEventListener('click', ()=>{
-        document.getElementById('miniGameContainer').innerHTML='';
-        sounds.click();
-        makeChoice({ text:'Cancel', effects:{patience:-10}, msg:'Elle a abandonné la négociation. Le vendeur est déçu.' }, {title:'Négociation', category:'spending'});
-      });
-      document.getElementById('negotiateBtn').addEventListener('click', ()=>{
-        const price = parseInt(out.textContent,10);
-        const success = price <= 35;
-        document.getElementById('miniGameContainer').innerHTML='';
-        if(success){
-          const saved = 50 - price; sounds.success();
-          if(!game.achievements.includes('negotiator')){
-            game.achievements.push('negotiator'); showNotification('💰','Achievement: Négociatrice');
-          }
-          game.miniGamesWon=(game.miniGamesWon||0)+1;
-          if(game.miniGamesWon>=3 && !game.achievements.includes('minigame_master')){
-            game.achievements.push('minigame_master'); showNotification('🎮','Achievement: Mini-jeu Pro');
-          }
-          makeChoice({ text:'Success', effects:{money:-price, patience:15}, msg:`Négociation réussie ! Économie de ${saved}$ 🤝`, achievement:'negotiator' }, {title:'Négociation', category:'spending'});
-        } else {
-          sounds.fail();
-          makeChoice({ text:'Failed', effects:{money:-price, patience:-5}, msg:`Le vendeur accepte mais elle aurait pu négocier plus... 😅` }, {title:'Négociation', category:'spending'});
-        }
-      });
-    }
-
-    // ====== STATS OVERLAY ======
-    function updateStatsOverlay(){
-      const history = game.state.statsHistory.slice(-20);
-      const histHtml = `
-        <div style="background:rgba(102,126,234,0.1);padding:15px;border-radius:10px;">
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center;font-size:0.85em;margin-bottom:10px;">
-            <div><strong>💰</strong></div><div><strong>⚡</strong></div><div><strong>🍔</strong></div><div><strong>😤</strong></div><div><strong>💕</strong></div>
-          </div>
-          ${history.map(h=>`
-            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;text-align:center;font-size:0.8em;padding:5px 0;border-top:1px solid rgba(0,0,0,0.1);">
-              <div>${Math.floor(h.money)}</div>
-              <div>${Math.floor(h.energy)}</div>
-              <div>${Math.floor(h.hunger)}</div>
-              <div>${Math.floor(h.patience)}</div>
-              <div>${Math.floor(h.yamy)}</div>
-            </div>`).join('')}
-        </div>`;
-      document.getElementById('statsHistory').innerHTML = histHtml;
-
-      const total = Object.values(game.spending).reduce((a,b)=>a+b,0);
-      const catNames = {food:'🍔 Nourriture',transport:'🚇 Transport',culture:'🎨 Culture',shopping:'🛍️ Shopping',other:'📦 Autre'};
-      const spendingHtml = `
-        <div style="background:rgba(102,126,234,0.1);padding:15px;border-radius:10px;">
-          ${Object.entries(game.spending).map(([cat, amount])=>{
-            const percent = total>0 ? Math.floor((amount/total)*100) : 0;
-            return `
-              <div style="margin:10px 0;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                  <span>${catNames[cat]}</span>
-                  <span><strong>${amount}</strong> (${percent}%)</span>
-                </div>
-                <div style="width:100%;height:20px;background:rgba(0,0,0,0.2);border-radius:10px;overflow:hidden;">
-                  <div style="width:${percent}%;height:100%;background:#667eea;"></div>
-                </div>
-              </div>`;
-          }).join('')}
-          <div style="margin-top:15px;text-align:center;font-weight:bold;font-size:1.2em;">Total dépensé: ${total}</div>
-        </div>`;
-      document.getElementById('spendingBreakdown').innerHTML = spendingHtml;
-
-      const generalHtml = `
-        <div style="background:rgba(102,126,234,0.1);padding:15px;border-radius:10px;text-align:center;">
-          <div style="font-size:1.5em;font-weight:bold;color:#667eea;">${game.state.actionCount}</div>
-          <div style="font-size:0.9em;opacity:0.7;">Actions</div>
+function updateJournalUI(){
+  const f = game.currentFilter;
+  const list = f==='all'? game.journal : game.journal.filter(e=>e.category===f);
+  const c = document.getElementById('journalEntries');
+  if(!list.length){ c.innerHTML = `<div style="text-align:center;color:#888;padding:20px">Aucune entrée</div>`; }
+  else {
+    c.innerHTML = list.map(e=>`
+      <div class="journal-entry">
+        <div class="row" style="font-weight:700;color:#667eea"><div>Jour ${e.day} · Act ${e.action}</div><div>${e.time}</div></div>
+        <div style="margin:4px 0;opacity:.9"><span>${emojiForCat(e.category)} ${e.category}</span></div>
+        <div style="font-style:italic;margin:6px 0">${e.quote}</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;font-size:.85em;opacity:.85">
+          <div style="text-align:center">💰${e.money}</div>
+          <div style="text-align:center">⚡${e.energy}%</div>
+          <div style="text-align:center">🍔${e.hunger}%</div>
+          <div style="text-align:center">😤${e.patience}%</div>
+          <div style="text-align:center">💕${e.yamy}%</div>
         </div>
-        <div style="background:rgba(102,126,234,0.1);padding:15px;border-radius:10px;text-align:center;">
-          <div style="font-size:1.5em;font-weight:bold;color:#667eea;">${game.state.photos}</div>
-          <div style="font-size:0.9em;opacity:0.7;">Photos</div>
-        </div>
-        <div style="background:rgba(102,126,234,0.1);padding:15px;border-radius:10px;text-align:center;">
-          <div style="font-size:1.5em;font-weight:bold;color:#667eea;">${game.journal.length}</div>
-          <div style="font-size:0.9em;opacity:0.7;">Journal</div>
-        </div>
-        <div style="background:rgba(102,126,234,0.1);padding:15px;border-radius:10px;text-align:center;">
-          <div style="font-size:1.5em;font-weight:bold;color:#667eea;">${game.achievements.length}/25</div>
-          <div style="font-size:0.9em;opacity:0.7;">Achievements</div>
-        </div>`;
-      document.getElementById('generalStats').innerHTML = generalHtml;
+      </div>`).join('');
+  }
+  document.getElementById('journalStats').innerHTML = `
+    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">🗓️ Jour <b>${game.state.day}</b></div>
+    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">📝 <b>${game.journal.length}</b> entrées</div>
+    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">💰 $<b>${fmt(game.state.money)}</b></div>
+    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">📸 <b>${game.state.photos}</b></div>`;
+}
+function emojiForCat(cat){ const m={yamy:'💕',food:'🍔',photos:'📸',mood:'😤',transport:'🚇',spending:'💳',culture:'🎨',rare:'⭐',energy:'⚡',weather:'☔',social:'👥',fun:'🎮',money:'💰'}; return m[cat]||'📝'; }
+
+function updateAchievementsUI(){
+  const c=document.getElementById('achievementsList');
+  c.innerHTML = achievementsList.map(a=>{
+    const unlocked=game.achievements.includes(a.id);
+    return `<div style="display:flex;gap:12px;align-items:center;padding:10px;border-left:4px solid ${unlocked?'#667eea':'#999'};background:${unlocked?'rgba(102,126,234,.06)':'rgba(0,0,0,.04)'};border-radius:10px;margin-bottom:8px;opacity:${unlocked?1:.5}">
+      <div style="font-size:2em">${a.icon}</div>
+      <div><div style="font-weight:800;color:#667eea">${a.title}</div><div style="opacity:.85">${a.desc}</div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('achievementsBadge').textContent = game.achievements.length;
+}
+
+function checkAchievements(){
+  achievementsList.forEach(a=>{
+    if(!game.achievements.includes(a.id) && a.condition && a.condition()){
+      game.achievements.push(a.id);
+      showNote('🏅',`Achievement: ${a.title}`); sounds.achievement();
     }
+  });
+  updateAchievementsUI();
+}
 
-    function updateStats(){
-      const s=game.state;
-      document.getElementById('money').textContent=Math.floor(s.money);
-      document.getElementById('energy').textContent=Math.floor(s.energy);
-      document.getElementById('hunger').textContent=Math.floor(s.hunger);
-      document.getElementById('patience').textContent=Math.floor(s.patience);
-      document.getElementById('yamy').textContent=Math.floor(s.yamy);
-      document.getElementById('actionCount').textContent=s.actionCount;
-      document.getElementById('moodIcon').textContent=getMood();
-
-      document.getElementById('moneyBar').style.width=(s.maxMoney ? Math.min(100,(s.money/s.maxMoney)*100) : 100)+'%';
-      document.getElementById('energyBar').style.width=s.energy+'%';
-      document.getElementById('hungerBar').style.width=s.hunger+'%';
-      document.getElementById('patienceBar').style.width=s.patience+'%';
-      document.getElementById('yamyBar').style.width=s.yamy+'%';
-
-      // Warnings: on déclenche quand la stat est critique
-      [
-        {id:'moneyLabel', ok: s.money>50},
-        {id:'energyLabel', ok: s.energy>30},
-        {id:'hungerLabel', ok: s.hunger<70},
-        {id:'patienceLabel', ok: s.patience>30},
-        {id:'yamyLabel', ok: s.yamy>30},
-      ].forEach(({id,ok})=>{
-        const el=document.getElementById(id);
-        if(!el) return;
-        if(ok) el.classList.remove('stat-warning'); else el.classList.add('stat-warning');
+/* ================== EVENTS FLOW ================== */
+function buildPool(){
+  const pool = [];
+  // base
+  pool.push(...baseEvents);
+  // conditional
+  pool.push(...conditionals.filter(e=>!e.condition || e.condition()));
+  // rares (faible proba)
+  if(Math.random()<0.05){ // 5%
+    const diff = DIFFS[selectedDiff];
+    const r = pick(rares);
+    if(diff.rareBuff>1 && r.choices[0].effects.patience) {
+      // rendre moins "OP": on applique un petit malus sur positif si hard
+      r.choices = r.choices.map(ch=>{
+        const ef={...ch.effects};
+        if(ef.patience) ef.patience = Math.round(ef.patience / diff.rareBuff);
+        if(ef.money>0)  ef.money   = Math.round(ef.money   / diff.rareBuff);
+        return {...ch, effects:ef};
       });
     }
+    pool.push({...r, rare:true});
+  }
+  return pool;
+}
 
-    function checkGameOver(){
-      const s=game.state; let r='';
-      if(s.money<=0) r="💸 Maiko FAUCHÉE ! Tout claqué.";
-      else if(s.energy<=0) r="😴 Maiko EFFONDRÉE de fatigue.";
-      else if(s.hunger>=100) r="🍔 Maiko a fait un MALAISE de faim.";
-      else if(s.patience<=0) r="😡 Maiko a PÉTÉ UN CÂBLE.";
-      else if(s.yamy<=0) r="💔 Yamy manque TROP. Elle rentre direct.";
-      if(r){ gameOver(r); return true; }
-      return false;
+function showEvent(){
+  const list = buildPool();
+  const e = pick(list);
+  const rareClass = e.rare ? ' event-rare' : '';
+  const catChip = `<div class="chip">${emojiForCat(e.category)} ${e.category}</div>`;
+  const cont = document.getElementById('eventContainer');
+
+  // Inject price previews with tax/tip
+  const choicesHtml = e.choices.map((ch,i)=>{
+    let effectsText = [];
+    // dynamic pricing
+    let priceLine = '';
+    if('cost' in ch){
+      const p = priceWithNYC(Math.abs(ch.cost), e.category);
+      const total = ch.cost>=0 ? p.total : -p.total; // ATM “gain”
+      priceLine = ch.cost>=0 ? ` · <span>coût réel ≈ ${total.toFixed(2)}$</span>` : ` · <span>gain net ≈ ${(-total).toFixed(2)}$</span>`;
+      ch._priced = total; // cache
     }
+    const ef = ch.effects||{};
+    if(ef.energy) effectsText.push(`⚡${ef.energy>0?'+':''}${ef.energy}%`);
+    if(ef.hunger) effectsText.push(`🍔${ef.hunger>0?'+':''}${ef.hunger}%`);
+    if(ef.patience) effectsText.push(`😤${ef.patience>0?'+':''}${ef.patience}%`);
+    if(ef.yamy) effectsText.push(`💕${ef.yamy>0?'+':''}${ef.yamy}%`);
+    if(ef.photos) effectsText.push(`📸+${ef.photos}`);
 
-    function gameOver(reason){
-      document.getElementById('gameScreen').classList.add('hidden');
-      document.getElementById('gameOverScreen').classList.remove('hidden');
-      document.getElementById('bottomNav').classList.add('hidden');
+    return `<button class="choice-btn" data-idx="${i}">
+      <div class="choice-line"><div>${ch.text}</div><div class="mini">${priceLine}</div></div>
+      <div class="effects">${effectsText.join(' · ') || '—'}</div>
+    </button>`;
+  }).join('');
 
-      document.getElementById('gameOverReason').textContent=reason;
-      document.getElementById('finalDays').textContent=game.state.day;
-      document.getElementById('finalActions').textContent=game.state.actionCount;
-      document.getElementById('finalMoney').textContent=Math.floor(game.state.money);
-      document.getElementById('finalPhotos').textContent=game.state.photos;
-      document.getElementById('finalAchievements').textContent=game.achievements.length;
+  cont.innerHTML = `
+    <div class="event-card${rareClass}">
+      <div class="event-emoji">${e.emoji}</div>
+      <div class="event-title">${e.title}</div>
+      ${catChip}
+      <div class="event-description">${e.desc}</div>
+      <div class="choices" id="choices">${choicesHtml}</div>
+    </div>`;
 
-      checkAchievements();
-      const unlocked=game.achievements.map(id=>achievementsList.find(a=>a.id===id)).filter(Boolean);
-      document.getElementById('unlockedAchievements').innerHTML=unlocked.length
-        ? '<h4 style="margin:15px 0;">🏆 Achievements débloqués:</h4>'+ unlocked.map(a=>`<span class="achievement-badge">${a.icon} ${a.title}</span>`).join('')
-        : '';
+  const btns = [...document.querySelectorAll('.choice-btn')];
+  btns.forEach(b=>b.addEventListener('click', ()=>{
+    btns.forEach(x=>x.disabled=true); // anti double clic
+    sounds.click();
+    const idx = +b.dataset.idx;
+    resolveChoice(e, e.choices[idx]);
+  }));
+
+  // Keyboard shortcuts
+  window.onkeydown = (ev)=>{
+    if(ev.key==='1' && btns[0]) btns[0].click();
+    if(ev.key==='2' && btns[1]) btns[1].click();
+    if(ev.key.toLowerCase()==='j') toggleOverlay('journalOverlay', true);
+    if(ev.key.toLowerCase()==='a') toggleOverlay('achievementsOverlay', true);
+    if(ev.key.toLowerCase()==='s') toggleOverlay('statsOverlay', true);
+  };
+}
+
+function resolveChoice(evt, ch){
+  const s=game.state;
+  // Combo
+  if(s.lastChoiceType===evt.category){
+    s.combo++;
+    document.getElementById('comboIndicator').classList.remove('hidden');
+    document.getElementById('comboX').textContent = `x${s.combo}`;
+    if(s.combo===5 && !game.achievements.includes('combo_master')){
+      game.achievements.push('combo_master'); showNote('🔥','Achievement: Combo Master'); sounds.achievement();
     }
+  } else {
+    s.combo=1; document.getElementById('comboIndicator').classList.add('hidden');
+  }
+  s.lastChoiceType=evt.category;
+  const comboBonus = s.combo>=2 ? 1 + (s.combo*0.05) : 1;
+  const apply = v => v ? Math.round(v * (v>0? comboBonus:1)) : 0;
 
-    function victory(){
-      checkAchievements();
-      gameOver(`🎉 VICTOIRE ! Maiko a survécu 5 jours à NYC ! ${game.state.photos} photos, plein de souvenirs. "Mouais c'était cool" - Maiko`);
+  // MONEY (with taxes)
+  if('_priced' in ch){
+    const delta = ch._priced; // already signed
+    s.money -= delta; // cost positive decreases money; ATM negative increases
+    // spending buckets
+    if(delta>0){
+      const amount = delta;
+      if(evt.category==='food') game.spending.food+=amount;
+      else if(evt.category==='transport') game.spending.transport+=amount;
+      else if(evt.category==='culture') game.spending.culture+=amount;
+      else if(evt.category==='spending') game.spending.shopping+=amount;
+      else game.spending.other+=amount;
+      game.daySpending += amount;
+      if(game.daySpending>=300 && !game.achievements.includes('spender')){
+        game.achievements.push('spender'); showNote('💳','Achievement: Dépensière'); sounds.achievement();
+      }
     }
+  }
 
-    // ====== WIRING (événements UI) ======
-    document.addEventListener('DOMContentLoaded', ()=>{
-      // Boutons principaux
-      document.getElementById('startBtn').addEventListener('click', startGame);
-      document.getElementById('restartBtn').addEventListener('click', restartGame);
+  // APPLY EFFECTS
+  const ef=ch.effects||{};
+  s.energy   += apply(ef.energy||0);
+  s.hunger   += apply(ef.hunger||0);
+  s.patience += apply(ef.patience||0);
+  s.yamy     += apply((ef.yamy||0) - DIFFS[selectedDiff].yamyWear); // usure relationnelle
+  s.photos   += (ef.photos||0);
 
-      // Bottom nav
-      document.getElementById('journalBtn').addEventListener('click', ()=>toggleOverlay('journalOverlay'));
-      document.getElementById('achievementsBtn').addEventListener('click', ()=>toggleOverlay('achievementsOverlay'));
-      document.getElementById('statsBtn').addEventListener('click', ()=>toggleOverlay('statsOverlay'));
-      document.getElementById('soundBtn').addEventListener('click', toggleSound);
+  // Fatigue passive par jour
+  s.energy -= DIFFS[selectedDiff].energyDaily;
 
-      // Close overlay
-      document.getElementById('closeJournalBtn').addEventListener('click', ()=>toggleOverlay('journalOverlay'));
-      document.getElementById('closeAchievementsBtn').addEventListener('click', ()=>toggleOverlay('achievementsOverlay'));
-      document.getElementById('closeStatsBtn').addEventListener('click', ()=>toggleOverlay('statsOverlay'));
+  // Faim naturelle
+  if(s.actionCount%2===0) s.hunger += DIFFS[selectedDiff].hungerTick;
 
-      // Filtres journal (event delegation)
-      document.querySelector('.journal-filters').addEventListener('click', (e)=>{
-        const btn = e.target.closest('.filter-btn');
-        if(!btn) return;
-        setFilter(btn.dataset.filter, btn);
-      });
+  // Bornes
+  s.money = Math.max(0, s.money);
+  s.energy = clamp(s.energy,0,100);
+  s.hunger = clamp(s.hunger,0,100);
+  s.patience = clamp(s.patience,0,100);
+  s.yamy = clamp(s.yamy,0,100);
 
-      // Log de debug
-      console.log('🗽 Maiko Survival NYC - Version Ultra Complete (corrigée)');
+  // Trackers
+  if((evt.title.includes('Marche')||evt.title.includes('pied')) && ch.text.includes('Marcher')){
+    game.walkCount++; if(game.walkCount>=5 && !game.achievements.includes('walker')){ game.achievements.push('walker'); showNote('🚶‍♀️','Achievement: Marcheuse'); sounds.achievement(); }
+  }
+  if((evt.title.includes('Métro')||evt.category==='transport') && ch.text.includes('Métro')){
+    game.metroCount++; if(game.metroCount>=10 && !game.achievements.includes('metro_master')){ game.achievements.push('metro_master'); showNote('🚇','Achievement: Metro Master'); sounds.achievement(); }
+  }
+
+  // Achievement direct attaché au choix
+  if(ch.achievement && !game.achievements.includes(ch.achievement)){
+    game.achievements.push(ch.achievement);
+    const a = achievementsList.find(x=>x.id===ch.achievement);
+    if(a){ showNote(a.icon,`Achievement: ${a.title}`); sounds.achievement(); }
+  }
+
+  s.actionCount++;
+  s.statsHistory.push({ action:s.actionCount, money:s.money, energy:s.energy, hunger:s.hunger, patience:s.patience, yamy:s.yamy });
+
+  addJournal(evt.title, evt.category);
+  renderState();
+
+  if(checkGameOver()) return;
+
+  // Changement de jour
+  if(s.actionCount % DAY_ACTIONS === 0){
+    s.day++;
+    if(s.day>5){ victory(); return; }
+    showNote('🗓️',`Jour ${s.day} — difficulté cumulée`);
+    game.daySpending=0; game.patienceStreak=0;
+  }
+  setTimeout(showEvent, 500);
+}
+
+/* ================== RENDER ================== */
+function renderState(){
+  const s=game.state;
+  const turnsLeft = DAY_ACTIONS - (s.actionCount % DAY_ACTIONS || DAY_ACTIONS);
+  document.getElementById('turnsLeft').textContent = turnsLeft;
+
+  document.getElementById('day').textContent = s.day;
+  document.getElementById('money').textContent = fmt(s.money);
+  document.getElementById('energy').textContent = fmt(s.energy);
+  document.getElementById('hunger').textContent = fmt(s.hunger);
+  document.getElementById('patience').textContent = fmt(s.patience);
+  document.getElementById('yamy').textContent = fmt(s.yamy);
+  document.getElementById('moodIcon').textContent = moodEmoji();
+
+  document.getElementById('moneyBar').style.width = (s.maxMoney? Math.min(100,(s.money/s.maxMoney)*100) : 100)+'%';
+  document.getElementById('energyBar').style.width = s.energy+'%';
+  document.getElementById('hungerBar').style.width = s.hunger+'%';
+  document.getElementById('patienceBar').style.width = s.patience+'%';
+  document.getElementById('yamyBar').style.width = s.yamy+'%';
+
+  // Critiques
+  const crits=[];
+  if(s.money<50) crits.push('💸 Budget critique');
+  if(s.energy<30) crits.push('😴 Énergie basse');
+  if(s.hunger>70) crits.push('🍔 Faim élevée');
+  if(s.patience<30) crits.push('😡 Patience faible');
+  if(s.yamy<30) crits.push('💔 Manque de Yamy');
+  document.getElementById('critBox').innerHTML = crits.length ? `<div class="row" style="color:#ffd700">${crits.join(' · ')}</div>` : '';
+
+  toggleCrit('moneyLabel', s.money>=50);
+  toggleCrit('energyLabel', s.energy>=30);
+  toggleCrit('hungerLabel', s.hunger<=70);
+  toggleCrit('patienceLabel', s.patience>=30);
+  toggleCrit('yamyLabel', s.yamy>=30);
+}
+function toggleCrit(id, ok){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle('crit', !ok);
+}
+
+/* ================== OVERLAYS & NAV ================== */
+function toggleOverlay(id, forceShow){
+  const ov = document.getElementById(id);
+  const show = forceShow ?? !ov.classList.contains('show');
+  if(show){
+    ov.classList.add('show');
+    if(id==='journalOverlay') updateJournalUI();
+    if(id==='achievementsOverlay') updateAchievementsUI();
+    if(id==='statsOverlay') updateStatsOverlay();
+    // click outside to close
+    ov.onclick = (e)=>{ if(e.target===ov) ov.classList.remove('show'); };
+  } else ov.classList.remove('show');
+}
+function updateStatsOverlay(){
+  const h = game.state.statsHistory.slice(-24);
+  document.getElementById('statsHistory').innerHTML = `
+    <div style="background:rgba(102,126,234,.08);padding:10px;border-radius:10px">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;font-weight:800;text-align:center">
+        <div>💰</div><div>⚡</div><div>🍔</div><div>😤</div><div>💕</div>
+      </div>
+      ${h.map(x=>`
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;border-top:1px solid rgba(0,0,0,.08);padding:4px 0">
+          <div>${fmt(x.money)}</div><div>${fmt(x.energy)}</div><div>${fmt(x.hunger)}</div><div>${fmt(x.patience)}</div><div>${fmt(x.yamy)}</div>
+        </div>`).join('')}
+    </div>`;
+  const total = Object.values(game.spending).reduce((a,b)=>a+b,0);
+  const cat = {food:'🍔 Nourriture',transport:'🚇 Transport',culture:'🎨 Culture',shopping:'🛍️ Shopping',other:'📦 Autre'};
+  document.getElementById('spendingBreakdown').innerHTML = `
+    <div style="background:rgba(102,126,234,.08);padding:10px;border-radius:10px">
+    ${Object.entries(game.spending).map(([k,v])=>{
+      const p = total? Math.round(v/total*100):0;
+      return `<div style="margin:6px 0">
+        <div class="row"><span>${cat[k]}</span><span><b>${fmt(v)}</b> (${p}%)</span></div>
+        <div style="height:10px;background:rgba(0,0,0,.15);border-radius:8px;overflow:hidden"><div style="height:100%;width:${p}%;background:#667eea"></div></div>
+      </div>`;
+    }).join('')}
+    <div style="text-align:center;margin-top:8px;font-weight:800">Total: ${fmt(total)}$</div>
+    </div>`;
+  document.getElementById('generalStats').innerHTML = `
+    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.state.actionCount}</div><div>Actions</div></div>
+    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.state.photos}</div><div>Photos</div></div>
+    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.journal.length}</div><div>Journal</div></div>
+    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.achievements.length}/25</div><div>Achievements</div></div>`;
+}
+
+/* ================== GAME LIFECYCLE ================== */
+function startGame(){
+  sounds.click();
+  // init difficulty
+  document.getElementById('diffLabel').textContent = DIFFS[selectedDiff].label;
+
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+
+  Object.assign(game.state, { day:1, actionCount:0, money:300, energy:100, hunger:40, patience:100, yamy:100, photos:0, maxMoney:300, combo:0, lastChoiceType:null, statsHistory:[] });
+  game.journal=[]; game.achievements=[]; game.usedEvents=[]; game.currentFilter='all';
+  game.spending={ food:0, transport:0, culture:0, shopping:0, other:0 };
+  game.energyStreak=0; game.patienceStreak=0; game.daySpending=0; game.miniGamesWon=0; game.walkCount=0; game.metroCount=0; game.kevinAvoidCount=0;
+
+  renderState(); updateAchievementsUI(); showEvent();
+  showNote('🗽','Bienvenue à NYC… bonne chance !');
+}
+
+function restartGame(){
+  document.getElementById('gameOverScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  ['journalOverlay','achievementsOverlay','statsOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  startGame();
+}
+
+function checkGameOver(){
+  const s=game.state;
+  let r='';
+  if(s.money<=0) r="💸 Fauchée — impossible de continuer.";
+  else if(s.energy<=0) r="😴 Effondrée de fatigue.";
+  else if(s.hunger>=100) r="🍔 Malaise de faim.";
+  else if(s.patience<=0) r="😡 A explosé… (social KO).";
+  else if(s.yamy<=0) r="💔 Le manque de Yamy est trop fort.";
+  if(r){ endGame(r); return true; }
+  return false;
+}
+function endGame(reason){
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('gameOverScreen').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.add('hidden');
+  document.getElementById('gameOverReason').textContent = reason;
+
+  document.getElementById('finalDays').textContent=game.state.day;
+  document.getElementById('finalActions').textContent=game.state.actionCount;
+  document.getElementById('finalMoney').textContent=fmt(game.state.money);
+  document.getElementById('finalPhotos').textContent=game.state.photos;
+  document.getElementById('finalAchievements').textContent=game.achievements.length;
+
+  checkAchievements();
+}
+function victory(){
+  checkAchievements();
+  endGame(`🎉 VICTOIRE ! 5 jours à NYC — ${game.state.photos} photos et des souvenirs…`);
+}
+
+/* ================== WIRING ================== */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // difficulty select
+  document.querySelectorAll('#diffSelect .pill').forEach(btn=>{
+    if(btn.dataset.diff===selectedDiff) btn.classList.add('active');
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#diffSelect .pill').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDiff = btn.dataset.diff;
+      localStorage.setItem('msnyc_diff', selectedDiff);
     });
+  });
 
-    // Exposition (si jamais tu réactives des attributs inline dans le HTML)
-    window.startGame = startGame;
-    window.restartGame = restartGame;
-  </script>
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('restartBtn').addEventListener('click', restartGame);
+
+  // bottom nav
+  document.getElementById('journalBtn').addEventListener('click', ()=>toggleOverlay('journalOverlay'));
+  document.getElementById('achievementsBtn').addEventListener('click', ()=>toggleOverlay('achievementsOverlay'));
+  document.getElementById('statsBtn').addEventListener('click', ()=>toggleOverlay('statsOverlay'));
+  document.getElementById('soundBtn').addEventListener('click', ()=>{
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('msnyc_sound', JSON.stringify(soundEnabled));
+    document.getElementById('soundBtn').textContent = soundEnabled? '🔊':'🔇';
+    if(soundEnabled) sounds.success();
+  });
+  document.getElementById('soundBtn').textContent = soundEnabled? '🔊':'🔇';
+
+  // overlay close buttons
+  document.querySelectorAll('.overlay [data-close]').forEach(b=>b.addEventListener('click', (e)=> e.currentTarget.closest('.overlay').classList.remove('show')));
+
+  // filters
+  document.getElementById('filters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.filter-btn'); if(!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active'); game.currentFilter = btn.dataset.filter; updateJournalUI();
+  });
+});
+</script>
 </body>
 </html>
