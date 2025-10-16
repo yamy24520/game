@@ -294,480 +294,604 @@ const achievementsList = [
 ];
 
 const baseEvents = [
-  {emoji:"🍕",title:"Pizzeria",desc:"Pizzeria chère. Maiko a FAIM.",category:'food',
-   choices:[{text:"🍕 Part (8$)",cost:8,effects:{hunger:-25,energy:+4}},{text:"🚫 Refuser",effects:{hunger:+8,patience:-10}}]},
-  {emoji:"☕",title:"Starbucks",desc:"Café pour tenir.",category:'food',
-   choices:[{text:"☕ Latte (6.5$)",cost:6.5,effects:{energy:+14,patience:+6}},{text:"💧 Eau",effects:{energy:+3,patience:-6}}]},
-  {emoji:"🚶‍♀️",title:"Marche 2h",desc:"Le prof veut marcher longtemps.",category:'transport',
-   choices:[{text:"🚇 Métro (3$)",cost:3,effects:{energy:+6,patience:-6}},{text:"👟 Marcher",effects:{energy:-18,patience:-10}}]},
-  {emoji:"🥢",title:"Resto Asiat",desc:"ENFIN de la vraie bouffe.",category:'food',
-   choices:[{text:"🍜 Bol (15$)",cost:15,effects:{hunger:-32,patience:+14,energy:+6}},{text:"🍔 Fast-food",effects:{hunger:-10,patience:-10}}]},
-  {emoji:"📸",title:"Spot Instagram",desc:"Endroit parfait.",category:'photos',
-   choices:[{text:"📱 50 photos",effects:{energy:-10,patience:+6,photos:+8}},{text:"⏭️ Skip",effects:{patience:-10}}]},
-  {emoji:"😤",title:"Kevin Relou",desc:"Kevin la saoule.",category:'mood',
-   choices:[{text:"🎮 Changer de groupe",effects:{patience:+10,energy:-4}},{text:"😡 Le remettre",effects:{patience:-10,energy:-10}}]},
-  {emoji:"🧋",title:"Bubble Tea",desc:"Envie de sucre.",category:'food',
-   choices:[{text:"🧋 Boisson (6$)",cost:6,effects:{patience:+10,hunger:-5}},{text:"🚫 Passer",effects:{patience:-10}}]},
-  {emoji:"🌆",title:"Times Square Nuit",desc:"Illuminé !",category:'photos',
-   choices:[{text:"📸 1h photos",effects:{energy:-16,patience:-6,photos:+18},achievement:'paparazzi'},{text:"🏃‍♀️ Vite",effects:{energy:-3,patience:-10,photos:+4}}]},
- {emoji:"🥯",title:"Bagel du matin",desc:"Odeur de bagels tout frais.",category:"food",
-    choices:[{text:"🥯 Cream cheese (5$)",cost:5,effects:{hunger:-14,patience:+4}},
-             {text:"☕ Juste un café (3$)",cost:3,effects:{energy:+8}}]},
-  {emoji:"🥗",title:"Salade rapide",desc:"Bar à salades au poids.",category:"food",
-    choices:[{text:"🥗 Bowl (11$)",cost:11,effects:{hunger:-20,energy:+4}},
-             {text:"🥤 Eau gratuite",effects:{patience:-2}}]},
-  {emoji:"🌮",title:"Tacos du coin",desc:"Odeur qui donne faim.",category:"food",
-    choices:[{text:"🌮 2 tacos (9$)",cost:9,effects:{hunger:-16,patience:+4}},
-             {text:"🌯 Burrito (12$)",cost:12,effects:{hunger:-24}}]},
-  {emoji:"🍜",title:"Ramen fumants",desc:"Queue courte, cuisine ouverte.",category:"food",
-    choices:[{text:"🍜 Classique (14$)",cost:14,effects:{hunger:-26,energy:+4}},
-             {text:"💧 Bouillon seul (4$)",cost:4,effects:{hunger:-6,energy:+2}}]},
-  {emoji:"🍕",title:"Part géante",desc:"Pizza XXL.",category:"food",
-    choices:[{text:"🍕 Tranche (6$)",cost:6,effects:{hunger:-14}},
-             {text:"🍕+🥤 Menu (9$)",cost:9,effects:{hunger:-18,energy:+4}}]},
-  {emoji:"🍣",title:"Sushis convoyeur",desc:"Assiettes colorées.",category:"food",
-    choices:[{text:"🍣 8 pièces (16$)",cost:16,effects:{hunger:-26,patience:+6}},
-             {text:"🍥 4 pièces (9$)",cost:9,effects:{hunger:-14}}]},
-  {emoji:"🥪",title:"Bodega Sandwich",desc:"Classique new-yorkais.",category:"food",
-    choices:[{text:"🥪 Dinde (8$)",cost:8,effects:{hunger:-18}},
-             {text:"🥪 Végé (7$)",cost:7,effects:{hunger:-14,energy:+2}}]},
-  {emoji:"🍟",title:"Frites maison",desc:"Cornet brûlant.",category:"food",
-    choices:[{text:"🍟 Petite (5$)",cost:5,effects:{hunger:-10}},
-             {text:"🍟 Grande (7$)",cost:7,effects:{hunger:-16,patience:+2}}]},
-  {emoji:"🧋",title:"Bubble Tea pause",desc:"Perles moelleuses.",category:"food",
-    choices:[{text:"🧋 Classique (6$)",cost:6,effects:{patience:+8,hunger:-4}},
-             {text:"🧋 Light (5$)",cost:5,effects:{patience:+6}}]},
-  {emoji:"🍰",title:"Cheesecake culte",desc:"Fameux spot local.",category:"food",
-    choices:[{text:"🍰 Part (7$)",cost:7,effects:{hunger:-10,patience:+6}},
-             {text:"👀 Regarder",effects:{patience:-4}}]},
+  // === FOOD (mais version chaotique) ===
+  {emoji:"🍕",title:"Pizza qui dégouline",desc:"Une part ÉNORME. L'huile coule sur ton bras.",category:'food',
+   choices:[{text:"🍕 Manger quand même (8$)",cost:8,effects:{hunger:-25,energy:+4}},{text:"🤢 C'est trop gras",effects:{hunger:+12,patience:-8}}]},
+  
+  {emoji:"🌭",title:"Hot-dog de rue",desc:"Le vendeur te fixe bizarrement. C'est louche.",category:'food',
+   choices:[{text:"🌭 YOLO (5$)",cost:5,effects:{hunger:-20,patience:-4}},{text:"🏃‍♀️ Fuir",effects:{patience:+2}}]},
+  
+  {emoji:"☕",title:"Starbucks saturé",desc:"7 Kevin dans la file. Ton nom sera massacré.",category:'food',
+   choices:[{text:"☕ Risquer (7$)",cost:7,effects:{energy:+12,patience:-10}},{text:"💧 Eau gratos",effects:{patience:+4}}]},
+  
+  {emoji:"🥯",title:"Bagel surprise",desc:"'Cream cheese' ils ont dit. C'est BEAUCOUP de cream cheese.",category:'food',
+   choices:[{text:"🥯 Noyer dedans (6$)",cost:6,effects:{hunger:-18,patience:+6}},{text:"🧻 Essuyer avant",effects:{hunger:-10}}]},
+  
+  {emoji:"🍜",title:"Ramen à 18$",desc:"Pour un BOL DE SOUPE. Mais ça sent trop bon...",category:'food',
+   choices:[{text:"🍜 Craquer (18$)",cost:18,effects:{hunger:-32,patience:+14}},{text:"💸 Scandale!",effects:{patience:-12}}]},
 
-  {emoji:"☕",title:"Café artisanal",desc:"Barista sympa.",category:"food",
-    choices:[{text:"☕ Latte (6$)",cost:6,effects:{energy:+12,patience:+4}},
-             {text:"☕ Noir (4$)",cost:4,effects:{energy:+10}}]},
-  {emoji:"🥤",title:"Stand limonade",desc:"Fait maison.",category:"food",
-    choices:[{text:"🍋 Gobelet (4$)",cost:4,effects:{energy:+6,patience:+4}},
-             {text:"🚫 Non merci",effects:{}}]},
-  {emoji:"🌯",title:"Halal cart",desc:"Odeur d’épices.",category:"food",
-    choices:[{text:"🥙 Chicken over rice (9$)",cost:9,effects:{hunger:-22}},
-             {text:"🥙 Falafel (8$)",cost:8,effects:{hunger:-18,energy:+2}}]},
-  {emoji:"🥨",title:"Pretzel croustillant",desc:"Salé comme il faut.",category:"food",
-    choices:[{text:"🥨 Pretzel (4$)",cost:4,effects:{hunger:-10,patience:+2}},
-             {text:"🧀 +Cheese (5$)",cost:5,effects:{hunger:-12}}]},
-  {emoji:"🧁",title:"Cupcake flashy",desc:"Topping extrême.",category:"food",
-    choices:[{text:"🧁 Un cupcake (5$)",cost:5,effects:{hunger:-8,patience:+6}},
-             {text:"🧁🧁 Double (9$)",cost:9,effects:{hunger:-14}}]},
+  {emoji:"🧋",title:"Bubble Tea géant",desc:"Taille 'Small' = 1 litre. Tu vas exploser.",category:'food',
+   choices:[{text:"🧋 Challenge accepted (7$)",cost:7,effects:{hunger:-8,patience:+10,energy:-4}},{text:"🤏 Partager",effects:{hunger:-4,patience:+4}}]},
 
-  {emoji:"🚇",title:"Métro bondé",desc:"Quasiment pas d’air.",category:"transport",
-    choices:[{text:"🚇 Tenir (2.9$)",cost:2.9,effects:{energy:+2,patience:-8}},
-             {text:"🚕 Taxi (18$)",cost:18,effects:{energy:+10,patience:+8,photos:+2}}]},
-  {emoji:"🛣️",title:"Avenue sans fin",desc:"Tout droit très longtemps.",category:"transport",
-    choices:[{text:"👟 Marcher 20 min",effects:{energy:-10,patience:-4}},
-             {text:"🚌 Bus (2.9$)",cost:2.9,effects:{energy:+4,patience:-2}}]},
-  {emoji:"🛴",title:"Trottinette partagée",desc:"Rapide mais stressant.",category:"transport",
-    choices:[{text:"🛴 Louer (6$)",cost:6,effects:{energy:+6,patience:-4}},
-             {text:"🚶‍♀️ À pied",effects:{energy:-8}}]},
-  {emoji:"⛴️",title:"Ferry gratuit",desc:"Vue baie & Statue.",category:"transport",
-    choices:[{text:"⛴️ Embarquer",effects:{energy:-2,patience:+8,photos:+4}},
-             {text:"🚫 Ignorer",effects:{patience:-4}}]},
-  {emoji:"🚦",title:"Feux rouges en chaîne",desc:"Stop & go sans fin.",category:"transport",
-    choices:[{text:"🧭 Raccourci",effects:{energy:-4,patience:-2}},
-             {text:"🧍 Attendre",effects:{patience:-6}}]},
+  {emoji:"🍔",title:"Five Guys portions",desc:"'Regular fries' = 2 kilos de patates.",category:'food',
+   choices:[{text:"🍔 Menu (16$)",cost:16,effects:{hunger:-40,patience:+8,energy:-6}},{text:"😰 Juste burger",effects:{hunger:-20}}]},
 
-  {emoji:"🖼️",title:"Galerie indie",desc:"Expo éphémère.",category:"culture",
-    choices:[{text:"🎟️ Entrer (8$)",cost:8,effects:{patience:+8,photos:+3}},
-             {text:"👀 Vitrines",effects:{photos:+1}}]},
-  {emoji:"🏛️",title:"Musée majeur",desc:"Collection iconique.",category:"culture",
-    choices:[{text:"🎟️ Étudiant (12$)",cost:12,effects:{patience:+10,photos:+4,energy:-6}},
-             {text:"📚 Boutique seule",effects:{patience:+2}}]},
-  {emoji:"🎭",title:"Théâtre de rue",desc:"Impro drôle.",category:"culture",
-    choices:[{text:"💵 Tip (2$)",cost:2,effects:{patience:+6}},
-             {text:"👏 Applaudir",effects:{patience:+2}}]},
-  {emoji:"🎶",title:"Concert parc",desc:"Jazz au soleil.",category:"culture",
-    choices:[{text:"🎶 Rester 20 min",effects:{energy:-4,patience:+8,photos:+2}},
-             {text:"🚶 Continuer",effects:{patience:-2}}]},
-  {emoji:"📚",title:"Librairie culte",desc:"Rayons sans fin.",category:"culture",
-    choices:[{text:"📖 Carnet (9$)",cost:9,effects:{patience:+6,photos:+1}},
-             {text:"👀 Flâner",effects:{patience:+2}}]},
+  {emoji:"🥤",title:"Free refills!",desc:"Distributeur de soda ILLIMITÉ. Le rêve américain.",category:'food',
+   choices:[{text:"🥤 Abuser x5 (0$)",effects:{energy:+16,patience:+10,hunger:-6}},{text:"💧 Eau only",effects:{patience:-4}}]},
 
-  {emoji:"🤯",title:"Bruit incessant",desc:"Sirènes & klaxons.",category:"mood",
-    choices:[{text:"🎧 Musique (3$)",cost:3,effects:{patience:+8}},
-             {text:"🧘 Respiration",effects:{patience:+4}}]},
-  {emoji:"😤",title:"Groupe traîne",desc:"Encore des retards.",category:"mood",
-    choices:[{text:"🗓️ Replanifier",effects:{patience:+2}},
-             {text:"😒 Râler",effects:{patience:-8,energy:-4}}]},
-  {emoji:"😵‍💫",title:"Trop de monde",desc:"Foule compacte.",category:"mood",
-    choices:[{text:"➡️ Changer de rue",effects:{energy:-4,patience:+2}},
-             {text:"🧍 Rester",effects:{patience:-6}}]},
-  {emoji:"🧼",title:"WC introuvables",desc:"Urgence monte.",category:"mood",
-    choices:[{text:"☕ Acheter accès (2.5$)",cost:2.5,effects:{patience:+6}},
-             {text:"🔎 Chercher 10 min",effects:{energy:-6,patience:-6}}]},
-  {emoji:"🧦",title:"Ampoule au pied",desc:"Ça frotte fort.",category:"mood",
-    choices:[{text:"🧦 Chaussettes (6$)",cost:6,effects:{energy:+6}},
-             {text:"😣 Ignorer",effects:{energy:-8,patience:-4}}]},
+  {emoji:"🌮",title:"Tacos 3am",desc:"C'est 11h du mat mais ils appellent ça 'late night menu'.",category:'food',
+   choices:[{text:"🌮 Weird flex (10$)",cost:10,effects:{hunger:-22,patience:+6}},{text:"❌ Nope",effects:{}}]},
 
-  {emoji:"📱",title:"Selfie foiré",desc:"Yeux fermés…",category:"photos",
-    choices:[{text:"🤳 Re-tenter",effects:{photos:+3,energy:-4}},
-             {text:"📸 Demander aide",effects:{photos:+4,patience:+2}}]},
-  {emoji:"🌇",title:"Toit avec vue",desc:"Skyline magnifique.",category:"photos",
-    choices:[{text:"📸 Session 10 min",effects:{photos:+6,energy:-4,patience:+4}},
-             {text:"👀 Juste regarder",effects:{patience:+2}}]},
-  {emoji:"🏙️",title:"Rue photogénique",desc:"Briques & escaliers.",category:"photos",
-    choices:[{text:"📷 Série rapide",effects:{photos:+4,energy:-2}},
-             {text:"🚶 Continuer",effects:{}}]},
-  {emoji:"🌆",title:"Golden hour",desc:"Lumière parfaite.",category:"photos",
-    choices:[{text:"📸 Capturer",effects:{photos:+6,energy:-2,patience:+2}},
-             {text:"⏭️ Plus tard",effects:{}}]},
-  {emoji:"🖤",title:"Street art",desc:"Fresque géante.",category:"photos",
-    choices:[{text:"📸 Portrait",effects:{photos:+5,patience:+4}},
-             {text:"👀 Admirer",effects:{patience:+2}}]},
+  {emoji:"🍩",title:"Donut RAINBOW",desc:"Tellement de glaçage que tu vois plus la pâte.",category:'food',
+   choices:[{text:"🍩 Instagram first (5$)",cost:5,effects:{hunger:-10,photos:+6,patience:+8}},{text:"📸 Photo suffit",effects:{photos:+4}}]},
 
-  {emoji:"🧴",title:"Crème solaire",desc:"UV bien présents.",category:"shopping",
-    choices:[{text:"🧴 SPF (7$)",cost:7,effects:{energy:+2,patience:+2}},
-             {text:"😑 Sans",effects:{energy:-4}}]},
-  {emoji:"🧣",title:"Bonnet NYC",desc:"Souvenir utile.",category:"shopping",
-    choices:[{text:"🧣 Acheter (15$)",cost:15,effects:{patience:+6,yamy:+4}},
-             {text:"💸 Trop cher",effects:{patience:-2}}]},
-  {emoji:"👟",title:"Semelles gel",desc:"Soulager les pieds.",category:"shopping",
-    choices:[{text:"👟 (10$)",cost:10,effects:{energy:+10,patience:+4}},
-             {text:"💪 Tenir",effects:{energy:-6,patience:-2}}]},
-  {emoji:"🧴",title:"Gel hydro",desc:"Pratique en métro.",category:"shopping",
-    choices:[{text:"🧴 (3$)",cost:3,effects:{patience:+2}},
-             {text:"🤷 Ignorer",effects:{}}]},
-  {emoji:"🔋",title:"Batterie basse",desc:"Powerbank à vendre.",category:"shopping",
-    choices:[{text:"🔌 Powerbank (18$)",cost:18,effects:{patience:+6}},
-             {text:"🔍 Prise plus tard",effects:{energy:-4,patience:-2}}]},
+  {emoji:"🥨",title:"Pretzel XXL",desc:"Gros comme ta tête. Sel visible à l'œil nu.",category:'food',
+   choices:[{text:"🥨 Sodium blast (4$)",cost:4,effects:{hunger:-14,patience:+6}},{text:"😵 Trop salé",effects:{patience:-4}}]},
 
-  {emoji:"😴",title:"Coup de barre",desc:"Paupières lourdes.",category:"energy",
-    choices:[{text:"☕ Double shot (7$)",cost:7,effects:{energy:+16}},
-             {text:"😮‍💨 Étirements",effects:{energy:+6}}]},
-  {emoji:"⏱️",title:"Timing serré",desc:"Deux spots à caser.",category:"mood",
-    choices:[{text:"🏃‍♀️ Accélérer",effects:{energy:-6,patience:-2}},
-             {text:"❌ Couper un stop",effects:{patience:+2}}]},
-  {emoji:"🧘",title:"Pause respiration",desc:"Se recentrer 2 min.",category:"mood",
-    choices:[{text:"🧘 Faire",effects:{patience:+6}},
-             {text:"⏭️ Passer",effects:{patience:-2}}]},
-  {emoji:"🧃",title:"Barre énergétique",desc:"Guichet du musée.",category:"food",
-    choices:[{text:"🍫 Choco (3$)",cost:3,effects:{hunger:-6,energy:+6}},
-             {text:"🍎 Pomme (2$)",cost:2,effects:{hunger:-5}}]},
-  {emoji:"🧋",title:"Refill eau",desc:"Fontaine publique.",category:"food",
-    choices:[{text:"🚰 Remplir",effects:{energy:+2}},
-             {text:"🥤 Acheter boisson (4$)",cost:4,effects:{energy:+6}}]},
+  {emoji:"🍦",title:"Ice cream 35°C",desc:"Il fond PENDANT qu'on te sert.",category:'food',
+   choices:[{text:"🍦 Course contre la montre (6$)",cost:6,effects:{hunger:-8,patience:-4,energy:+4}},{text:"🏃 Abandon",effects:{}}]},
 
-  // ——— Multiplicateurs : variations “base” pour atteindre 100 ———
-  {emoji:"🍔",title:"Diner rétro",desc:"Sièges rouges & jukebox.",category:"food",
-    choices:[{text:"🍔 Menu (13$)",cost:13,effects:{hunger:-26,patience:+6}},
-             {text:"🍳 Brunch (11$)",cost:11,effects:{hunger:-18,energy:+6}}]},
-  {emoji:"🍲",title:"Soupe du jour",desc:"Chaude et réconfortante.",category:"food",
-    choices:[{text:"🍲 Bol (7$)",cost:7,effects:{hunger:-12,energy:+2}},
-             {text:"🥖 +Pain (9$)",cost:9,effects:{hunger:-16}}]},
-  {emoji:"🌭",title:"Hot-dog stand",desc:"Classique NYC.",category:"food",
-    choices:[{text:"🌭 Un (4$)",cost:4,effects:{hunger:-12,patience:+2}},
-             {text:"🌭🌭 Deux (7$)",cost:7,effects:{hunger:-18}}]},
-  {emoji:"🍗",title:"Fried chicken",desc:"Croustillant fort.",category:"food",
-    choices:[{text:"🍗 Box (10$)",cost:10,effects:{hunger:-22}},
-             {text:"🍗 Petit (7$)",cost:7,effects:{hunger:-14}}]},
-  {emoji:"🍤",title:"Tempura bar",desc:"Léger et chaud.",category:"food",
-    choices:[{text:"🍤 Assiette (12$)",cost:12,effects:{hunger:-20}},
-             {text:"🍤 Snack (7$)",cost:7,effects:{hunger:-10}}]},
-  {emoji:"🍱",title:"Bento express",desc:"Complet & compact.",category:"food",
-    choices:[{text:"🍱 Box (13$)",cost:13,effects:{hunger:-24,energy:+2}},
-             {text:"🍙 Onigiri (4$)",cost:4,effects:{hunger:-8}}]},
-  {emoji:"🌮",title:"Taqueria hype",desc:"File modérée.",category:"food",
-    choices:[{text:"🌮 Trio (12$)",cost:12,effects:{hunger:-22}},
-             {text:"🌮 Solo (5$)",cost:5,effects:{hunger:-10}}]},
-  {emoji:"🍧",title:"Italian ice",desc:"Glace pilée sucrée.",category:"food",
-    choices:[{text:"🍧 Coupe (4$)",cost:4,effects:{patience:+6,energy:+2}},
-             {text:"🚫 Non",effects:{}}]},
-  {emoji:"🥟",title:"Dumpling shop",desc:"Cuisson vapeur.",category:"food",
-    choices:[{text:"🥟 10 pcs (10$)",cost:10,effects:{hunger:-20}},
-             {text:"🥟 6 pcs (7$)",cost:7,effects:{hunger:-12}}]},
-  {emoji:"🥞",title:"Pancakes fluffy",desc:"Sirop qui coule.",category:"food",
-    choices:[{text:"🥞 Pile (9$)",cost:9,effects:{hunger:-20,patience:+4}},
-             {text:"🥞 Mini (6$)",cost:6,effects:{hunger:-12}}]},
+  // === TRANSPORT (chaos urbain) ===
+  {emoji:"🚇",title:"Métro qui PUE",desc:"Odeur non identifiée. Quelqu'un mange du poisson.",category:'transport',
+   choices:[{text:"🚇 Respirer par la bouche (3$)",cost:3,effects:{patience:-12,energy:+2}},{text:"🤮 Sortir!",effects:{energy:-8}}]},
 
-  {emoji:"🚌",title:"Bus lent",desc:"Feux et arrêts.",category:"transport",
-    choices:[{text:"🚌 Patienter (2.9$)",cost:2.9,effects:{energy:+2,patience:-4}},
-             {text:"👟 Descendre",effects:{energy:-8}}]},
-  {emoji:"🚕",title:"Taxi pressé",desc:"Conduite sportive.",category:"transport",
-    choices:[{text:"🚕 Monter (17$)",cost:17,effects:{energy:+10,patience:+6,photos:+2}},
-             {text:"🚇 Métro (2.9$)",cost:2.9,effects:{patience:-2}}]},
-  {emoji:"🚲",title:"Vélo en libre",desc:"Piste cyclable ok.",category:"transport",
-    choices:[{text:"🚲 20 min (5$)",cost:5,effects:{energy:+6,patience:+2}},
-             {text:"🚶 Marcher",effects:{energy:-6}}]},
-  {emoji:"🧭",title:"Mauvaise sortie",desc:"Revenir sur ses pas.",category:"transport",
-    choices:[{text:"🧭 Recalcule",effects:{energy:-4,patience:-2}},
-             {text:"🗺️ Demander",effects:{patience:+2}}]},
-  {emoji:"🅿️",title:"Trop de stops",desc:"Arrêts fréquents.",category:"transport",
-    choices:[{text:"🚶 Couper par ruelles",effects:{energy:-6,patience:+2}},
-             {text:"🧍 Suivre la foule",effects:{patience:-4}}]},
+  {emoji:"🚕",title:"Taxi driver furieux",desc:"Il gueule sur TOUT LE MONDE. Radio à fond.",category:'transport',
+   choices:[{text:"🚕 Tenir bon (20$)",cost:20,effects:{patience:-10,energy:+6}},{text:"🚪 Descendre ici",effects:{energy:-6}}]},
 
-  {emoji:"🎟️",title:"Petit musée",desc:"Billet abordable.",category:"culture",
-    choices:[{text:"🎟️ Entrée (7$)",cost:7,effects:{patience:+6,photos:+3}},
-             {text:"📷 Extérieur",effects:{photos:+1}}]},
-  {emoji:"📖",title:"Lecture café",desc:"Coin cosy.",category:"culture",
-    choices:[{text:"☕ + Lecture (6$)",cost:6,effects:{patience:+8,energy:+6}},
-             {text:"👀 Scroll tel",effects:{energy:-2}}]},
-  {emoji:"🎨",title:"Atelier kids",desc:"Mur participatif.",category:"culture",
-    choices:[{text:"🎨 Essayer (3$)",cost:3,effects:{patience:+6,photos:+2}},
-             {text:"👀 Regarder",effects:{patience:+2}}]},
-  {emoji:"🏟️",title:"Stands sport",desc:"Ambiance match.",category:"culture",
-    choices:[{text:"🌭 Snack (6$)",cost:6,effects:{hunger:-12,patience:+4}},
-             {text:"📸 Selfie tribune",effects:{photos:+3}}]},
-  {emoji:"🪗",title:"Musicien métro",desc:"Bonne vibe.",category:"culture",
-    choices:[{text:"💵 Tip (2$)",cost:2,effects:{patience:+4}},
-             {text:"🎧 Passer",effects:{}}]},
+  {emoji:"🚶‍♀️",title:"Prof marche VITE",desc:"'Petit tour' = 3h de marche. Tes pieds crient.",category:'transport',
+   choices:[{text:"😫 Suivre",effects:{energy:-18,patience:-12}},{text:"🚇 Déserter (3$)",cost:3,effects:{patience:+4}}]},
 
-  {emoji:"😮‍💨",title:"Stress groupe",desc:"Ça parle fort.",category:"mood",
-    choices:[{text:"🎧 Isolement",effects:{patience:+6,energy:+2}},
-             {text:"🤐 Supporter",effects:{patience:-6}}]},
-  {emoji:"🙂",title:"Petit geste sympa",desc:"Quelqu’un tient la porte.",category:"mood",
-    choices:[{text:"😊 Remercier",effects:{patience:+6}},
-             {text:"👍 Hochement",effects:{patience:+2}}]},
-  {emoji:"🗺️",title:"GPS capricieux",desc:"Perdue 5 min.",category:"mood",
-    choices:[{text:"🔄 Recalibrer",effects:{patience:-2}},
-             {text:"👮 Demander",effects:{patience:+2}}]},
-  {emoji:"💼",title:"Sac trop lourd",desc:"Épaules tirent.",category:"mood",
-    choices:[{text:"📦 Casiers (5$)",cost:5,effects:{energy:+6}},
-             {text:"💪 Tenir",effects:{energy:-8}}]},
-  {emoji:"🧃",title:"Petite hypo",desc:"Main qui tremble.",category:"mood",
-    choices:[{text:"🍫 Barre (3$)",cost:3,effects:{hunger:-8,energy:+8}},
-             {text:"🍎 Pomme (2$)",cost:2,effects:{hunger:-6}}]},
+  {emoji:"🛴",title:"Scooter électrique",desc:"Ça va à 30km/h. Tu vas mourir.",category:'transport',
+   choices:[{text:"🛴 YOLO (8$)",cost:8,effects:{energy:+10,patience:-8}},{text:"😰 Trop dangereux",effects:{}}]},
 
-  {emoji:"📷",title:"Reflets vitrines",desc:"Jeu de lumière.",category:"photos",
-    choices:[{text:"📸 Essais",effects:{photos:+4,energy:-2}},
-             {text:"👀 Regarder",effects:{}}]},
-  {emoji:"🧱",title:"Brick wall vibe",desc:"Texture sympa.",category:"photos",
-    choices:[{text:"📸 Portrait",effects:{photos:+3,patience:+2}},
-             {text:"🚶 Passer",effects:{}}]},
-  {emoji:"🛑",title:"Photo interdite",desc:"Agent fait non.",category:"photos",
-    choices:[{text:"🙏 S’excuser",effects:{patience:+2}},
-             {text:"📦 Ranger l’appareil",effects:{}}]},
-  {emoji:"🌉",title:"Pont iconique",desc:"Câbles et vue.",category:"photos",
-    choices:[{text:"📸 Série rapide",effects:{photos:+5,energy:-3}},
-             {text:"👀 Balade",effects:{patience:+2}}]},
-  {emoji:"🌃",title:"Nuit claire",desc:"Ciel propre.",category:"photos",
-    choices:[{text:"📸 Longue expo",effects:{photos:+6,energy:-4}},
-             {text:"😴 Prioriser sommeil",effects:{energy:+4}}]},
+  {emoji:"🚦",title:"5 minutes au feu",desc:"Comment un feu peut être rouge SI LONGTEMPS?!",category:'transport',
+   choices:[{text:"🧍‍♀️ Attendre...",effects:{patience:-10}},{text:"🏃‍♀️ Traverser!",effects:{patience:+4,energy:-4}}]},
 
-  {emoji:"🧴",title:"Baume lèvres",desc:"Air sec.",category:"shopping",
-    choices:[{text:"💄 (3$)",cost:3,effects:{patience:+2}},
-             {text:"🤷 Passer",effects:{}}]},
-  {emoji:"🧻",title:"Lingettes",desc:"Mains collantes.",category:"shopping",
-    choices:[{text:"🧻 Pack (2$)",cost:2,effects:{patience:+2}},
-             {text:"🚰 Laver plus tard",effects:{patience:-2}}]},
-  {emoji:"👕",title:"T-shirt propre",desc:"Tache gênante.",category:"shopping",
-    choices:[{text:"👕 Basique (12$)",cost:12,effects:{patience:+6}},
-             {text:"🧻 Nettoyer vite",effects:{patience:+2}}]},
-  {emoji:"🧵",title:"Mini-couture",desc:"Bretelle faible.",category:"shopping",
-    choices:[{text:"🧵 Kit (4$)",cost:4,effects:{energy:+2}},
-             {text:"🖐️ Tenir",effects:{energy:-4}}]},
-  // Yamy
-  {emoji:"🧸",title:"Labubu Shop",desc:"Peluche pour Yamy ?",category:'yamy',
-   choices:[{text:"💝 Acheter (35$)",cost:35,effects:{patience:+14,energy:+6,yamy:+26},achievement:'labubu'},{text:"💸 Trop cher",effects:{patience:-12,yamy:-10}}]},
-  {emoji:"🥨",title:"Stand de Pretzels",desc:"Odeur de pretzels chauds.",category:"food",
-    choices:[{text:"🥨 Pretzel (4$)",cost:4,effects:{hunger:-10,patience:+4}},
-             {text:"🚫 Passer",effects:{patience:-4}}]},
-  {emoji:"🍩",title:"Doughnut Shop",desc:"Vitrine qui brille.",category:"food",
-    choices:[{text:"🍩 Donut (3.5$)",cost:3.5,effects:{hunger:-8,energy:+4}},
-             {text:"☕ + Donut (7$)",cost:7,effects:{hunger:-10,energy:+10}}]},
-  {emoji:"🍜",title:"Food Court",desc:"Trop de choix.",category:"food",
-    choices:[{text:"🍛 Plat (12$)",cost:12,effects:{hunger:-24,patience:+6}},
-             {text:"🥗 Salade (10$)",cost:10,effects:{hunger:-18,energy:+4}}]},
-  {emoji:"🍕",title:"Dollar Slice Line",desc:"Queue pour la pizza à 1$.",category:"food",
-    choices:[{text:"⏳ Attendre (1$)",cost:1,effects:{hunger:-10,patience:-6}},
-             {text:"💸 Pizzeria voisine (9$)",cost:9,effects:{hunger:-18,patience:+6}}]},
-  {emoji:"🍣",title:"Sushis rapides",desc:"Bar à sushis sur place.",category:"food",
-    choices:[{text:"🍣 6 pièces (14$)",cost:14,effects:{hunger:-22,energy:+4}},
-             {text:"🚫 Trop cher",effects:{patience:-6}}]},
-  {emoji:"🌯",title:"Food Truck Mexicain",desc:"Tacos qui sentent bon.",category:"food",
-    choices:[{text:"🌮 2 tacos (9$)",cost:9,effects:{hunger:-16,patience:+4}},
-             {text:"🌯 Burrito (12$)",cost:12,effects:{hunger:-24,energy:+4}}]},
-  {emoji:"🥤",title:"Bodega drink",desc:"Boisson fraîche au coin.",category:"food",
-    choices:[{text:"🥤 Soda (2.5$)",cost:2.5,effects:{energy:+4}},
-             {text:"🚰 Eau du robinet",effects:{patience:-4}}]},
-  {emoji:"🧃",title:"Jus frais",desc:"Jus pressé minute.",category:"food",
-    choices:[{text:"🍊 Jus (6$)",cost:6,effects:{energy:+8,patience:+4}},
-             {text:"🚫 Non merci",effects:{patience:-4}}]},
-  {emoji:"🍟",title:"Frites croustillantes",desc:"Frites dorées, sel gant.",category:"food",
-    choices:[{text:"🍟 Petite (5$)",cost:5,effects:{hunger:-10}},
-             {text:"🍟 Grande (7$)",cost:7,effects:{hunger:-16,patience:+4}}]},
-  {emoji:"🍔",title:"Diner rétro",desc:"Sièges rouges, jukebox.",category:"food",
-    choices:[{text:"🍔 Menu (13$)",cost:13,effects:{hunger:-26,patience:+6}},
-             {text:"🍳 Œufs & bacon (11$)",cost:11,effects:{hunger:-18,energy:+6}}]},
+  {emoji:"🚌",title:"Bus MTA en retard",desc:"'2 minutes' = 25 minutes en temps réel.",category:'transport',
+   choices:[{text:"🚌 Optimiste (3$)",cost:3,effects:{patience:-14,energy:+2}},{text:"👟 Marcher direct",effects:{energy:-10}}]},
 
-  {emoji:"🚇",title:"Changement raté",desc:"Tu as pris la mauvaise direction.",category:"transport",
-    choices:[{text:"🧭 Recalculer (3$)",cost:3,effects:{patience:-4}},
-             {text:"👟 Marcher 25 min",effects:{energy:-10,patience:-6}}]},
-  {emoji:"🚌",title:"Bus MTA bondé",desc:"Quasi pas de place assise.",category:"transport",
-    choices:[{text:"🚌 Serrer les coudes (2.9$)",cost:2.9,effects:{energy:+2,patience:-8}},
-             {text:"🚕 Prendre taxi (18$)",cost:18,effects:{energy:+10,patience:+8,photos:+2}}]},
-  {emoji:"🛴",title:"Trottinette partagée",desc:"Rapide mais stressant.",category:"transport",
-    choices:[{text:"🛴 Louer (6$)",cost:6,effects:{energy:+6,patience:-4}},
-             {text:"🚶‍♀️ À pied",effects:{energy:-12}}]},
-  {emoji:"⛴️",title:"Staten Island Ferry",desc:"Vue gratuite sur la baie.",category:"transport",
-    choices:[{text:"⛴️ Embarquer (0$)",effects:{energy:-2,patience:+6,photos:+4}},
-             {text:"🚫 Pas le temps",effects:{patience:-6}}]},
-  {emoji:"🚦",title:"Feu rouge interminable",desc:"Tu attends, attends…",category:"transport",
-    choices:[{text:"🚶‍♀️ Traverser plus loin",effects:{energy:-6,patience:-4}},
-             {text:"🧍 Attendre",effects:{patience:-6}}]},
+  // === KEVIN & GROUPE (enfer social) ===
+  {emoji:"😤",title:"Kevin fait LE MALIN",desc:"Il imite l'accent américain. Personne rit.",category:'mood',
+   choices:[{text:"😡 'La ferme Kevin'",effects:{patience:-12,energy:-6}},{text:"🙄 Ignorer",effects:{patience:-8}}]},
 
-  {emoji:"🎟️",title:"Billet musée",desc:"Entrée standard ou étudiante ?.",category:"culture",
-    choices:[{text:"🎟️ Étudiant (12$)",cost:12,effects:{patience:+8,energy:-6,photos:+4}},
-             {text:"🚫 Passer",effects:{patience:-6}}]},
-  {emoji:"🖼️",title:"Galerie de SoHo",desc:"Expo éphémère.",category:"culture",
-    choices:[{text:"🎨 Entrer (8$)",cost:8,effects:{patience:+8,photos:+3}},
-             {text:"📷 Vitre seulement",effects:{photos:+1}}]},
-  {emoji:"🎭",title:"Impro de rue",desc:"Spectacle drôle.",category:"culture",
-    choices:[{text:"💵 Tip (2$)",cost:2,effects:{patience:+6}},
-             {text:"👏 Applaudir",effects:{patience:+2}}]},
-  {emoji:"📚",title:"Librairie culte",desc:"Odeur de papier.",category:"culture",
-    choices:[{text:"📖 Carnet (9$)",cost:9,effects:{patience:+6,photos:+1}},
-             {text:"👀 Flâner",effects:{patience:+2}}]},
-  {emoji:"🎶",title:"Concert de rue",desc:"Jazz à Bryant Park.",category:"culture",
-    choices:[{text:"🎶 Rester 20 min",effects:{energy:-4,patience:+8,photos:+2}},
-             {text:"🚶‍♀️ Continuer",effects:{patience:-4}}]},
+  {emoji:"🤳",title:"Kevin PHOTOBOMBE",desc:"Il est dans TOUTES tes photos. TOUTES.",category:'photos',
+   choices:[{text:"😤 Le dégager",effects:{patience:-10,photos:+4}},{text:"📱 Recommencer x10",effects:{energy:-8,photos:+6}}]},
 
-  {emoji:"😵‍💫",title:"Trop de bruit",desc:"Klaxons + sirènes = 🤯",category:"mood",
-    choices:[{text:"🎧 Musique (3$)",cost:3,effects:{patience:+8}},
-             {text:"🧘 Respiration",effects:{patience:+4}}]},
-  {emoji:"😠",title:"Groupe en retard",desc:"Encore 15 minutes…",category:"mood",
-    choices:[{text:"🗓️ Replanifier",effects:{patience:+2}},
-             {text:"😤 Remontrance",effects:{patience:-8,energy:-4}}]},
-  {emoji:"🤳",title:"Selfie fail",desc:"Yeux fermés, encore.",category:"photos",
-    choices:[{text:"🤳 Re-tenter",effects:{photos:+3,energy:-4}},
-             {text:"📸 Demander aide",effects:{photos:+4,patience:+2}}]},
-  {emoji:"🗺️",title:"Perdue 5 min",desc:"GPS capricieux.",category:"mood",
-    choices:[{text:"🗺️ Recalibrer",effects:{patience:-2}},
-             {text:"👮 Demander un agent",effects:{patience:+2}}]},
-  {emoji:"🧼",title:"Salle de bain introuvable",desc:"Urgence augmente.",category:"mood",
-    choices:[{text:"☕ Acheter (2.5$)",cost:2.5,effects:{patience:+6}},
-             {text:"🚶‍♀️ Chercher encore",effects:{energy:-6,patience:-6}}]},
+  {emoji:"🎤",title:"Prof fait des BLAGUES",desc:"'I'll be FRANK with you... my name is David!' *silence*",category:'mood',
+   choices:[{text:"😅 Rire faux",effects:{patience:-8}},{text:"🤐 Cringe silence",effects:{patience:-12}}]},
 
-  {emoji:"🧣",title:"Souvenir bonnet NYC",desc:"Stylé mais utile ?",category:"shopping",
-    choices:[{text:"🧣 Acheter (15$)",cost:15,effects:{patience:+6,yamy:+4}},
-             {text:"💸 Trop cher",effects:{patience:-4}}]},
-  {emoji:"👟",title:"Semelles gel",desc:"Pieds en feu.",category:"shopping",
-    choices:[{text:"👟 Acheter (10$)",cost:10,effects:{energy:+10,patience:+4}},
-             {text:"💪 Tenir",effects:{energy:-6,patience:-4}}]},
-  {emoji:"🧴",title:"Crème solaire",desc:"UV costauds aujourd’hui.",category:"shopping",
-    choices:[{text:"🧴 SPF (7$)",cost:7,effects:{energy:+2,patience:+2}},
-             {text:"😑 Sans",effects:{energy:-4}}]},
-  {emoji:"🎒",title:"Bretelles sac",desc:"Une s’est cassée.",category:"shopping",
-    choices:[{text:"🧵 Réparer (6$)",cost:6,effects:{energy:+4}},
-             {text:"🖐️ Porter à la main",effects:{energy:-10}}]},
-  {emoji:"📦",title:"Casiers de gare",desc:"Déposer des sacs.",category:"shopping",
-    choices:[{text:"🔒 Louer (5$)",cost:5,effects:{energy:+6}},
-             {text:"💼 Garder sur soi",effects:{energy:-8}}]},
-  {emoji:"📱",title:"Appel Yamy",desc:"Un appel ? ",category:'yamy',
-   choices:[{text:"💕 20 min",effects:{energy:-6,patience:+14,yamy:+18}},{text:"⏱️ Rapide",effects:{yamy:-10,patience:-8}}]}
+  {emoji:"👥",title:"Groupe est LENT",desc:"Ils prennent 10 ans pour choisir un resto.",category:'mood',
+   choices:[{text:"⏰ Attendre",effects:{patience:-14,energy:-4}},{text:"✂️ Partir solo",effects:{patience:+6,energy:-6}}]},
+
+  {emoji:"📸",title:"'UNE DERNIÈRE!'",desc:"Ça fait la 47ème 'dernière' photo.",category:'photos',
+   choices:[{text:"😫 Encore une...",effects:{patience:-10,photos:+8}},{text:"❌ 'JE RENTRE'",effects:{patience:+4}}]},
+
+  // === SITUATIONS ABSURDES ===
+  {emoji:"🐦",title:"Pigeon AGRESSIF",desc:"Il veut ton sandwich. Il te fixe. Il s'approche.",category:'mood',
+   choices:[{text:"🥊 Défendre ta bouffe",effects:{patience:-8,hunger:-10}},{text:"🏃‍♀️ Sacrifier sandwich",effects:{patience:+4,hunger:+12}}]},
+
+  {emoji:"🐿️",title:"Écureuil de Central Park",desc:"Il a ZERO peur. Il est à 20cm de toi.",category:'photos',
+   choices:[{text:"📸 Photo risquée",effects:{photos:+10,patience:-6}},{text:"😰 Reculer",effects:{patience:+2}}]},
+
+  {emoji:"🎪",title:"Times Square sensory overload",desc:"10000 écrans. 5000 touristes. Elmo te harcèle.",category:'mood',
+   choices:[{text:"📸 Photo avec Elmo (20$)",cost:20,effects:{photos:+8,patience:-10}},{text:"🏃‍♀️ FUIR",effects:{energy:-8,patience:+4}}]},
+
+  {emoji:"😱",title:"M&M's Store",desc:"4 ÉTAGES de bonbons. Tu perds la raison.",category:'shopping',
+   choices:[{text:"🛍️ Acheter (25$)",cost:25,effects:{patience:+12,yamy:+8}},{text:"🧠 Résister",effects:{patience:-6}}]},
+
+  {emoji:"🗽",title:"Queue Statue Liberté",desc:"3h d'attente. TROIS. HEURES.",category:'mood',
+   choices:[{text:"😤 Attendre...",effects:{patience:-20,energy:-10,photos:+12}},{text:"📸 Photo de loin",effects:{photos:+4}}]},
+
+  {emoji:"🧼",title:"Toilettes PAYANTES",desc:"0.25$ pour PISSER. L'Amérique est un mensonge.",category:'mood',
+   choices:[{text:"💵 Payer (0.25$)",cost:0.25,effects:{patience:+6}},{text:"🤬 Chercher ailleurs",effects:{patience:-10,energy:-6}}]},
+
+  {emoji:"🔊",title:"New-yorkais te parle",desc:"Tu comprends 2 mots sur 10. Tu fais semblant.",category:'mood',
+   choices:[{text:"😅 'Yeah yeah'",effects:{patience:-6}},{text:"❓ 'Sorry what?'",effects:{patience:-10}}]},
+
+  {emoji:"🎵",title:"Subway performer",desc:"Il joue... quelque chose. C'est... du jazz? Du métal?",category:'mood',
+   choices:[{text:"💵 Tip gêné (2$)",cost:2,effects:{patience:+4}},{text:"🚶‍♀️ Changer de wagon",effects:{patience:-2}}]},
+
+  {emoji:"🐱",title:"BODEGA CAT!!",desc:"LE CHAT LÉGENDAIRE. Il te regarde. C'est magique.",category:'photos',
+   choices:[{text:"📸 10 photos",effects:{photos:+12,patience:+14,energy:-4}},{text:"🙏 Juste le regarder",effects:{patience:+10}}]},
+
+  {emoji:"🧀",title:"Rat dans le métro",desc:"Il mange une pizza. Il s'en fout de toi.",category:'mood',
+   choices:[{text:"📸 PIZZA RAT (rare!)",effects:{photos:+16,patience:+8}},{text:"🤢 Dégoutée",effects:{patience:-8}}]},
+
+  // === SHOPPING & SOUVENIRS ===
+  {emoji:"👕",title:"T-shirt 'I ❤️ NY'",desc:"Le cliché ULTIME. Mais tu le veux quand même.",category:'shopping',
+   choices:[{text:"👕 Assumer (15$)",cost:15,effects:{patience:+6,yamy:+4}},{text:"😎 'Trop mainstream'",effects:{patience:-4}}]},
+
+  {emoji:"🗽",title:"Mini Statue Liberté",desc:"Made in China mais vendue à NYC. Logique.",category:'shopping',
+   choices:[{text:"🗽 Ironique (12$)",cost:12,effects:{yamy:+6}},{text:"💸 Arnaque",effects:{patience:-4}}]},
+
+  {emoji:"🧸",title:"Labubu NYC Edition",desc:"ÉDITION LIMITÉE. Yamy va ADORER.",category:'yamy',
+   choices:[{text:"💝 ACHETER (40$)",cost:40,effects:{yamy:+30,patience:+16},achievement:'labubu'},{text:"💸 Trop cher...",effects:{yamy:-14,patience:-10}}]},
+
+  {emoji:"🎒",title:"Faux Supreme",desc:"Vendeur de rue: 'Real Supreme bro, trust me'",category:'shopping',
+   choices:[{text:"🎒 C'est une arnaque (30$)",cost:30,effects:{patience:-8}},{text:"😏 Négocier",effects:{patience:+4}}]},
+
+  // === YAMY CONTENT ===
+  {emoji:"📱",title:"Yamy t'appelle",desc:"Il est 3h du mat chez lui. Il s'ennuie de toi.",category:'yamy',
+   choices:[{text:"💕 Parler 30min",effects:{energy:-8,patience:+18,yamy:+20}},{text:"⏱️ 'Je suis occupée'",effects:{yamy:-12,patience:-8}}]},
+
+  {emoji:"💬",title:"Messages Yamy",desc:"47 messages. Il a envoyé des memes chelous.",category:'yamy',
+   choices:[{text:"😊 Répondre tout",effects:{energy:-6,patience:+12,yamy:+14}},{text:"👀 'Vu' only",effects:{yamy:-10}}]},
+
+  {emoji:"🎁",title:"Boutique kawaii",desc:"Tout est TROP MIGNON. Yamy aimerait tout.",category:'shopping',
+   choices:[{text:"🛍️ Shopping spree (35$)",cost:35,effects:{yamy:+18,patience:+10}},{text:"📸 Photos suffisent",effects:{yamy:+4}}]},
+
+  // === MÉTÉO & CONDITIONS ===
+  {emoji:"🌧️",title:"Pluie SOUDAINE",desc:"Pas de parapluie. Cheveux ruinés. Mascara coule.",category:'mood',
+   choices:[{text:"☂️ Acheter (15$)",cost:15,effects:{patience:+8}},{text:"🏃‍♀️ COURIR",effects:{energy:-12,patience:-10}}]},
+
+  {emoji:"🥵",title:"Chaleur INSUPPORTABLE",desc:"38°C. L'asphalte ondule. Tu vas fondre.",category:'mood',
+   choices:[{text:"🧊 Smoothie glacé (8$)",cost:8,effects:{energy:+10,patience:+8}},{text:"😵 Endurer",effects:{energy:-12,patience:-10}}]},
+
+  {emoji:"❄️",title:"Clim ARCTIQUE",desc:"Tu passes de 38° dehors à -5° dedans.",category:'mood',
+   choices:[{text:"🧥 Acheter pull (25$)",cost:25,effects:{patience:+8,energy:+6}},{text:"🥶 Grelotter",effects:{energy:-8}}]},
+
+  // === FIN DE JOURNÉE ===
+  {emoji:"😴",title:"Crash complet",desc:"Tes yeux se ferment tout seuls. Danger.",category:'energy',
+   choices:[{text:"☕ Triple shot (10$)",cost:10,effects:{energy:+20}},{text:"😮‍💨 Power nap 15min",effects:{energy:+12,yamy:-4}}]},
+
+  {emoji:"🦶",title:"Pieds EXPLOSÉS",desc:"22000 pas aujourd'hui. Tu marches comme un zombie.",category:'mood',
+   choices:[{text:"👟 Semelles (12$)",cost:12,effects:{energy:+12,patience:+8}},{text:"😭 Continuer",effects:{energy:-10,patience:-8}}]},
+
+  {emoji:"📱",title:"Batterie 2%",desc:"Tu paniques. Comment tu vas faire tes stories??",category:'other',
+   choices:[{text:"🔌 Powerbank (22$)",cost:22,effects:{patience:+10}},{text:"😰 Mode avion",effects:{patience:-8,photos:-6}}]},
+
+  // === CULTURE ===
+  {emoji:"🎨",title:"MoMA bondé",desc:"Plus de monde que d'œuvres. Tu vois que des têtes.",category:'culture',
+   choices:[{text:"🎟️ Billet (25$)",cost:25,effects:{patience:-12,photos:+6}},{text:"🏃‍♀️ Boutique only",effects:{patience:+4}}]},
+
+  {emoji:"🎭",title:"Spectacle de rue WEIRD",desc:"Un type peint en or reste immobile. Pourquoi?",category:'culture',
+   choices:[{text:"💵 Tip (3$)",cost:3,effects:{patience:+6}},{text:"👀 Regarder gratos",effects:{patience:+2}}]},
+
+  {emoji:"📚",title:"Strand Bookstore",desc:"'18 miles of books'. Tu te perds littéralement.",category:'culture',
+   choices:[{text:"📖 Acheter bouquin (15$)",cost:15,effects:{patience:+10,energy:-6}},{text:"👀 Flâner 30min",effects:{patience:+6,energy:-8}}]}
 ];
 
 const conditionals = [
-  {emoji:"😴",title:"Sieste",desc:"Elle vacille…",category:'energy',condition:()=>game.state.energy<35,
-   choices:[{text:"💤 Dormir 1h",effects:{energy:+28,hunger:+12,yamy:-4}},{text:"☕ Café (8$)",cost:8,effects:{energy:+14}}]},
-  {emoji:"🍕",title:"Pizza à 1$",desc:"Plan radin.",category:'food',condition:()=>game.state.money<100,
-   choices:[{text:"🍕 Slice (1$)",cost:1,effects:{hunger:-12}},{text:"🚫 Rien",effects:{hunger:+8}}]},
-   {emoji:"🌧️",title:"Averse soudaine",desc:"Pas de parapluie.",category:"weather",
-   condition:()=> game.state.energy>0 && game.state.hunger<90,
-   choices:[{text:"☂️ Acheter (12$)",cost:12,effects:{patience:+6}},
-            {text:"💦 Courir",effects:{energy:-10,patience:-10}}]},
-  {emoji:"🔥",title:"Trop chaud",desc:"Canicule écrasante.",category:"weather",
-   condition:()=> game.state.energy<70,
-   choices:[{text:"🥤 Boisson glacée (5$)",cost:5,effects:{energy:+8,patience:+4}},
-            {text:"🌳 Ombre 10 min",effects:{energy:+4}}]},
-  {emoji:"🧊",title:"Clim glaciale",desc:"Dans le métro.",category:"weather",
-   condition:()=> game.state.energy<60,
-   choices:[{text:"🧣 Acheter (8$)",cost:8,effects:{energy:+6}},
-            {text:"🥶 Supporter",effects:{energy:-6,patience:-4}}]},
-  {emoji:"🕘",title:"Retard de 30 min",desc:"Planning décalé.",category:"mood",
-   condition:()=> game.state.patience<60,
-   choices:[{text:"🗂️ Réorganiser",effects:{patience:+4}},
-            {text:"😒 Râler",effects:{patience:-8}}]},
-  {emoji:"💤",title:"Coup de barre",desc:"Paupières lourdes.",category:"energy",
-   condition:()=> game.state.energy<40,
-   choices:[{text:"☕ Double shot (7$)",cost:7,effects:{energy:+16}},
-            {text:"😮‍💨 Étirements",effects:{energy:+6}}]},
-  {emoji:"🧃",title:"Hypo légère",desc:"Tu trembles un peu.",category:"food",
-   condition:()=> game.state.hunger>65 && game.state.energy<50,
-   choices:[{text:"🍫 Barre (3$)",cost:3,effects:{hunger:-8,energy:+8}},
-            {text:"🍎 Pomme (2$)",cost:2,effects:{hunger:-6}}]},
-  {emoji:"📱",title:"Batterie 10%",desc:"Téléphone proche KO.",category:"other",
-   condition:()=> game.state.photos>10,
-   choices:[{text:"🔌 Powerbank (18$)",cost:18,effects:{patience:+6}},
-            {text:"🔍 Spot prise",effects:{energy:-6,patience:-4}}]},
-  {emoji:"🧦",title:"Ampoule au pied",desc:"Aïe à chaque pas.",category:"mood",
-   condition:()=> game.state.energy<70,
-   choices:[{text:"🧦 Chaussettes (6$)",cost:6,effects:{energy:+6}},
-            {text:"😣 Ignorer",effects:{energy:-8,patience:-4}}]},
-  {emoji:"🧴",title:"Mains sèches",desc:"Air clim’ + gel hydro.",category:"other",
-   condition:()=> true,
-   choices:[{text:"🧴 Crème (4$)",cost:4,effects:{patience:+4}},
-            {text:"🤷 Rien",effects:{}}]},
-  {emoji:"🕐",title:"Décalage pique",desc:"Somnolence hors horaire.",category:"energy",
-   condition:()=> game.state.day<=2 && game.state.energy<60,
-   choices:[{text:"😴 Micro-sieste 15min",effects:{energy:+10,hunger:+4,yamy:-2}},
-            {text:"🚶 Bouger",effects:{energy:+4}}]},
-  {emoji:"😮‍💨",title:"Stress du groupe",desc:"Trop de bruit, trop vite.",category:"mood",
-   condition:()=> game.state.patience<50,
-   choices:[{text:"🧘 4-7-8",effects:{patience:+8}},
-            {text:"🎧 Isolement",effects:{patience:+6,energy:+2}}]},
-  {emoji:"🧃",title:"Sirop d’érable tentant",desc:"Boutique souvenir.",category:"shopping",
-   condition:()=> game.state.money>40,
-   choices:[{text:"🍁 Petit flacon (8$)",cost:8,effects:{yamy:+4,patience:+4}},
-            {text:"🚫 C’est lourd",effects:{patience:-2}}]},
-  {emoji:"🧸",title:"Peluche alternative",desc:"Kitsch mais drôle.",category:"yamy",
-   condition:()=> !game.achievements.includes('labubu'),
-   choices:[{text:"🧸 (20$)",cost:20,effects:{yamy:+12,patience:+4}},
-            {text:"📷 Photo à la place",effects:{photos:+2}}]},
-  {emoji:"📅",title:"Planning compressé",desc:"Deux spots à caser.",category:"mood",
-   condition:()=> game.state.day>=3,
-   choices:[{text:"🏃‍♀️ Accélérer",effects:{energy:-8,patience:-4}},
-            {text:"❌ Annuler un spot",effects:{patience:+4}}]},
-  {emoji:"🧼",title:"Tache sur t-shirt",desc:"Photo tout à l’heure…",category:"other",
-   condition:()=> game.state.photos>15,
-   choices:[{text:"👕 T-shirt (12$)",cost:12,effects:{patience:+6}},
-            {text:"🧻 Nettoyer vite",effects:{patience:+2}}]},
-  {emoji:"💰",title:"ATM",desc:"Besoin de cash ?",category:'money',condition:()=>game.state.money<50,
-   choices:[{text:"💵 50$ (+5$ frais)",cost: -45, effects:{}},{text:"❌ Continuer",effects:{patience:-6}}]} // cost négative = gain net
+  {emoji:"🍕",title:"Pizza 99¢",desc:"Deal LOUCHE mais tu es BROKE.",category:'food',
+   condition:()=>game.state.money<30,
+   choices:[{text:"🍕 YOLO (1$)",cost:1,effects:{hunger:-12,patience:-4}},{text:"😰 Too sketchy",effects:{hunger:+10}}]},
+
+  {emoji:"💤",title:"Micro-sieste urgente",desc:"Tu t'endors DEBOUT.",category:'energy',
+   condition:()=>game.state.energy<30,
+   choices:[{text:"😴 Dormir sur banc",effects:{energy:+20,hunger:+8,patience:-10}},{text:"☕ Café IV (12$)",cost:12,effects:{energy:+18}}]},
+
+  {emoji:"😡",title:"RAGE MODE",desc:"Kevin a fait UN TRUC DE TROP.",category:'mood',
+   condition:()=>game.state.patience<30,
+   choices:[{text:"🤬 EXPLOSER",effects:{patience:+10,energy:-10}},{text:"🧘 Respiration (crash dans 5min)",effects:{patience:+4}}]},
+
+  {emoji:"🍔",title:"Faim CRITIQUE",desc:"Ton ventre fait des bruits d'alien.",category:'food',
+   condition:()=>game.state.hunger>75,
+   choices:[{text:"🍔 N'IMPORTE QUOI (15$)",cost:15,effects:{hunger:-35,patience:+8}},{text:"🍫 Vending machine (3$)",cost:3,effects:{hunger:-12}}]},
+
+  {emoji:"💸",title:"BROKE AS HELL",desc:"Tu comptes chaque dollar. C'est la fin.",category:'money',
+   condition:()=>game.state.money<20,
+   choices:[{text:"💰 ATM (+5$ fees)",cost:-45,effects:{patience:-10}},{text:"😭 Survivre",effects:{patience:-8}}]},
+
+  {emoji:"🏃‍♀️",title:"Retard CRITIQUE",desc:"Rdv dans 5min, t'es à 15min.",category:'mood',
+   condition:()=>game.state.patience<40,
+   choices:[{text:"🚕 TAXI (25$)",cost:25,effects:{energy:+8,patience:-8}},{text:"🏃‍♀️ SPRINTER",effects:{energy:-18,patience:-12}}]},
+
+  {emoji:"🌧️",title:"Déluge biblique",desc:"Il pleut des CORDES. Apocalypse.",category:'weather',
+   condition:()=>game.state.energy<50,
+   choices:[{text:"☂️ + Pluie (18$)",cost:18,effects:{patience:+10}},{text:"💦 Devenir poisson",effects:{energy:-14,patience:-14}}]},
+
+  {emoji:"📱",title:"Batterie MORTE",desc:"0%. Pas de GPS. Pas de photos. Rien.",category:'other',
+   condition:()=>game.state.photos>20,
+   choices:[{text:"🔌 Powerbank MAINTENANT (25$)",cost:25,effects:{patience:+12}},{text:"😭 Mode survie",effects:{patience:-12,photos:-10}}]},
+
+  {emoji:"🧃",title:"Hypoglycémie",desc:"Tu trembles. Ta vision floute. Danger.",category:'food',
+   condition:()=>game.state.hunger>70 && game.state.energy<40,
+   choices:[{text:"🍫 Sucre rapide (4$)",cost:4,effects:{hunger:-12,energy:+12}},{text:"🥤 Soda (3$)",cost:3,effects:{hunger:-6,energy:+10}}]},
+
+  {emoji:"🦶",title:"Ampoule DEGUEULASSE",desc:"Ça saigne dans ta chaussure. Pas bien.",category:'mood',
+   condition:()=>game.state.energy<60,
+   choices:[{text:"🩹 Bandages (8$)",cost:8,effects:{energy:+10,patience:+6}},{text:"😭 Marcher dans la douleur",effects:{energy:-12,patience:-12}}]},
+
+  // NOUVEAUX CONDITIONNELS
+  {emoji:"😭",title:"Breakdown imminent",desc:"Tu vas craquer. Les larmes montent.",category:'mood',
+   condition:()=>game.state.patience<25 && game.state.energy<40,
+   choices:[{text:"😭 Pleurer 5min",effects:{patience:+14,energy:-6}},{text:"📱 Appeler Yamy",effects:{patience:+18,yamy:+20,energy:-8}}]},
+
+  {emoji:"🍟",title:"Resto fast = survie",desc:"Tu manges n'importe quoi, n'importe où.",category:'food',
+   condition:()=>game.state.hunger>80,
+   choices:[{text:"🍟 Gober 5000 calories (18$)",cost:18,effects:{hunger:-45,patience:+6,energy:-6}},{text:"🍕 Pizza grasse (8$)",cost:8,effects:{hunger:-30}}]},
+
+  {emoji:"💳",title:"Carte refusée",desc:"DECLINED. Devant tout le monde. Honte maximale.",category:'money',
+   condition:()=>game.state.money<15,
+   choices:[{text:"😰 Autre carte",effects:{patience:-16}},{text:"💵 Fouiller poches",effects:{patience:-12,energy:-4}}]},
+
+  {emoji:"🧊",title:"Coup de chaud critique",desc:"Vision floue. Tu vois des étoiles.",category:'energy',
+   condition:()=>game.state.energy<25,
+   choices:[{text:"🧊 Urgence A/C (entrer n'importe où)",effects:{energy:+16,patience:-6}},{text:"💧 Eau + ombre",effects:{energy:+10}}]},
+
+  {emoji:"💬",title:"Yamy spam URGENT",desc:"267 messages. Il panique car tu réponds pas.",category:'yamy',
+   condition:()=>game.state.yamy<30,
+   choices:[{text:"💕 CALL maintenant",effects:{yamy:+35,energy:-12,patience:+20}},{text:"💬 'Tout va bien'",effects:{yamy:+18}}]},
+
+  {emoji:"📸",title:"Storage PLEIN",desc:"'Cannot take photo'. NON. PAS MAINTENANT.",category:'photos',
+   condition:()=>game.state.photos>80,
+   choices:[{text:"🗑️ Delete 100 photos",effects:{photos:-20,patience:-14}},{text:"☁️ Buy iCloud (3$)",cost:3,effects:{patience:+8}}]},
+
+  {emoji:"😴",title:"Zombie mode",desc:"Tu marches mais tu dors en même temps.",category:'energy',
+   condition:()=>game.state.energy<20,
+   choices:[{text:"💤 Dormir MAINTENANT",effects:{energy:+30,hunger:+12,yamy:-8}},{text:"☕ Café + Red Bull (15$)",cost:15,effects:{energy:+25}}]},
+
+  {emoji:"🤯",title:"Surcharge sensorielle",desc:"Trop de bruit + monde + lumière = HELP.",category:'mood',
+   condition:()=>game.state.patience<35 && game.state.energy<50,
+   choices:[{text:"🧘 Panic breathing",effects:{patience:+12,energy:-4}},{text:"🏃‍♀️ Fuir dans Central Park",effects:{patience:+16,energy:-12}}]},
+
+  {emoji:"💸",title:"Dernier billet",desc:"Tu regardes ton dernier 20$. C'est ça ou rien.",category:'money',
+   condition:()=>game.state.money<25,
+   choices:[{text:"🍔 Manger (20$)",cost:20,effects:{hunger:-30,patience:-10}},{text:"💰 Garder pour urgence",effects:{patience:-8}}]},
+
+  {emoji:"👟",title:"Chaussures DÉTRUITES",desc:"Semelle décollée. Tu marches avec une tong.",category:'mood',
+   condition:()=>game.state.energy<45,
+   choices:[{text:"👟 Emergency shoes (60$)",cost:60,effects:{energy:+25,patience:+16}},{text:"🩹 Duct tape (5$)",cost:5,effects:{energy:+8}}]},
+
+  {emoji:"💔",title:"Manque de Yamy intense",desc:"Seeing couples = torture.",category:'yamy',
+   condition:()=>game.state.yamy<25 && game.state.patience<50,
+   choices:[{text:"💕 Long video call",effects:{yamy:+30,energy:-12,patience:+20}},{text:"😢 Pleurer un peu",effects:{yamy:+10,patience:-8}}]},
+
+  {emoji:"🚫",title:"Plus d'argent liquide",desc:"Tous les stands prennent QUE du cash.",category:'money',
+   condition:()=>game.state.money<10,
+   choices:[{text:"💳 ATM emergency",cost:-50,effects:{patience:-14}},{text:"😭 Rien acheter",effects:{patience:-16,hunger:+10}}]},
+
+  {emoji:"📱",title:"Réseau 1 barre",desc:"GPS marche pas. Maps freeze. Tu es PERDUE.",category:'other',
+   condition:()=>game.state.patience<45,
+   choices:[{text:"🗺️ Demander à 10 personnes",effects:{patience:-12,energy:-6}},{text:"🚕 Taxi (20$)",cost:20,effects:{patience:+8}}]},
+
+  {emoji:"🥵",title:"Déshydratation",desc:"Bouche sèche. Tête qui tourne. Bois NOW.",category:'energy',
+   condition:()=>game.state.energy<35,
+   choices:[{text:"💧 Acheter 3 bouteilles (9$)",cost:9,effects:{energy:+18}},{text:"🚰 Fontaine publique",effects:{energy:+10}}]},
+
+  {emoji:"😱",title:"Kevin perdu AGAIN",desc:"Il est pas au meeting point. ENCORE.",category:'mood',
+   condition:()=>game.state.patience<55,
+   choices:[{text:"📱 Appeler x10",effects:{patience:-18,energy:-6}},{text:"🚶‍♀️ Partir sans lui",effects:{patience:+10}}]}
 ];
 
 const rares = [
-  {emoji:"⭐",title:"Célébrité!",desc:"Croisée au coin de la rue.",category:'rare',
-   choices:[{text:"📱 Photo",effects:{energy:-4,patience:+18,photos:+4}},{text:"👀 Laisser",effects:{patience:-10}}],achievement:'lucky'},
-  {emoji:"💼",title:"Portefeuille rendu",desc:"Quelqu’un te rend un portefeuille perdu.",category:"rare",
-    choices:[{text:"💵 Récompense",effects:{money:+40,patience:+10}},
-             {text:"🙏 Juste merci",effects:{patience:+12}}],achievement:"lucky"},
-  {emoji:"🎟️",title:"Entrées comp offertes",desc:"Tu tombes sur une disrib d’invitations.",category:"rare",
-    choices:[{text:"🎭 Spectacle",effects:{patience:+14,photos:+4,energy:-6}},
-             {text:"🎶 Concert",effects:{patience:+12,photos:+6,energy:-8}}],achievement:"lucky"},
-  {emoji:"🧾",title:"Erreur de caisse",desc:"Le total est plus bas qu’affiché.",category:"rare",
-    choices:[{text:"✅ Payer moins",effects:{money:+10,patience:+8}},
-             {text:"🤝 Signaler",effects:{patience:+10}}],achievement:"lucky"},
-  {emoji:"📸",title:"Ciel incroyable",desc:"Golden hour parfaite.",category:"rare",
-    choices:[{text:"📸 Mitrailler",effects:{photos:+12,energy:-6,patience:+8}},
-             {text:"👀 Profiter",effects:{patience:+10}}],achievement:"lucky"},
-  {emoji:"🗽",title:"Guide super sympa",desc:"Te file 2 astuces secrètes.",category:"rare",
-    choices:[{text:"📍 Spot secret",effects:{photos:+8,patience:+10}},
-             {text:"💸 Bon plan -5$",effects:{money:+5,patience:+6}}],achievement:"lucky"},
-  {emoji:"🎁",title:"Goodie bag",desc:"Samples gratuits.",category:"rare",
-    choices:[{text:"🎁 Prendre",effects:{patience:+8,energy:+4}},
-             {text:"👋 Laisser",effects:{}}],achievement:"lucky"},
-  {emoji:"🚕",title:"Taxi offre la course",desc:"Histoire improbable mais vrai.",category:"rare",
-    choices:[{text:"🚕 Monter",effects:{energy:+12,patience:+10}},
-             {text:"🚶‍♀️ Refuser",effects:{}}],achievement:"lucky"},
-  {emoji:"💳",title:"Cashback éclair",desc:"Promo bancaire furtive.",category:"rare",
-    choices:[{text:"💳 Activer",effects:{money:+15,patience:+6}},
-             {text:"⏭️ Ignorer",effects:{}}],achievement:"lucky"},
-  {emoji:"📱",title:"Wifi public turbo",desc:"Upload tes stories instant.",category:"rare",
-    choices:[{text:"🚀 Spam stories",effects:{photos:+8,patience:+6,energy:-4}},
-             {text:"👍 Sobre",effects:{patience:+4}}],achievement:"lucky"},
-  {emoji:"🕊️",title:"Hasard bienveillant",desc:"Quelqu’un t’aide sans demander.",category:"rare",
-    choices:[{text:"😊 Remercier",effects:{patience:+12}},
-             {text:"🙏 + Tip (2$)",cost:2,effects:{patience:+16}}],achievement:"lucky"},
-  {emoji:"💸",title:"50$ trouvés",desc:"Par terre…",category:'rare',
-   choices:[{text:"💰 Prendre",effects:{money:+50,patience:+12}},{text:"🚔 Rapporter",effects:{patience:+8}}],achievement:'lucky'}
-];
+  {emoji:"🎬",title:"FILMING EN COURS",desc:"Tu reconnais UN ACTEUR. C'est INCROYABLE.",category:'rare',
+   choices:[{text:"📸 Photo sneaky",effects:{photos:+20,patience:+20}},{text:"😱 Fangirl mode",effects:{patience:+18,energy:-6}}],achievement:'lucky'},
 
+  {emoji:"💵",title:"100$ par terre",desc:"Un billet juste LÀ. Personne l'a vu.",category:'rare',
+   choices:[{text:"💰 PRENDRE",effects:{money:+100,patience:+16}},{text:"🚔 Rendre à police",effects:{patience:+12}}],achievement:'lucky'},
+
+  {emoji:"🎟️",title:"VIP tickets GRATUITS",desc:"Concert ce soir. Première rangée. WTF.",category:'rare',
+   choices:[{text:"🎶 Y ALLER",effects:{patience:+20,photos:+12,energy:-12}},{text:"😴 Trop fatiguée",effects:{energy:+10}}],achievement:'lucky'},
+
+  {emoji:"🍕",title:"Pizza celeb",desc:"Le pizzaiolo t'offre UNE PART. 'On the house!'",category:'rare',
+   choices:[{text:"🍕 MERCI",effects:{hunger:-20,patience:+16}},{text:"😊 Juste merci",effects:{patience:+10}}],achievement:'lucky'},
+
+  {emoji:"🌈",title:"Rainbow PARFAIT",desc:"Arc-en-ciel DOUBLE au-dessus de Manhattan.",category:'rare',
+   choices:[{text:"📸 MODE PAPARAZZI",effects:{photos:+16,patience:+18}},{text:"👀 Juste profiter",effects:{patience:+14}}],achievement:'lucky'},
+
+  {emoji:"🐶",title:"Chien influenceur",desc:"C'est LE chien Instagram. 500k followers.",category:'rare',
+   choices:[{text:"📸 Selfie avec",effects:{photos:+18,patience:+16}},{text:"😍 Le caresser",effects:{patience:+14}}],achievement:'lucky'},
+
+  {emoji:"🎁",title:"Échantillons PARTOUT",desc:"Stand qui donne des trucs gratos.",category:'rare',
+   choices:[{text:"🎁 Tout prendre",effects:{patience:+12,energy:+8}},{text:"😊 Juste un",effects:{patience:+8}}],achievement:'lucky'},
+
+  {emoji:"🚕",title:"Uber discount",desc:"Bug de l'app. Course à -90%.",category:'rare',
+   choices:[{text:"🚕 PROFITER",effects:{money:+15,patience:+14}},{text:"👍 Signaler bug",effects:{patience:+10}}],achievement:'lucky'},
+
+  {emoji:"⭐",title:"Compliment random",desc:"Quelqu'un: 'Love your outfit!' Tu brilles.",category:'rare',
+   choices:[{text:"😊 MERCI",effects:{patience:+16}},{text:"🥰 Rougir",effects:{patience:+14}}],achievement:'lucky'},
+
+  {emoji:"📸",title:"Golden hour PARFAIT",desc:"Lumière INCROYABLE. Tes photos seront FEUX.",category:'rare',
+   choices:[{text:"📸 Session 20min",effects:{photos:+20,patience:+18,energy:-8}},{text:"🤳 Quelques unes",effects:{photos:+12,patience:+12}}],achievement:'lucky'},
+
+  // === ENCORE PLUS D'ÉVÉNEMENTS (100+) ===
+  
+  // FOOD CHAOS SUITE
+  {emoji:"🥓",title:"Bacon sur TOUT",desc:"Ils mettent du bacon PARTOUT. Même sur les donuts.",category:'food',
+   choices:[{text:"🥓 Bacon donut (7$)",cost:7,effects:{hunger:-16,patience:+8}},{text:"🤢 C'est malsain",effects:{patience:-6}}]},
+
+  {emoji:"🌶️",title:"'Mild' sauce",desc:"Ils ont dit mild. Tu PLEURES. C'est de la lave.",category:'food',
+   choices:[{text:"💧 Lait d'urgence (4$)",cost:4,effects:{patience:-10,energy:-4}},{text:"😭 Souffrir",effects:{patience:-14,hunger:+8}}]},
+
+  {emoji:"🍪",title:"Cookie géant",desc:"Taille d'une ASSIETTE. 2000 calories. YOLO.",category:'food',
+   choices:[{text:"🍪 Partager (6$)",cost:6,effects:{hunger:-20,patience:+6}},{text:"🍪 Solo warrior (6$)",cost:6,effects:{hunger:-32,energy:-6}}]},
+
+  {emoji:"🥤",title:"Free water mais...",desc:"Le serveur te JUGE parce que tu prends pas de boisson.",category:'food',
+   choices:[{text:"💧 Assumer",effects:{patience:-8}},{text:"🥤 Commander par pitié (3$)",cost:3,effects:{patience:+4}}]},
+
+  {emoji:"🍳",title:"Brunch à 28$",desc:"Pour des ŒUFS. Avec un avocat. L'arnaque ultime.",category:'food',
+   choices:[{text:"🍳 'C'est tendance' (28$)",cost:28,effects:{hunger:-30,patience:-8}},{text:"💸 Deli sandwich (8$)",cost:8,effects:{hunger:-20,patience:+6}}]},
+
+  {emoji:"🌽",title:"Maïs grillé ambulant",desc:"Un mexicain te vend du elote. Ça sent INCROYABLE.",category:'food',
+   choices:[{text:"🌽 + Mayo + fromage (6$)",cost:6,effects:{hunger:-18,patience:+10}},{text:"🚫 Trop bizarre",effects:{patience:-4}}]},
+
+  {emoji:"🥟",title:"Dumpling challenge",desc:"10$ = 30 dumplings. Tu peux le faire... non?",category:'food',
+   choices:[{text:"🥟 CHALLENGE (10$)",cost:10,effects:{hunger:-40,patience:+12,energy:-8}},{text:"🥟 Portion normale (7$)",cost:7,effects:{hunger:-18}}]},
+
+  {emoji:"🧃",title:"Jus détox à 12$",desc:"'Activated charcoal'. Ça a le goût de RIEN.",category:'food',
+   choices:[{text:"🧃 Influencer mode (12$)",cost:12,effects:{energy:+6,patience:-8,photos:+4}},{text:"☕ Café normal (4$)",cost:4,effects:{energy:+10}}]},
+
+  {emoji:"🍰",title:"Cheesecake géant",desc:"La part fait 800g. C'est une BRIQUE de fromage.",category:'food',
+   choices:[{text:"🍰 To-go box (9$)",cost:9,effects:{hunger:-20,patience:+8}},{text:"🍰 Finir ici (9$)",cost:9,effects:{hunger:-28,energy:-10}}]},
+
+  {emoji:"🌮",title:"Tacos AUTHENTIQUES",desc:"Petit spot, 0 anglais parlé, queue de locaux. C'est BON SIGNE.",category:'food',
+   choices:[{text:"🌮 3 tacos (8$)",cost:8,effects:{hunger:-24,patience:+12}},{text:"🌮 Menu complet (14$)",cost:14,effects:{hunger:-35,patience:+10}}]},
+
+  {emoji:"🍿",title:"Popcorn caramélisé",desc:"Stand ambulant. Odeur qui rend fou.",category:'food',
+   choices:[{text:"🍿 Petit sac (5$)",cost:5,effects:{hunger:-10,patience:+6}},{text:"🍿 GRAND (9$)",cost:9,effects:{hunger:-18,patience:+8}}]},
+
+  {emoji:"🥙",title:"Halal cart du coin",desc:"File de 15 personnes. Si y'a la queue, c'est bon.",category:'food',
+   choices:[{text:"🥙 Chicken & rice (8$)",cost:8,effects:{hunger:-24,patience:-6}},{text:"🚫 Trop long",effects:{patience:+4}}]},
+
+  {emoji:"🍌",title:"Banana pudding hype",desc:"Magnolia Bakery. 1h de queue. Pour un DESSERT.",category:'food',
+   choices:[{text:"🍌 Attendre (9$)",cost:9,effects:{hunger:-16,patience:-14,photos:+6}},{text:"😤 Pas fou",effects:{patience:+4}}]},
+
+  {emoji:"🥨",title:"Auntie Anne's pretzels",desc:"L'odeur dans le mall. Irrésistible.",category:'food',
+   choices:[{text:"🥨 Original (6$)",cost:6,effects:{hunger:-14,patience:+6}},{text:"🥨 + Cheese dip (8$)",cost:8,effects:{hunger:-18,patience:+8}}]},
+
+  {emoji:"🍕",title:"Dollar slice VRAIE",desc:"1$ la part. C'est pas bon mais c'est CHEAP.",category:'food',
+   choices:[{text:"🍕 2 parts (2$)",cost:2,effects:{hunger:-20,patience:+8}},{text:"🍕 4 parts challenge (4$)",cost:4,effects:{hunger:-35,energy:-6}}]},
+
+  // TRANSPORT ENFER
+  {emoji:"🚇",title:"Showtime!",desc:"'IT'S SHOWTIME SHOWTIME!' Des gars font des flips dans le métro.",category:'transport',
+   choices:[{text:"😰 Prier pour survivre",effects:{patience:-12,energy:-4}},{text:"📸 Filmer (risqué)",effects:{photos:+8,patience:-8}}]},
+
+  {emoji:"🚶‍♀️",title:"Walk sign qui ment",desc:"Il dit 25 secondes. Tu as 8 secondes. COURS.",category:'transport',
+   choices:[{text:"🏃‍♀️ SPRINTEEER",effects:{energy:-10,patience:-6}},{text:"🛑 Attendre encore",effects:{patience:-10}}]},
+
+  {emoji:"🚕",title:"Taxi sent BIZARRE",desc:"Odeur non identifiée. Fenêtres bloquées. Aide.",category:'transport',
+   choices:[{text:"🤢 Tenir bon",effects:{patience:-14,energy:-4}},{text:"🚪 'ICI C'EST BON'",effects:{money:-8,energy:-6}}]},
+
+  {emoji:"🚲",title:"Citi Bike cassé",desc:"Tu débloques le vélo. La selle est PARTIE.",category:'transport',
+   choices:[{text:"🚲 Rouler debout",effects:{energy:-12,patience:-10}},{text:"🔄 Prendre un autre",effects:{patience:-6}}]},
+
+  {emoji:"🛤️",title:"Métro en panne",desc:"'Train traffic ahead'. Tout le monde soupire.",category:'transport',
+   choices:[{text:"⏰ Attendre 20min",effects:{patience:-16,energy:-4}},{text:"🚶‍♀️ Sortir marcher",effects:{energy:-12}}]},
+
+  {emoji:"🚕",title:"Taxi refuse d'aller là",desc:"'I don't go to Brooklyn'. Mais... pourquoi?!",category:'transport',
+   choices:[{text:"🙏 Négocier",effects:{patience:-10}},{text:"😤 Prendre un autre (10min)",effects:{patience:-12,energy:-4}}]},
+
+  {emoji:"🛴",title:"Scooter bug",desc:"Il s'arrête PAS de biper. Tout le monde te regarde.",category:'transport',
+   choices:[{text:"😰 Finir le trajet",effects:{patience:-12,energy:-4}},{text:"🚫 Abandonner",effects:{money:-6,energy:-6}}]},
+
+  {emoji:"🚌",title:"Bus qui pue l'essence",desc:"Fumée noire + odeur + chaleur = ENFER.",category:'transport',
+   choices:[{text:"🤢 Respirer bouche",effects:{patience:-14}},{text:"🚪 Descendre NOW",effects:{energy:-8}}]},
+
+  {emoji:"⛴️",title:"Ferry bondé",desc:"Tous les touristes ont eu la même idée. Contact physique forcé.",category:'transport',
+   choices:[{text:"⛴️ Serrage maximum",effects:{patience:-10,photos:+6}},{text:"🌊 Rester à l'extérieur",effects:{energy:-6,patience:+4}}]},
+
+  {emoji:"🚦",title:"Piéton anarchie",desc:"Personne respecte les feux. C'est le chaos total.",category:'transport',
+   choices:[{text:"🏃‍♀️ Suivre le flow",effects:{energy:-6,patience:+4}},{text:"🛑 Être la seule qui attend",effects:{patience:-10}}]},
+
+  // KEVIN & GROUPE SUITE
+  {emoji:"📱",title:"Kevin fait le vlog",desc:"Il parle FORT dans son téléphone. Tout le monde le déteste.",category:'mood',
+   choices:[{text:"😡 'Arrête ça'",effects:{patience:-10,energy:-4}},{text:"🙄 Laisser faire",effects:{patience:-12}}]},
+
+  {emoji:"🎵",title:"Kevin chante FAUX",desc:"Il massacre du Céline Dion dans le métro.",category:'mood',
+   choices:[{text:"🎧 Mettre écouteurs",effects:{patience:-8}},{text:"😤 'TA GUEULE'",effects:{patience:+4,energy:-6}}]},
+
+  {emoji:"💬",title:"Kevin raconte SA VIE",desc:"Personne a demandé mais il raconte TOUT.",category:'mood',
+   choices:[{text:"😐 Fake écouter",effects:{patience:-10,energy:-4}},{text:"📱 Regarder téléphone",effects:{patience:-6}}]},
+
+  {emoji:"🤳",title:"Kevin selfie ENCORE",desc:"'UNE DERNIÈRE' pour la 50ème fois.",category:'photos',
+   choices:[{text:"😫 Poser encore",effects:{patience:-12,photos:+4}},{text:"🚶‍♀️ 'Je vous attends là'",effects:{patience:+6}}]},
+
+  {emoji:"🍟",title:"Kevin pique tes frites",desc:"Sans demander. Il le fait JUSTE.",category:'food',
+   choices:[{text:"🍴 Taper sa main",effects:{patience:-8,hunger:-8}},{text:"😒 Laisser faire",effects:{patience:-12,hunger:-12}}]},
+
+  {emoji:"🗣️",title:"Groupe parle français FORT",desc:"Dans le métro. Tout le monde vous regarde.",category:'mood',
+   choices:[{text:"🤐 'On peut chuchoter?'",effects:{patience:-6}},{text:"😳 Gênée totale",effects:{patience:-10}}]},
+
+  {emoji:"🕐",title:"Groupe EN RETARD (x3)",desc:"C'est systématique. TOUJOURS 15min de retard.",category:'mood',
+   choices:[{text:"⏰ Mentir sur l'heure +30min",effects:{patience:+6}},{text:"😤 Attendre encore",effects:{patience:-14,energy:-6}}]},
+
+  {emoji:"🍽️",title:"Groupe peut PAS choisir",desc:"30 minutes pour décider où manger. Tu as FAIM.",category:'mood',
+   choices:[{text:"😤 'On va LÀ'",effects:{patience:-8,hunger:+6}},{text:"⏰ Attendre décision",effects:{patience:-14,hunger:+10}}]},
+
+  {emoji:"💸",title:"Kevin a 'oublié' son argent",desc:"Encore. Pour la 4ème fois.",category:'mood',
+   choices:[{text:"💰 Payer pour lui (12$)",cost:12,effects:{patience:-12}},{text:"😤 'Débrouille-toi'",effects:{patience:-8}}]},
+
+  {emoji:"🎒",title:"Kevin perd son sac",desc:"Panique totale. Vous devez revenir en arrière.",category:'mood',
+   choices:[{text:"🏃‍♀️ Aider chercher",effects:{energy:-12,patience:-14}},{text:"😤 'Tant pis pour toi'",effects:{patience:-8}}]},
+
+  // SITUATIONS ABSURDES NYC
+  {emoji:"🎅",title:"Elmo veut 40$",desc:"Pour UNE photo. Il devient agressif si tu refuses.",category:'mood',
+   choices:[{text:"📸 Payer l'arnaque (40$)",cost:40,effects:{photos:+8,patience:-14}},{text:"🏃‍♀️ FUIR",effects:{patience:-6}}]},
+
+  {emoji:"🎤",title:"Prédicateur apocalypse",desc:"Il crie que la fin est proche. Depuis 1987.",category:'mood',
+   choices:[{text:"👂 Écouter 2min",effects:{patience:-8}},{text:"🎧 Ignorer",effects:{patience:-4}}]},
+
+  {emoji:"🎸",title:"Guitariste nul",desc:"Il joue 'Wonderwall'. Très TRÈS mal.",category:'mood',
+   choices:[{text:"💵 Tip pity (1$)",cost:1,effects:{patience:+4}},{text:"🚶‍♀️ Fuir le son",effects:{patience:+2}}]},
+
+  {emoji:"🗞️",title:"New York Post headline",desc:"Titre complètement FOU. Tu dois le photographier.",category:'photos',
+   choices:[{text:"📸 Screenshot",effects:{photos:+6,patience:+6}},{text:"👀 Juste lire",effects:{patience:+4}}]},
+
+  {emoji:"🦝",title:"Raton-laveur du parc",desc:"Il te fixe. Il s'approche. Il veut ton snack.",category:'mood',
+   choices:[{text:"🍪 Lui donner",effects:{patience:+8,hunger:-6}},{text:"🏃‍♀️ Protéger ta vie",effects:{patience:-6}}]},
+
+  {emoji:"🚨",title:"Sirènes NON-STOP",desc:"Ambulance + police + pompiers. Concert de sirènes.",category:'mood',
+   choices:[{text:"🎧 Volume MAX",effects:{patience:-8}},{text:"😫 Endurer",effects:{patience:-12}}]},
+
+  {emoji:"🚧",title:"Travaux PARTOUT",desc:"Chaque rue est en construction. Pourquoi?!",category:'transport',
+   choices:[{text:"🗺️ Détour infini",effects:{energy:-10,patience:-10}},{text:"🦺 Passer dans le chantier",effects:{patience:-8}}]},
+
+  {emoji:"🏢",title:"Steam qui sort du sol",desc:"NYC classique. On dirait un film.",category:'photos',
+   choices:[{text:"📸 Photo dramatique",effects:{photos:+8,patience:+6}},{text:"🚶‍♀️ Passer",effects:{}}]},
+
+  {emoji:"🎭",title:"Naked Cowboy",desc:"LE mec en sous-vêtements avec une guitare. Iconique.",category:'culture',
+   choices:[{text:"📸 Photo touristique (5$)",cost:5,effects:{photos:+10,patience:+8}},{text:"👀 Juste regarder",effects:{patience:+4}}]},
+
+  {emoji:"🍎",title:"Big Apple symbolisme",desc:"Tu réalises ENFIN pourquoi ils disent 'Big Apple'... non attends, toujours pas.",category:'mood',
+   choices:[{text:"🤔 Réfléchir",effects:{patience:+4}},{text:"📱 Googler",effects:{patience:+2}}]},
+
+  // SHOPPING & SOUVENIRS SUITE
+  {emoji:"🗽",title:"Statue Liberty foam hat",desc:"Le chapeau de mousse vert. Peak tourist.",category:'shopping',
+   choices:[{text:"🗽 ASSUMER (12$)",cost:12,effects:{patience:+10,photos:+6,yamy:+6}},{text:"😎 Trop ridicule",effects:{patience:-4}}]},
+
+  {emoji:"💍",title:"Bijoux Canal Street",desc:"'Real gold bro'. Spoiler: c'est pas de l'or.",category:'shopping',
+   choices:[{text:"💍 Fake luxury (8$)",cost:8,effects:{patience:+6}},{text:"🙄 Arnaque évidente",effects:{patience:+2}}]},
+
+  {emoji:"🎨",title:"Print d'artiste local",desc:"Petit stand dans le parc. C'est joli VRAIMENT.",category:'shopping',
+   choices:[{text:"🎨 Acheter (25$)",cost:25,effects:{patience:+12,yamy:+8}},{text:"📸 Photo only",effects:{photos:+4}}]},
+
+  {emoji:"👟",title:"Fake Yeezys",desc:"'Original Adidas'. Vendus dans la rue. LOL.",category:'shopping',
+   choices:[{text:"👟 Pour rigoler (30$)",cost:30,effects:{patience:-8}},{text:"😂 'Non merci'",effects:{patience:+4}}]},
+
+  {emoji:"🧢",title:"Yankees cap",desc:"Casquette NY. Tu vas la porter 1 fois.",category:'shopping',
+   choices:[{text:"🧢 Souvenir classique (28$)",cost:28,effects:{patience:+8,yamy:+4}},{text:"💸 Trop cher",effects:{patience:-4}}]},
+
+  {emoji:"🛍️",title:"Century 21",desc:"Le magasin. Les prix. Les FOULES. C'est l'apocalypse.",category:'shopping',
+   choices:[{text:"🛍️ Plonger dedans",effects:{energy:-14,patience:-12,money:-35}},{text:"😰 Trop intense",effects:{patience:+4}}]},
+
+  {emoji:"📚",title:"Guidebook NYC",desc:"350 pages sur New York. Tu vas le lire... jamais.",category:'shopping',
+   choices:[{text:"📖 Acheter quand même (18$)",cost:18,effects:{patience:+6}},{text:"📱 Google suffit",effects:{patience:+2}}]},
+
+  {emoji:"🧸",title:"FAO Schwarz",desc:"Le magasin de jouets GÉANT. Tu redeviens une enfant.",category:'shopping',
+   choices:[{text:"🧸 Peluche géante (45$)",cost:45,effects:{patience:+14,yamy:+20,energy:-6}},{text:"👀 Juste regarder",effects:{patience:+8}}]},
+
+  {emoji:"🎒",title:"JanSport vintage",desc:"Sac à dos rétro. Très Brooklyn.",category:'shopping',
+   choices:[{text:"🎒 Hipster approved (35$)",cost:35,effects:{patience:+10,energy:+6}},{text:"💼 Tu as déjà un sac",effects:{patience:+2}}]},
+
+  {emoji:"🕶️",title:"Lunettes de soleil",desc:"Le gars vend 10 modèles différents. Tous à 5$.",category:'shopping',
+   choices:[{text:"🕶️ Deal suspect (5$)",cost:5,effects:{patience:+6,energy:+2}},{text:"👀 Tes yeux vont bien",effects:{}}]},
+
+  // YAMY CONTENT MAXIMUM
+  {emoji:"💕",title:"Yamy video call",desc:"Il veut te montrer son chat. Trop mignon mais long.",category:'yamy',
+   choices:[{text:"💕 30 minutes chat",effects:{energy:-10,patience:+20,yamy:+24}},{text:"⏱️ 'Suis occupée'",effects:{yamy:-16,patience:-8}}]},
+
+  {emoji:"🎁",title:"Cadeau parfait trouvé",desc:"LE truc que Yamy voulait. C'est le destin.",category:'yamy',
+   choices:[{text:"🎁 ACHETER (38$)",cost:38,effects:{yamy:+28,patience:+14}},{text:"📸 Photo 'Regarde!'",effects:{yamy:+8}}]},
+
+  {emoji:"💬",title:"Spam messages Yamy",desc:"156 messages en 2h. Il s'ennuie GRAVE.",category:'yamy',
+   choices:[{text:"💕 Répondre à tout",effects:{energy:-10,patience:+18,yamy:+22}},{text:"👀 Répondre vite",effects:{yamy:+6}}]},
+
+  {emoji:"🎵",title:"Chanson Yamy aime",desc:"Dans un magasin. C'est SA chanson.",category:'yamy',
+   choices:[{text:"🎵 Envoyer Shazam",effects:{yamy:+12,patience:+8}},{text:"🎶 Juste écouter",effects:{patience:+4}}]},
+
+  {emoji:"🌹",title:"Fleurs jolies",desc:"Bouquet pour Yamy... par anticipation?",category:'yamy',
+   choices:[{text:"🌹 Photos pour lui",effects:{yamy:+14,photos:+6}},{text:"💐 Acheter pour ramener (22$)",cost:22,effects:{yamy:+26,patience:+10}}]},
+
+  {emoji:"📍",title:"Spot Yamy parlait",desc:"Le lieu qu'il avait mentionné. Tu y es!",category:'yamy',
+   choices:[{text:"📸 Photos pour lui",effects:{yamy:+16,photos:+8,patience:+10}},{text:"💬 Lui dire",effects:{yamy:+10}}]},
+
+  {emoji:"☁️",title:"Couple mignon",desc:"Tu penses à Yamy instantanément. C'est mignon mais triste.",category:'yamy',
+   choices:[{text:"💕 Envoyer message",effects:{yamy:+18,patience:+8}},{text:"😔 Juste soupirer",effects:{yamy:+6,patience:-4}}]},
+
+  {emoji:"🌙",title:"Différence horaire",desc:"Il est 3h du mat chez lui mais il répond. Insomniac love.",category:'yamy',
+   choices:[{text:"💕 'Va dormir!'",effects:{yamy:+14,patience:+10}},{text:"💬 Parler quand même",effects:{yamy:+20,energy:-8}}]},
+
+  {emoji:"🎮",title:"Jeu vidéo Yamy joue",desc:"Shop qui vend le jeu. Limited edition.",category:'yamy',
+   choices:[{text:"🎮 Acheter (55$)",cost:55,effects:{yamy:+32,patience:+14}},{text:"💸 Trop cher",effects:{yamy:-8}}]},
+
+  {emoji:"✈️",title:"Nostalgie hit",desc:"Tu comptes les jours avant de rentrer.",category:'yamy',
+   choices:[{text:"💕 Texte romantique",effects:{yamy:+20,patience:+10,energy:-4}},{text:"😊 Profiter du moment",effects:{patience:+8}}]},
+
+  // CULTURE & ACTIVITÉS
+  {emoji:"🎨",title:"MoMA queue 2h",desc:"File INSANE. Pour voir 'Starry Night'.",category:'culture',
+   choices:[{text:"⏰ Attendre (28$)",cost:28,effects:{patience:-18,photos:+10,energy:-8}},{text:"🏃‍♀️ Autre musée",effects:{patience:+4}}]},
+
+  {emoji:"🗽",title:"Statue of Liberty stairs",desc:"354 marches. Jusqu'à la COURONNE.",category:'culture',
+   choices:[{text:"🗽 Tout monter (23$)",cost:23,effects:{energy:-20,patience:-10,photos:+14}},{text:"😰 Juste la base",effects:{photos:+6}}]},
+
+  {emoji:"🏛️",title:"Met Museum donation",desc:"'Suggested donation'. Tu peux payer 1$... mais le regard...",category:'culture',
+   choices:[{text:"💵 Full price (30$)",cost:30,effects:{patience:+8,photos:+8}},{text:"💰 Minimum (5$)",cost:5,effects:{patience:-8,photos:+8}}]},
+
+  {emoji:"📖",title:"Strand Books 3 étages",desc:"Tu te perds dans les rayons. Littéralement.",category:'culture',
+   choices:[{text:"📚 2h dedans",effects:{energy:-12,patience:+14,money:-20}},{text:"📸 Juste l'esthétique",effects:{photos:+6}}]},
+
+  {emoji:"🎭",title:"Broadway TKTS",desc:"Billets réduits mais QUELLE FILE.",category:'culture',
+   choices:[{text:"🎟️ Attendre (65$)",cost:65,effects:{patience:-16,energy:-10}},{text:"💸 Trop cher anyway",effects:{patience:-8}}]},
+
+  {emoji:"🌳",title:"Central Park immense",desc:"Tu marches depuis 1h. Tu es TOUJOURS dans le parc.",category:'culture',
+   choices:[{text:"🚶‍♀️ Continuer",effects:{energy:-14,patience:-6,photos:+8}},{text:"🛑 Pause banc",effects:{energy:+6}}]},
+
+  {emoji:"🏀",title:"Basket de rue",desc:"Game intense au parc. Ça trash-talk FORT.",category:'culture',
+   choices:[{text:"📸 Filmer",effects:{photos:+8,patience:+8}},{text:"🏀 Demander jouer",effects:{energy:-10,patience:+12}}]},
+
+  {emoji:"🎨",title:"Street art Bushwick",desc:"Murs ENTIERS de graffitis incroyables.",category:'culture',
+   choices:[{text:"📸 Session 30min",effects:{photos:+14,energy:-8,patience:+12}},{text:"🚶‍♀️ Walk rapide",effects:{photos:+6}}]},
+
+  {emoji:"📻",title:"Radio live dans la rue",desc:"Ils font une émission EN DIRECT. Tu peux passer derrière.",category:'culture',
+   choices:[{text:"👋 Faire coucou",effects:{patience:+10,photos:+6}},{text:"😳 Trop gênée",effects:{patience:+4}}]},
+
+  {emoji:"🎪",title:"Performance bizarre",desc:"Art conceptuel. Personne comprend. Y compris toi.",category:'culture',
+   choices:[{text:"🤔 Essayer comprendre",effects:{patience:+6,energy:-4}},{text:"🚶‍♀️ Next",effects:{patience:+2}}]},
+
+  // PHOTOS & RÉSEAUX SOCIAUX
+  {emoji:"📱",title:"Story Instagram 24h",desc:"Tu veux TOUT partager. Spam mode ON.",category:'photos',
+   choices:[{text:"📸 30 stories",effects:{photos:+12,energy:-8,patience:+10}},{text:"📱 Sobre (5 stories)",effects:{photos:+6}}]},
+
+  {emoji:"🤳",title:"Selfie avec skyline",desc:"L'angle est DIFFICILE. Essai #47.",category:'photos',
+   choices:[{text:"🤳 Continuer",effects:{photos:+8,energy:-6,patience:-8}},{text:"📸 Demander à quelqu'un",effects:{photos:+10,patience:+4}}]},
+
+  {emoji:"📷",title:"Touriste te demande photo",desc:"'Can you take our picture?' 15 fois aujourd'hui.",category:'photos',
+   choices:[{text:"📸 Être gentille",effects:{patience:+6}},{text:"😤 'J'ai pas le temps'",effects:{patience:-8}}]},
+
+  {emoji:"🌆",title:"Blue hour parfait",desc:"Entre jour et nuit. Lumière de OUF.",category:'photos',
+   choices:[{text:"📸 Profiter 20min",effects:{photos:+16,energy:-6,patience:+12}},{text:"🤳 Quelques photos",effects:{photos:+8}}]},
+
+  {emoji:"📱",title:"Post perfect trouvé",desc:"Carrousel de 10 photos. Ça va faire 1000 likes.",category:'photos',
+   choices:[{text:"✍️ Caption parfait (20min)",effects:{photos:+12,energy:-8,patience:+10}},{text:"⚡ Post rapide",effects:{photos:+8}}]},
+
+  {emoji:"🎥",title:"Reels inspiration",desc:"Tu vois un trend. Tu DOIS le faire.",category:'photos',
+   choices:[{text:"🎥 Filmer 30min",effects:{photos:+14,energy:-10,patience:-8}},{text:"💾 Save pour + tard",effects:{photos:+4}}]},
+
+  {emoji:"📸",title:"Grid Instagram parfait",desc:"Les couleurs matchent. L'esthétique est là.",category:'photos',
+   choices:[{text:"✨ Perfectionniste",effects:{photos:+10,energy:-6,patience:+8}},{text:"📱 Poster direct",effects:{photos:+6}}]},
+
+  {emoji:"🌅",title:"Sunrise impossible",desc:"Réveil 5h pour le lever de soleil. Worth it?",category:'photos',
+   choices:[{text:"📸 Faire l'effort",effects:{photos:+18,energy:-16,patience:+12}},{text:"😴 Dormir > photos",effects:{energy:+10}}]},
+
+  // MÉTÉO & CONDITIONS PHYSIQUES
+  {emoji:"💨",title:"Vent VIOLENT",desc:"Cheveux dans la bouche. Jupe qui s'envole. Chaos.",category:'mood',
+   choices:[{text:"😤 Bataille éléments",effects:{patience:-12,energy:-6}},{text:"🏢 Refuge magasin",effects:{patience:-6}}]},
+
+  {emoji:"☀️",title:"Soleil BRUTAL",desc:"Pas de cloud. 38°C ressenti. Tu cuits.",category:'mood',
+   choices:[{text:"🧴 Crème + casquette (15$)",cost:15,effects:{patience:+8,energy:+4}},{text:"🥵 Fondre",effects:{energy:-14,patience:-12}}]},
+
+  {emoji:"🌫️",title:"Brume matinale",desc:"Atmosphère de film. Vibe mystérieux.",category:'photos',
+   choices:[{text:"📸 Photos aesthetic",effects:{photos:+12,patience:+10}},{text:"🚶‍♀️ C'est flippant",effects:{patience:-4}}]},
+
+  {emoji:"⛈️",title:"Orage SOUDAIN",desc:"Ciel noir en 5min. Éclairs partout.",category:'mood',
+   choices:[{text:"🏃‍♀️ Courir s'abriter",effects:{energy:-12,patience:-10}},{text:"☔ Acheter parapluie VITE (18$)",cost:18,effects:{patience:+6}}]},
+
+  {emoji:"🌡️",title:"AC vs Chaleur",desc:"35° dehors, 15° dans le métro. Ton corps bug.",category:'mood',
+   choices:[{text:"🧥 Couches multiples",effects:{patience:-8}},{text:"🥶 Accepter le froid",effects:{energy:-8}}]},
+
+  // SITUATIONS PHYSIQUES
+  {emoji:"🚽",title:"Envie URGENTE",desc:"Niveau 10/10. Panique maximale.",category:'mood',
+   choices:[{text:"🏃‍♀️ Starbucks (acheter 5$)",cost:5,effects:{patience:+10}},{text:"😰 Chercher WC publics",effects:{patience:-14,energy:-8}}]},
+
+  {emoji:"🦶",title:"Chaussures NEUVES erreur",desc:"Ampoules sur ampoules. Chaque pas = douleur.",category:'mood',
+   choices:[{text:"👟 Nouvelles chaussures (45$)",cost:45,effects:{energy:+20,patience:+14}},{text:"😭 Continuer souffrir",effects:{energy:-16,patience:-16}}]},
+
+  {emoji:"💆",title:"Mal de tête arrive",desc:"Déshydratation + bruit + fatigue = migraine.",category:'mood',
+   choices:[{text:"💊 Medic (8$)",cost:8,effects:{patience:+12,energy:+6}},{text:"🧘 Massage tempes",effects:{patience:+6}}]},
+
+  {emoji:"😵",title:"Vertiges légers",desc:"Tu as trop marché. Trop chaud. Trop tout.",category:'energy',
+   choices:[{text:"🧃 Sucre rapide (5$)",cost:5,effects:{energy:+12}},{text:"🪑 S'asseoir 10min",effects:{energy:+8,patience:-6}}]},
+
+  {emoji:"🥱",title:"Yeux qui piquent",desc:"Fatigue extrême. Tu bailles en boucle.",category:'energy',
+   choices:[{text:"☕ Triple espresso (9$)",cost:9,effects:{energy:+18,patience:-4}},{text:"💤 Micro-sieste",effects:{energy:+10,yamy:-4}}]},
+
+  // RANDOM & FINAL
+  {emoji:"🎰",title:"Lucky scratch card",desc:"Stand de loto. 'You feeling lucky?'",category:'other',
+   choices:[{text:"🎫 Tenter (5$)",cost:5,effects:{patience:+6}},{text:"💸 C'est une arnaque",effects:{patience:+2}}]},
+
+  {emoji:"🪙",title:"Penny press machine",desc:"Faire une pièce souvenir écrasée.",category:'shopping',
+   choices:[{text:"🪙 Souvenir (0.51$)",cost:0.51,effects:{patience:+8,yamy:+4}},{text:"🤷 Inutile",effects:{}}]},
+
+  {emoji:"🎈",title:"Ballon gratuit",desc:"Un gars distribue des ballons. Pour... rien?",category:'mood',
+   choices:[{text:"🎈 Prendre",effects:{patience:+8,photos:+4}},{text:"👋 'Non merci'",effects:{}}]},
+
+  {emoji:"🎪",title:"Flash mob!!",desc:"Des gens commencent à DANSER. C'est NYC baby.",category:'culture',
+   choices:[{text:"🎥 FILMER",effects:{photos:+12,patience:+14}},{text:"💃 PARTICIPER",effects:{energy:-10,patience:+16}}]},
+
+  {emoji:"🍃",title:"Dollar Bill par terre",desc:"1$ sur le trottoir. Score.",category:'mood',
+   choices:[{text:"💵 Prendre",effects:{money:+1,patience:+4}},{text:"🚶‍♀️ Laisser",effects:{patience:+2}}]}
+];
 /* ================== PRICING (taxes & tips) ================== */
 function priceWithNYC(cost, category){
   if(cost==null) return {total:0, breakdown:''};
