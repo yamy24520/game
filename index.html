@@ -1,1349 +1,1287 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Maiko Survival NYC 🗽</title>
-<link rel="icon" href="data:,">
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  :root{
-    --glass: rgba(255,255,255,.15);
-    --glass-2: rgba(255,255,255,.22);
-    --ink:#fff; --ink-dark:#333;
-    --brand1:#667eea; --brand2:#764ba2;
-    --warn:#ff6b6b; --ok:#22c55e; --gold:#ffd700;
-  }
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,system-ui,sans-serif;background:linear-gradient(135deg,var(--brand1),var(--brand2));min-height:100vh;color:var(--ink);overflow-x:hidden;touch-action:pan-y}
-  .game-container{max-width:540px;margin:0 auto;padding:16px 16px 88px}
-  .header{text-align:center;padding:16px 10px;animation:fadeIn .5s ease-in}
-  .header h1{font-size:1.9em;margin-bottom:6px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
-  .sub{opacity:.85}
-  .mood-indicator{font-size:2.2em;margin:8px 0}
-  .row{display:flex;align-items:center;gap:8px;justify-content:space-between}
-  .stats-container{background:var(--glass);backdrop-filter:blur(10px);border-radius:16px;padding:14px;margin:12px 0;border:1px solid rgba(255,255,255,.2)}
-  .stat{margin-bottom:10px}
-  .stat:last-child{margin-bottom:0}
-  .stat-label{display:flex;justify-content:space-between;font-weight:600;font-size:.95em;margin-bottom:6px}
-  .stat-label.crit{color:var(--gold);text-shadow:0 0 8px rgba(255,215,0,.6)}
-  .stat-bar{width:100%;height:16px;background:rgba(0,0,0,.28);border-radius:10px;overflow:hidden}
-  .stat-fill{height:100%;border-radius:10px;transition:width .35s ease}
-  .money-fill{background:linear-gradient(90deg,#ffd700,#ffed4e)}
-  .energy-fill{background:linear-gradient(90deg,#4ecdc4,#44a8a0)}
-  .hunger-fill{background:linear-gradient(90deg,#ff6b6b,#ee5a52)}
-  .patience-fill{background:linear-gradient(90deg,#a8e6cf,#7bc9a0)}
-  .yamy-fill{background:linear-gradient(90deg,#ff69b4,#ff1493)}
-  .topline{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:10px 0 0}
-  .turns{font-size:.9em;opacity:.9}
-  .turns b{font-size:1.05em}
-  .day-counter{text-align:center;font-size:1.35em;font-weight:700;margin:6px 0}
-  .event-card{background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border-radius:16px;padding:16px;border:2px solid rgba(255,255,255,.28);box-shadow:0 8px 28px rgba(0,0,0,.1);margin-top:10px}
-  .event-rare{border-color:#ffd700;box-shadow:0 0 0 2px rgba(255,215,0,.3)}
-  .event-emoji{font-size:2.2em;text-align:center;margin-bottom:8px}
-  .event-title{text-align:center;font-weight:800;margin-bottom:6px}
-  .chip{display:inline-flex;align-items:center;gap:6px;font-size:.8em;background:rgba(0,0,0,.25);padding:4px 8px;border-radius:999px;margin:6px auto 10px}
-  .event-description{text-align:center;opacity:.95;margin-bottom:12px}
-  .choices{display:flex;flex-direction:column;gap:10px}
-  .choice-btn{position:relative;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.35);border-radius:14px;padding:12px 14px;text-align:left;color:#fff;font-weight:650;cursor:pointer}
-  .choice-btn[disabled]{opacity:.6;cursor:not-allowed}
-  .choice-line{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .effects{font-size:.85em;opacity:.9;margin-top:4px;line-height:1.25}
-  .mini{font-size:.85em;opacity:.9}
-  .start-screen,.game-over{text-align:center}
-  .start-box{background:var(--glass);backdrop-filter:blur(10px);border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,.2);margin-top:12px}
-  .select{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
-  .pill{padding:8px 12px;border-radius:999px;border:2px solid #ffd700;background:rgba(255,215,0,.18);cursor:pointer;font-weight:700}
-  .pill.active{background:#ffd700;color:#333}
-  .start-btn,.restart-btn{margin-top:14px;background:linear-gradient(135deg,#ffd700,#ff6b6b);border:none;border-radius:22px;padding:12px 28px;font-size:1.05em;color:#fff;font-weight:800;cursor:pointer}
-  .bottom-nav{position:fixed;inset:auto 0 0 0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);padding:10px;display:flex;justify-content:space-around;z-index:1000}
-  .nav-btn{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);border-radius:12px;padding:10px 14px;font-size:1.05em;color:#fff;cursor:pointer;position:relative}
-  .badge-count{position:absolute;top:-7px;right:-7px;background:#ff6b6b;color:#fff;border-radius:999px;width:22px;height:22px;font-size:.7em;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-weight:800}
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:1500;display:none}
-  .overlay.show{display:block;animation:fadeIn .2s}
-  .overlay .panel{max-width:540px;margin:18px auto;background:#fff;color:#333;border-radius:16px;padding:22px;position:relative}
-  .close-btn{position:absolute;top:10px;right:10px;background:#ff6b6b;border:none;color:#fff;border-radius:999px;width:36px;height:36px;font-size:1.1em;cursor:pointer}
-  .journal-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
-  .filter-btn{border:2px solid #667eea;background:rgba(102,126,234,.08);color:#667eea;padding:6px 10px;border-radius:999px;cursor:pointer}
-  .filter-btn.active{background:#667eea;color:#fff}
-  .journal-entry{background:rgba(102,126,234,.06);border-left:4px solid #667eea;padding:12px;border-radius:10px;margin-bottom:10px}
-  .notification{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(255,215,0,.96);color:#333;border:2px solid #ffd700;border-radius:14px;padding:10px 14px;z-index:2000;animation:slideDown .25s ease}
-  .combo-indicator{position:fixed;top:90px;right:16px;background:rgba(255,107,107,.92);border:2px solid #ff6b6b;color:#fff;border-radius:12px;padding:8px 10px;font-weight:800;z-index:1200}
-  .tooltip{font-size:.85em;opacity:.85;margin-top:4px;text-align:right}
-  .crit-msg{margin-top:8px;font-size:.9em}
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none !important;transition:none !important}
-  }
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes slideDown{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Gants du Désir - L'Art du Plaisir Sensoriel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500&display=swap');
+        
+        :root {
+            --noir-profond: #0a0a0a;
+            --or-rose: #d4a574;
+            --blanc-casse: #faf8f5;
+            --gris-doux: #666;
+            --accent: #c9897d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            color: var(--noir-profond);
+            background: var(--blanc-casse);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        nav.scrolled {
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--or-rose);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-menu a {
+            color: var(--blanc-casse);
+            text-decoration: none;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--or-rose);
+        }
+        
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--or-rose);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-menu a:hover::after,
+        .nav-menu a.active::after {
+            width: 100%;
+        }
+        
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--or-rose);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, var(--noir-profond) 0%, #1a1a1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at 30% 50%, var(--or-rose) 0%, transparent 25%),
+                        radial-gradient(circle at 70% 80%, var(--accent) 0%, transparent 30%);
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, -20px) rotate(180deg); }
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            max-width: 900px;
+            padding: 0 40px;
+        }
+        
+        .hero-title {
+            font-family: 'Bodoni Moda', serif;
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 400;
+            color: var(--blanc-casse);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            font-style: italic;
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--or-rose);
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.2s forwards;
+        }
+        
+        .hero-text {
+            font-size: 18px;
+            color: rgba(250, 248, 245, 0.8);
+            margin-bottom: 50px;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.4s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            padding: 18px 50px;
+            background: var(--or-rose);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid var(--or-rose);
+            transition: all 0.4s ease;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+        }
+        
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--or-rose);
+            transform: translateY(-2px);
+        }
+        
+        /* Section styles */
+        .section {
+            padding: 100px 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        .section-title {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--noir-profond);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: var(--gris-doux);
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Philosophy Section */
+        .philosophy {
+            background: var(--noir-profond);
+            color: var(--blanc-casse);
+        }
+        
+        .philosophy .section-title {
+            color: var(--or-rose);
+        }
+        
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 60px;
+            margin-top: 60px;
+        }
+        
+        .philosophy-card {
+            text-align: center;
+        }
+        
+        .philosophy-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border: 2px solid var(--or-rose);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: var(--or-rose);
+        }
+        
+        .philosophy-card h3 {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--blanc-casse);
+        }
+        
+        .philosophy-card p {
+            font-size: 16px;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+        
+        /* Products Section */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            height: 350px;
+            background: linear-gradient(135deg, var(--or-rose) 0%, var(--accent) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--noir-profond);
+            color: var(--blanc-casse);
+            padding: 8px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .product-info {
+            padding: 30px;
+        }
+        
+        .product-name {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--noir-profond);
+        }
+        
+        .product-description {
+            color: var(--gris-doux);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .product-price {
+            font-size: 28px;
+            color: var(--or-rose);
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+        
+        .btn-add-cart {
+            width: 100%;
+            padding: 15px;
+            background: var(--noir-profond);
+            color: white;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-cart:hover {
+            background: var(--or-rose);
+        }
+        
+        /* Magazine Section */
+        .magazine {
+            background: #f5f5f5;
+        }
+        
+        .magazine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .article-card {
+            background: white;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .article-image {
+            height: 250px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--or-rose) 100%);
+        }
+        
+        .article-content {
+            padding: 30px;
+        }
+        
+        .article-category {
+            color: var(--or-rose);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .article-title {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--noir-profond);
+        }
+        
+        .article-excerpt {
+            color: var(--gris-doux);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .article-link {
+            color: var(--noir-profond);
+            text-decoration: none;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: gap 0.3s ease;
+        }
+        
+        .article-link:hover {
+            gap: 15px;
+            color: var(--or-rose);
+        }
+        
+        /* Contact Section */
+        .contact {
+            background: var(--blanc-casse);
+            text-align: center;
+        }
+        
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--noir-profond);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background: white;
+            font-family: inherit;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--or-rose);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--noir-profond);
+            color: var(--blanc-casse);
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h4 {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--or-rose);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            color: rgba(250, 248, 245, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column a:hover {
+            color: var(--or-rose);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(250, 248, 245, 0.1);
+            color: rgba(250, 248, 245, 0.6);
+            font-size: 14px;
+        }
+        
+        /* Cart Modal */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-modal.active {
+            right: 0;
+        }
+        
+        .cart-header {
+            padding: 30px;
+            background: var(--noir-profond);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-header h3 {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 24px;
+        }
+        
+        .close-cart {
+            cursor: pointer;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: white;
+        }
+        
+        .cart-items {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--or-rose) 0%, var(--accent) 100%);
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: var(--or-rose);
+            font-size: 20px;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quantity-btn:hover {
+            background: var(--noir-profond);
+            color: white;
+        }
+        
+        .cart-footer {
+            padding: 30px;
+            background: #f5f5f5;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .cart-total span:last-child {
+            color: var(--or-rose);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Mobile menu */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+        }
+        
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--blanc-casse);
+            transition: all 0.3s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: var(--noir-profond);
+                flex-direction: column;
+                justify-content: center;
+                padding: 40px;
+                transition: right 0.3s ease;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .hero-title {
+                font-size: 48px;
+            }
+            
+            .products-grid,
+            .magazine-grid,
+            .philosophy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-modal {
+                width: 100%;
+                right: -100%;
+            }
+        }
+        
+        /* Loading animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--noir-profond);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-text {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 36px;
+            color: var(--or-rose);
+            font-style: italic;
+            animation: pulse 1.5s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
 </head>
 <body>
-<div class="game-container">
-  <!-- START -->
-  <div id="startScreen" class="start-screen">
-    <div class="header">
-      <div style="font-size:3.2em;margin-bottom:10px">🗽</div>
-      <h1>MAIKO SURVIVAL NYC</h1>
-      <div class="sub">Version équilibrée & difficile</div>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-text">Les Gants du Désir</div>
     </div>
-    <div class="start-box">
-      <div><strong>Choisis la difficulté</strong></div>
-      <div class="select" id="diffSelect">
-        <button class="pill" data-diff="easy">Facile</button>
-        <button class="pill active" data-diff="normal">Normal</button>
-        <button class="pill" data-diff="hard">Difficile</button>
-      </div>
-      <div style="margin-top:8px;font-size:.95em;opacity:.9">
-        <div>• Prix & taxes réelles · faim naturelle · fatigue progressive</div>
-        <div>• Rares moins “OP”, punition des mauvais enchaînements</div>
-      </div>
-      <button class="start-btn" id="startBtn">🚀 Démarrer</button>
-    </div>
-  </div>
-
-  <!-- GAME -->
-  <div id="gameScreen" class="hidden">
-    <div class="header">
-      <h1>🗽 MAIKO À NYC</h1>
-      <div class="sub">Difficulté: <span id="diffLabel">Normal</span></div>
-      <div class="mood-indicator" id="moodIcon">😊</div>
-    </div>
-    <div class="row topline">
-      <div class="day-counter">Jour <b id="day">1</b>/5</div>
-      <div class="turns">Actions restantes: <b id="turnsLeft">8</b>/8</div>
-    </div>
-
-    <div class="stats-container">
-      <div class="stat">
-        <div class="stat-label" id="moneyLabel"><span>💰 Argent</span><span><b id="money">300</b>$</span></div>
-        <div class="stat-bar"><div class="stat-fill money-fill" id="moneyBar" style="width:100%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-label" id="energyLabel"><span>⚡ Énergie</span><span><b id="energy">100</b>%</span></div>
-        <div class="stat-bar"><div class="stat-fill energy-fill" id="energyBar" style="width:100%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-label" id="hungerLabel"><span>🍔 Faim</span><span><b id="hunger">40</b>%</span></div>
-        <div class="stat-bar"><div class="stat-fill hunger-fill" id="hungerBar" style="width:40%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-label" id="patienceLabel"><span>😤 Patience</span><span><b id="patience">100</b>%</span></div>
-        <div class="stat-bar"><div class="stat-fill patience-fill" id="patienceBar" style="width:100%"></div></div>
-      </div>
-      <div class="stat">
-        <div class="stat-label" id="yamyLabel"><span>💕 Yamy</span><span><b id="yamy">100</b>%</span></div>
-        <div class="stat-bar"><div class="stat-fill yamy-fill" id="yamyBar" style="width:100%"></div></div>
-      </div>
-      <div id="critBox" class="crit-msg"></div>
-    </div>
-
-    <div id="eventContainer"></div>
-  </div>
-
-  <!-- GAME OVER -->
-  <div id="gameOverScreen" class="hidden game-over">
-    <h2>💀 GAME OVER 💀</h2>
-    <div id="gameOverReason" style="margin:10px 0 6px"></div>
-    <div class="start-box" style="color:#333">
-      <div><b>Jours:</b> <span id="finalDays">0</span></div>
-      <div><b>Actions:</b> <span id="finalActions">0</span></div>
-      <div><b>Argent:</b> $<span id="finalMoney">0</span></div>
-      <div><b>Photos:</b> <span id="finalPhotos">0</span></div>
-      <div><b>Achievements:</b> <span id="finalAchievements">0</span>/25</div>
-    </div>
-    <button class="restart-btn" id="restartBtn">🔄 Recommencer</button>
-  </div>
-
-  <!-- NAV -->
-  <div id="bottomNav" class="bottom-nav hidden">
-    <button class="nav-btn" id="journalBtn" title="J">📔<span class="badge-count" id="journalBadge">0</span></button>
-    <button class="nav-btn" id="achievementsBtn" title="A">🏆<span class="badge-count" id="achievementsBadge">0</span></button>
-    <button class="nav-btn" id="statsBtn" title="S">📊</button>
-    <button class="nav-btn" id="soundBtn" title="Son">🔇</button>
-  </div>
-</div>
-
-<!-- Overlays -->
-<div id="journalOverlay" class="overlay"><div class="panel">
-  <button class="close-btn" data-close>×</button>
-  <h2 style="color:#667eea;text-align:center">📔 Journal</h2>
-  <div class="journal-filters" id="filters">
-    <button class="filter-btn active" data-filter="all">Tout</button>
-    <button class="filter-btn" data-filter="yamy">💕 Yamy</button>
-    <button class="filter-btn" data-filter="food">🍔 Bouffe</button>
-    <button class="filter-btn" data-filter="photos">📸 Photos</button>
-    <button class="filter-btn" data-filter="mood">😤 Mood</button>
-  </div>
-  <div id="journalStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;font-size:.95em"></div>
-  <div id="journalEntries"></div>
-</div></div>
-
-<div id="achievementsOverlay" class="overlay"><div class="panel">
-  <button class="close-btn" data-close>×</button>
-  <h2 style="color:#667eea;text-align:center">🏆 Achievements</h2>
-  <div id="achievementsList"></div>
-</div></div>
-
-<div id="statsOverlay" class="overlay"><div class="panel">
-  <button class="close-btn" data-close>×</button>
-  <h2 style="color:#667eea;text-align:center">📊 Statistiques</h2>
-  <div id="statsHistory"></div>
-  <div id="spendingBreakdown" style="margin-top:12px"></div>
-  <div id="generalStats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"></div>
-</div></div>
-
-<div id="notificationContainer"></div>
-<div id="comboIndicator" class="combo-indicator hidden">
-  🔥 COMBO <span id="comboX">x1</span>
-  <div class="tooltip">Bonus positifs +5% par niveau</div>
-</div>
-
-<script>
-/* ================== SETTINGS & UTILS ================== */
-const TAX = 0.08875; // NYC sales tax approx
-const TIP_MIN = 0.10, TIP_MAX = 0.20; // typical tips on food
-const DAY_ACTIONS = 13;
-
-const DIFFS = {
-  easy:   { label:'Facile',  price:0.95, hungerTick:5, energyDaily:0, yamyWear:2, rareBuff:1.0 },
-  normal: { label:'Normal',  price:1.00, hungerTick:7, energyDaily:2, yamyWear:3, rareBuff:1.0 },
-  hard:   { label:'Difficile', price:1.15, hungerTick:10, energyDaily:4, yamyWear:5, rareBuff:1.15 }
-};
-
-let soundEnabled = JSON.parse(localStorage.getItem('msnyc_sound')||'false');
-let selectedDiff = localStorage.getItem('msnyc_diff') || 'normal';
-
-function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
-function vibrate(ms=50){ if('vibrate' in navigator) navigator.vibrate(ms); }
-function fmt(n){ return Math.round(n); }
-function showNote(icon, text){
-  const n = document.createElement('div');
-  n.className='notification'; n.innerHTML=`<b style="margin-right:6px">${icon}</b>${text}`;
-  document.getElementById('notificationContainer').appendChild(n);
-  setTimeout(()=>n.remove(), 2500);
-}
-
-/* ================== AUDIO ================== */
-const sounds = {
-  click: () => play(500, .08, .05),
-  success: () => play(820, .12, .09),
-  fail: () => play(220, .14, .1),
-  achievement: () => { play(600,.08,.06); setTimeout(()=>play(820,.08,.06),100); setTimeout(()=>play(1000,.12,.08),220); }
-};
-function play(freq, duration, volume){
-  if(!soundEnabled) return;
-  try{
-    const Ctx = window.AudioContext||window.webkitAudioContext;
-    if(!Ctx) return;
-    const ctx = new Ctx(), osc=ctx.createOscillator(), g=ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
-    osc.frequency.value=freq; g.gain.value=volume;
-    osc.start(); osc.stop(ctx.currentTime+duration);
-  }catch(e){}
-}
-
-/* ================== STATE ================== */
-const game = {
-  state: { day:1, actionCount:0, money:300, energy:100, hunger:40, patience:100, yamy:100, photos:0, maxMoney:300, combo:0, lastChoiceType:null, statsHistory:[] },
-  journal: [], achievements: [], usedEvents: [], availableEvents: [], currentFilter:'all',
-  spending: { food:0, transport:0, culture:0, shopping:0, other:0 },
-  energyStreak:0, patienceStreak:0, daySpending:0, miniGamesWon:0, walkCount:0, metroCount:0, kevinAvoidCount:0
-};
-
-/* ================== DATA (quotes / achievements / events) ================== */
-const quotes = {
-  hungry:["Je vais croquer un taxi là","Mon ventre crie au secours","J’ai des étoiles devant les yeux","Tout est nourriture autour de moi"],
-  tired:["Mes jambes sont en carton","Sieste sur un trottoir ok?","J’ai cligné trop longtemps -> dodo","Je marche en pilote auto"],
-  broke:["NYC m’a rackettée","Je vais vendre mes chaussures","Budget évaporé","Note à moi-même: plus jamais"],
-  impatient:["Ne me parlez pas merci","Je deviens allergique aux gens","Profs = boss de fin","Je boude activement"],
-  happy:["Ok c’est stylé de ouf","C’est exactement comme dans les films","Je kiffe cette journée","Le mood est au vert"],
-  photos:["Mon stockage pleure","Encore une, juste une…","La lumière est insane","Je suis la paparazzi de moi-même"],
-  food:["Tout est XXL ici","Beurre + sucre + friture = 🇺🇸","Rien ne bat un bon ramen","Je rêve de légumes"],
-  nyc:["NYC est une machine à fatigue","Bruyant, grand, vivant","Je comprends le mythe","Clermont me manque un peu"],
-  group:["Le groupe traîne les pieds","On s’est quand même marrés","Tout le monde râle en chœur","Photo de groupe ratée x12"],
-  yamy:["Yamy me manque","Spammé de cœurs (pardon)","Une peluche pour Yamy?","Je veux lui raconter tout"],
-  missYamy:["Le manque commence à piquer","Je veux juste un câlin là","Le décalage me nargue","Reviens vite pls"]
-};
-
-const achievementsList = [
-  {id:'first_day', icon:'🗓️', title:'Premier Jour', desc:'Survivre au jour 1', condition:()=>game.state.day>=2},
-  {id:'survivor', icon:'🏆', title:'Survivor', desc:'Terminer le voyage', condition:()=>game.state.day>5},
-  {id:'broke', icon:'💸', title:'Fauchée', desc:'Avoir moins de 50$', condition:()=>game.state.money<50},
-  {id:'rich', icon:'💰', title:'Économe', desc:'Finir avec plus de 200$', condition:()=>game.state.day>5 && game.state.money>200},
-  {id:'photographer', icon:'📸', title:'Photographe', desc:'Prendre 50 photos', condition:()=>game.state.photos>=50},
-  {id:'paparazzi', icon:'📷', title:'Paparazzi', desc:'Prendre 100 photos', condition:()=>game.state.photos>=100},
-  {id:'foodie', icon:'🍔', title:'Foodie', desc:'Manger 10 fois', condition:()=>game.journal.filter(e=>e.category==='food').length>=10},
-  {id:'starving', icon:'😵', title:'Affamée', desc:'Avoir 90%+ de faim', condition:()=>game.state.hunger>=90},
-  {id:'energizer', icon:'⚡', title:'Énergique', desc:'80%+ énergie 5 actions', condition:()=>false},
-  {id:'zen', icon:'🧘', title:'Zen Master', desc:'90%+ patience un jour', condition:()=>false},
-  {id:'love_birds', icon:'💕', title:'Love Birds', desc:'Yamy 90%+ longtemps', condition:()=>game.state.yamy>=90 && game.state.actionCount>10},
-  {id:'heartbroken', icon:'💔', title:'Heartbroken', desc:'Yamy ≤ 20%', condition:()=>game.state.yamy<=20},
-  {id:'labubu', icon:'🧸', title:'Best GF', desc:'Acheter le Labubu', condition:()=>false},
-  {id:'spender', icon:'💳', title:'Dépensière', desc:'300$ en un jour', condition:()=>false},
-  {id:'walker', icon:'🚶‍♀️', title:'Marcheuse', desc:'Refuser 5 transports', condition:()=>false},
-  {id:'metro_master', icon:'🚇', title:'Metro Master', desc:'10 métros', condition:()=>false},
-  {id:'tourist', icon:'🗽', title:'Touriste Ultime', desc:'Spots iconiques', condition:()=>false},
-  {id:'combo_master', icon:'🔥', title:'Combo Master', desc:'Combo x5', condition:()=>false},
-  {id:'lucky', icon:'🍀', title:'Chanceuse', desc:'Évènement rare', condition:()=>false},
-  {id:'minigame_master', icon:'🎮', title:'Mini-jeu Pro', desc:'3 mini-jeux', condition:()=>false},
-  {id:'photo_perfectionist', icon:'📸', title:'Perfectionniste Photo', desc:'Photo parfaite', condition:()=>false},
-  {id:'negotiator', icon:'💰', title:'Négociatrice', desc:'Négociation ok', condition:()=>false},
-  {id:'journal_writer', icon:'📔', title:'Écrivaine', desc:'30 entrées', condition:()=>game.journal.length>=30},
-  {id:'balanced', icon:'⚖️', title:'Équilibrée', desc:'Stats >50% en fin', condition:()=>game.state.day>5 && game.state.money>100 && game.state.energy>50 && game.state.hunger<50 && game.state.patience>50 && game.state.yamy>50},
-  {id:'perfectionist', icon:'💎', title:'Perfectionniste', desc:'Stats >70% en fin', condition:()=>game.state.day>5 && game.state.energy>70 && game.state.hunger<30 && game.state.patience>70 && game.state.yamy>70}
-];
-
-const baseEvents = [
-  // === FOOD (mais version chaotique) ===
-  {emoji:"🍕",title:"Pizza qui dégouline",desc:"Une part ÉNORME. L'huile coule sur ton bras.",category:'food',
-   choices:[{text:"🍕 Manger quand même (8$)",cost:8,effects:{hunger:-25,energy:+4}},{text:"🤢 C'est trop gras",effects:{hunger:+12,patience:-8}}]},
-  
-  {emoji:"🌭",title:"Hot-dog de rue",desc:"Le vendeur te fixe bizarrement. C'est louche.",category:'food',
-   choices:[{text:"🌭 YOLO (5$)",cost:5,effects:{hunger:-20,patience:-4}},{text:"🏃‍♀️ Fuir",effects:{patience:+2}}]},
-  
-  {emoji:"☕",title:"Starbucks saturé",desc:"7 Kevin dans la file. Ton nom sera massacré.",category:'food',
-   choices:[{text:"☕ Risquer (7$)",cost:7,effects:{energy:+12,patience:-10}},{text:"💧 Eau gratos",effects:{patience:+4}}]},
-  
-  {emoji:"🥯",title:"Bagel surprise",desc:"'Cream cheese' ils ont dit. C'est BEAUCOUP de cream cheese.",category:'food',
-   choices:[{text:"🥯 Noyer dedans (6$)",cost:6,effects:{hunger:-18,patience:+6}},{text:"🧻 Essuyer avant",effects:{hunger:-10}}]},
-  
-  {emoji:"🍜",title:"Ramen à 18$",desc:"Pour un BOL DE SOUPE. Mais ça sent trop bon...",category:'food',
-   choices:[{text:"🍜 Craquer (18$)",cost:18,effects:{hunger:-32,patience:+14}},{text:"💸 Scandale!",effects:{patience:-12}}]},
-
-  {emoji:"🧋",title:"Bubble Tea géant",desc:"Taille 'Small' = 1 litre. Tu vas exploser.",category:'food',
-   choices:[{text:"🧋 Challenge accepted (7$)",cost:7,effects:{hunger:-8,patience:+10,energy:-4}},{text:"🤏 Partager",effects:{hunger:-4,patience:+4}}]},
-
-  {emoji:"🍔",title:"Five Guys portions",desc:"'Regular fries' = 2 kilos de patates.",category:'food',
-   choices:[{text:"🍔 Menu (16$)",cost:16,effects:{hunger:-40,patience:+8,energy:-6}},{text:"😰 Juste burger",effects:{hunger:-20}}]},
-
-  {emoji:"🥤",title:"Free refills!",desc:"Distributeur de soda ILLIMITÉ. Le rêve américain.",category:'food',
-   choices:[{text:"🥤 Abuser x5 (0$)",effects:{energy:+16,patience:+10,hunger:-6}},{text:"💧 Eau only",effects:{patience:-4}}]},
-
-  {emoji:"🌮",title:"Tacos 3am",desc:"C'est 11h du mat mais ils appellent ça 'late night menu'.",category:'food',
-   choices:[{text:"🌮 Weird flex (10$)",cost:10,effects:{hunger:-22,patience:+6}},{text:"❌ Nope",effects:{}}]},
-
-  {emoji:"🍩",title:"Donut RAINBOW",desc:"Tellement de glaçage que tu vois plus la pâte.",category:'food',
-   choices:[{text:"🍩 Instagram first (5$)",cost:5,effects:{hunger:-10,photos:+6,patience:+8}},{text:"📸 Photo suffit",effects:{photos:+4}}]},
-
-  {emoji:"🥨",title:"Pretzel XXL",desc:"Gros comme ta tête. Sel visible à l'œil nu.",category:'food',
-   choices:[{text:"🥨 Sodium blast (4$)",cost:4,effects:{hunger:-14,patience:+6}},{text:"😵 Trop salé",effects:{patience:-4}}]},
-
-  {emoji:"🍦",title:"Ice cream 35°C",desc:"Il fond PENDANT qu'on te sert.",category:'food',
-   choices:[{text:"🍦 Course contre la montre (6$)",cost:6,effects:{hunger:-8,patience:-4,energy:+4}},{text:"🏃 Abandon",effects:{}}]},
-
-  // === TRANSPORT (chaos urbain) ===
-  {emoji:"🚇",title:"Métro qui PUE",desc:"Odeur non identifiée. Quelqu'un mange du poisson.",category:'transport',
-   choices:[{text:"🚇 Respirer par la bouche (3$)",cost:3,effects:{patience:-12,energy:+2}},{text:"🤮 Sortir!",effects:{energy:-8}}]},
-
-  {emoji:"🚕",title:"Taxi driver furieux",desc:"Il gueule sur TOUT LE MONDE. Radio à fond.",category:'transport',
-   choices:[{text:"🚕 Tenir bon (20$)",cost:20,effects:{patience:-10,energy:+6}},{text:"🚪 Descendre ici",effects:{energy:-6}}]},
-
-  {emoji:"🚶‍♀️",title:"Prof marche VITE",desc:"'Petit tour' = 3h de marche. Tes pieds crient.",category:'transport',
-   choices:[{text:"😫 Suivre",effects:{energy:-18,patience:-12}},{text:"🚇 Déserter (3$)",cost:3,effects:{patience:+4}}]},
-
-  {emoji:"🛴",title:"Scooter électrique",desc:"Ça va à 30km/h. Tu vas mourir.",category:'transport',
-   choices:[{text:"🛴 YOLO (8$)",cost:8,effects:{energy:+10,patience:-8}},{text:"😰 Trop dangereux",effects:{}}]},
-
-  {emoji:"🚦",title:"5 minutes au feu",desc:"Comment un feu peut être rouge SI LONGTEMPS?!",category:'transport',
-   choices:[{text:"🧍‍♀️ Attendre...",effects:{patience:-10}},{text:"🏃‍♀️ Traverser!",effects:{patience:+4,energy:-4}}]},
-
-  {emoji:"🚌",title:"Bus MTA en retard",desc:"'2 minutes' = 25 minutes en temps réel.",category:'transport',
-   choices:[{text:"🚌 Optimiste (3$)",cost:3,effects:{patience:-14,energy:+2}},{text:"👟 Marcher direct",effects:{energy:-10}}]},
-
-  // === KEVIN & GROUPE (enfer social) ===
-  {emoji:"😤",title:"Kevin fait LE MALIN",desc:"Il imite l'accent américain. Personne rit.",category:'mood',
-   choices:[{text:"😡 'La ferme Kevin'",effects:{patience:-12,energy:-6}},{text:"🙄 Ignorer",effects:{patience:-8}}]},
-
-  {emoji:"🤳",title:"Kevin PHOTOBOMBE",desc:"Il est dans TOUTES tes photos. TOUTES.",category:'photos',
-   choices:[{text:"😤 Le dégager",effects:{patience:-10,photos:+4}},{text:"📱 Recommencer x10",effects:{energy:-8,photos:+6}}]},
-
-  {emoji:"🎤",title:"Prof fait des BLAGUES",desc:"'I'll be FRANK with you... my name is David!' *silence*",category:'mood',
-   choices:[{text:"😅 Rire faux",effects:{patience:-8}},{text:"🤐 Cringe silence",effects:{patience:-12}}]},
-
-  {emoji:"👥",title:"Groupe est LENT",desc:"Ils prennent 10 ans pour choisir un resto.",category:'mood',
-   choices:[{text:"⏰ Attendre",effects:{patience:-14,energy:-4}},{text:"✂️ Partir solo",effects:{patience:+6,energy:-6}}]},
-
-  {emoji:"📸",title:"'UNE DERNIÈRE!'",desc:"Ça fait la 47ème 'dernière' photo.",category:'photos',
-   choices:[{text:"😫 Encore une...",effects:{patience:-10,photos:+8}},{text:"❌ 'JE RENTRE'",effects:{patience:+4}}]},
-
-  // === SITUATIONS ABSURDES ===
-  {emoji:"🐦",title:"Pigeon AGRESSIF",desc:"Il veut ton sandwich. Il te fixe. Il s'approche.",category:'mood',
-   choices:[{text:"🥊 Défendre ta bouffe",effects:{patience:-8,hunger:-10}},{text:"🏃‍♀️ Sacrifier sandwich",effects:{patience:+4,hunger:+12}}]},
-
-  {emoji:"🐿️",title:"Écureuil de Central Park",desc:"Il a ZERO peur. Il est à 20cm de toi.",category:'photos',
-   choices:[{text:"📸 Photo risquée",effects:{photos:+10,patience:-6}},{text:"😰 Reculer",effects:{patience:+2}}]},
-
-  {emoji:"🎪",title:"Times Square sensory overload",desc:"10000 écrans. 5000 touristes. Elmo te harcèle.",category:'mood',
-   choices:[{text:"📸 Photo avec Elmo (20$)",cost:20,effects:{photos:+8,patience:-10}},{text:"🏃‍♀️ FUIR",effects:{energy:-8,patience:+4}}]},
-
-  {emoji:"😱",title:"M&M's Store",desc:"4 ÉTAGES de bonbons. Tu perds la raison.",category:'shopping',
-   choices:[{text:"🛍️ Acheter (25$)",cost:25,effects:{patience:+12,yamy:+8}},{text:"🧠 Résister",effects:{patience:-6}}]},
-
-  {emoji:"🗽",title:"Queue Statue Liberté",desc:"3h d'attente. TROIS. HEURES.",category:'mood',
-   choices:[{text:"😤 Attendre...",effects:{patience:-20,energy:-10,photos:+12}},{text:"📸 Photo de loin",effects:{photos:+4}}]},
-
-  {emoji:"🧼",title:"Toilettes PAYANTES",desc:"0.25$ pour PISSER. L'Amérique est un mensonge.",category:'mood',
-   choices:[{text:"💵 Payer (0.25$)",cost:0.25,effects:{patience:+6}},{text:"🤬 Chercher ailleurs",effects:{patience:-10,energy:-6}}]},
-
-  {emoji:"🔊",title:"New-yorkais te parle",desc:"Tu comprends 2 mots sur 10. Tu fais semblant.",category:'mood',
-   choices:[{text:"😅 'Yeah yeah'",effects:{patience:-6}},{text:"❓ 'Sorry what?'",effects:{patience:-10}}]},
-
-  {emoji:"🎵",title:"Subway performer",desc:"Il joue... quelque chose. C'est... du jazz? Du métal?",category:'mood',
-   choices:[{text:"💵 Tip gêné (2$)",cost:2,effects:{patience:+4}},{text:"🚶‍♀️ Changer de wagon",effects:{patience:-2}}]},
-
-  {emoji:"🐱",title:"BODEGA CAT!!",desc:"LE CHAT LÉGENDAIRE. Il te regarde. C'est magique.",category:'photos',
-   choices:[{text:"📸 10 photos",effects:{photos:+12,patience:+14,energy:-4}},{text:"🙏 Juste le regarder",effects:{patience:+10}}]},
-
-  {emoji:"🧀",title:"Rat dans le métro",desc:"Il mange une pizza. Il s'en fout de toi.",category:'mood',
-   choices:[{text:"📸 PIZZA RAT (rare!)",effects:{photos:+16,patience:+8}},{text:"🤢 Dégoutée",effects:{patience:-8}}]},
-
-  // === SHOPPING & SOUVENIRS ===
-  {emoji:"👕",title:"T-shirt 'I ❤️ NY'",desc:"Le cliché ULTIME. Mais tu le veux quand même.",category:'shopping',
-   choices:[{text:"👕 Assumer (15$)",cost:15,effects:{patience:+6,yamy:+4}},{text:"😎 'Trop mainstream'",effects:{patience:-4}}]},
-
-  {emoji:"🗽",title:"Mini Statue Liberté",desc:"Made in China mais vendue à NYC. Logique.",category:'shopping',
-   choices:[{text:"🗽 Ironique (12$)",cost:12,effects:{yamy:+6}},{text:"💸 Arnaque",effects:{patience:-4}}]},
-
-  {emoji:"🧸",title:"Labubu NYC Edition",desc:"ÉDITION LIMITÉE. Yamy va ADORER.",category:'yamy',
-   choices:[{text:"💝 ACHETER (40$)",cost:40,effects:{yamy:+30,patience:+16},achievement:'labubu'},{text:"💸 Trop cher...",effects:{yamy:-14,patience:-10}}]},
-
-  {emoji:"🎒",title:"Faux Supreme",desc:"Vendeur de rue: 'Real Supreme bro, trust me'",category:'shopping',
-   choices:[{text:"🎒 C'est une arnaque (30$)",cost:30,effects:{patience:-8}},{text:"😏 Négocier",effects:{patience:+4}}]},
-
-  // === YAMY CONTENT ===
-  {emoji:"📱",title:"Yamy t'appelle",desc:"Il est 3h du mat chez lui. Il s'ennuie de toi.",category:'yamy',
-   choices:[{text:"💕 Parler 30min",effects:{energy:-8,patience:+18,yamy:+20}},{text:"⏱️ 'Je suis occupée'",effects:{yamy:-12,patience:-8}}]},
-
-  {emoji:"💬",title:"Messages Yamy",desc:"47 messages. Il a envoyé des memes chelous.",category:'yamy',
-   choices:[{text:"😊 Répondre tout",effects:{energy:-6,patience:+12,yamy:+14}},{text:"👀 'Vu' only",effects:{yamy:-10}}]},
-
-  {emoji:"🎁",title:"Boutique kawaii",desc:"Tout est TROP MIGNON. Yamy aimerait tout.",category:'shopping',
-   choices:[{text:"🛍️ Shopping spree (35$)",cost:35,effects:{yamy:+18,patience:+10}},{text:"📸 Photos suffisent",effects:{yamy:+4}}]},
-
-  // === MÉTÉO & CONDITIONS ===
-  {emoji:"🌧️",title:"Pluie SOUDAINE",desc:"Pas de parapluie. Cheveux ruinés. Mascara coule.",category:'mood',
-   choices:[{text:"☂️ Acheter (15$)",cost:15,effects:{patience:+8}},{text:"🏃‍♀️ COURIR",effects:{energy:-12,patience:-10}}]},
-
-  {emoji:"🥵",title:"Chaleur INSUPPORTABLE",desc:"38°C. L'asphalte ondule. Tu vas fondre.",category:'mood',
-   choices:[{text:"🧊 Smoothie glacé (8$)",cost:8,effects:{energy:+10,patience:+8}},{text:"😵 Endurer",effects:{energy:-12,patience:-10}}]},
-
-  {emoji:"❄️",title:"Clim ARCTIQUE",desc:"Tu passes de 38° dehors à -5° dedans.",category:'mood',
-   choices:[{text:"🧥 Acheter pull (25$)",cost:25,effects:{patience:+8,energy:+6}},{text:"🥶 Grelotter",effects:{energy:-8}}]},
-
-  // === FIN DE JOURNÉE ===
-  {emoji:"😴",title:"Crash complet",desc:"Tes yeux se ferment tout seuls. Danger.",category:'energy',
-   choices:[{text:"☕ Triple shot (10$)",cost:10,effects:{energy:+20}},{text:"😮‍💨 Power nap 15min",effects:{energy:+12,yamy:-4}}]},
-
-  {emoji:"🦶",title:"Pieds EXPLOSÉS",desc:"22000 pas aujourd'hui. Tu marches comme un zombie.",category:'mood',
-   choices:[{text:"👟 Semelles (12$)",cost:12,effects:{energy:+12,patience:+8}},{text:"😭 Continuer",effects:{energy:-10,patience:-8}}]},
-
-  {emoji:"📱",title:"Batterie 2%",desc:"Tu paniques. Comment tu vas faire tes stories??",category:'other',
-   choices:[{text:"🔌 Powerbank (22$)",cost:22,effects:{patience:+10}},{text:"😰 Mode avion",effects:{patience:-8,photos:-6}}]},
-
-  // === CULTURE ===
-  {emoji:"🎨",title:"MoMA bondé",desc:"Plus de monde que d'œuvres. Tu vois que des têtes.",category:'culture',
-   choices:[{text:"🎟️ Billet (25$)",cost:25,effects:{patience:-12,photos:+6}},{text:"🏃‍♀️ Boutique only",effects:{patience:+4}}]},
-
-  {emoji:"🎭",title:"Spectacle de rue WEIRD",desc:"Un type peint en or reste immobile. Pourquoi?",category:'culture',
-   choices:[{text:"💵 Tip (3$)",cost:3,effects:{patience:+6}},{text:"👀 Regarder gratos",effects:{patience:+2}}]},
-
-  {emoji:"📚",title:"Strand Bookstore",desc:"'18 miles of books'. Tu te perds littéralement.",category:'culture',
-   choices:[{text:"📖 Acheter bouquin (15$)",cost:15,effects:{patience:+10,energy:-6}},{text:"👀 Flâner 30min",effects:{patience:+6,energy:-8}}]}
-];
-
-const conditionals = [
-  {emoji:"🍕",title:"Pizza 99¢",desc:"Deal LOUCHE mais tu es BROKE.",category:'food',
-   condition:()=>game.state.money<30,
-   choices:[{text:"🍕 YOLO (1$)",cost:1,effects:{hunger:-12,patience:-4}},{text:"😰 Too sketchy",effects:{hunger:+10}}]},
-
-  {emoji:"💤",title:"Micro-sieste urgente",desc:"Tu t'endors DEBOUT.",category:'energy',
-   condition:()=>game.state.energy<30,
-   choices:[{text:"😴 Dormir sur banc",effects:{energy:+20,hunger:+8,patience:-10}},{text:"☕ Café IV (12$)",cost:12,effects:{energy:+18}}]},
-
-  {emoji:"😡",title:"RAGE MODE",desc:"Kevin a fait UN TRUC DE TROP.",category:'mood',
-   condition:()=>game.state.patience<30,
-   choices:[{text:"🤬 EXPLOSER",effects:{patience:+10,energy:-10}},{text:"🧘 Respiration (crash dans 5min)",effects:{patience:+4}}]},
-
-  {emoji:"🍔",title:"Faim CRITIQUE",desc:"Ton ventre fait des bruits d'alien.",category:'food',
-   condition:()=>game.state.hunger>75,
-   choices:[{text:"🍔 N'IMPORTE QUOI (15$)",cost:15,effects:{hunger:-35,patience:+8}},{text:"🍫 Vending machine (3$)",cost:3,effects:{hunger:-12}}]},
-
-  {emoji:"💸",title:"BROKE AS HELL",desc:"Tu comptes chaque dollar. C'est la fin.",category:'money',
-   condition:()=>game.state.money<20,
-   choices:[{text:"💰 ATM (+5$ fees)",cost:-45,effects:{patience:-10}},{text:"😭 Survivre",effects:{patience:-8}}]},
-
-  {emoji:"🏃‍♀️",title:"Retard CRITIQUE",desc:"Rdv dans 5min, t'es à 15min.",category:'mood',
-   condition:()=>game.state.patience<40,
-   choices:[{text:"🚕 TAXI (25$)",cost:25,effects:{energy:+8,patience:-8}},{text:"🏃‍♀️ SPRINTER",effects:{energy:-18,patience:-12}}]},
-
-  {emoji:"🌧️",title:"Déluge biblique",desc:"Il pleut des CORDES. Apocalypse.",category:'weather',
-   condition:()=>game.state.energy<50,
-   choices:[{text:"☂️ + Pluie (18$)",cost:18,effects:{patience:+10}},{text:"💦 Devenir poisson",effects:{energy:-14,patience:-14}}]},
-
-  {emoji:"📱",title:"Batterie MORTE",desc:"0%. Pas de GPS. Pas de photos. Rien.",category:'other',
-   condition:()=>game.state.photos>20,
-   choices:[{text:"🔌 Powerbank MAINTENANT (25$)",cost:25,effects:{patience:+12}},{text:"😭 Mode survie",effects:{patience:-12,photos:-10}}]},
-
-  {emoji:"🧃",title:"Hypoglycémie",desc:"Tu trembles. Ta vision floute. Danger.",category:'food',
-   condition:()=>game.state.hunger>70 && game.state.energy<40,
-   choices:[{text:"🍫 Sucre rapide (4$)",cost:4,effects:{hunger:-12,energy:+12}},{text:"🥤 Soda (3$)",cost:3,effects:{hunger:-6,energy:+10}}]},
-
-  {emoji:"🦶",title:"Ampoule DEGUEULASSE",desc:"Ça saigne dans ta chaussure. Pas bien.",category:'mood',
-   condition:()=>game.state.energy<60,
-   choices:[{text:"🩹 Bandages (8$)",cost:8,effects:{energy:+10,patience:+6}},{text:"😭 Marcher dans la douleur",effects:{energy:-12,patience:-12}}]},
-
-  // NOUVEAUX CONDITIONNELS
-  {emoji:"😭",title:"Breakdown imminent",desc:"Tu vas craquer. Les larmes montent.",category:'mood',
-   condition:()=>game.state.patience<25 && game.state.energy<40,
-   choices:[{text:"😭 Pleurer 5min",effects:{patience:+14,energy:-6}},{text:"📱 Appeler Yamy",effects:{patience:+18,yamy:+20,energy:-8}}]},
-
-  {emoji:"🍟",title:"Resto fast = survie",desc:"Tu manges n'importe quoi, n'importe où.",category:'food',
-   condition:()=>game.state.hunger>80,
-   choices:[{text:"🍟 Gober 5000 calories (18$)",cost:18,effects:{hunger:-45,patience:+6,energy:-6}},{text:"🍕 Pizza grasse (8$)",cost:8,effects:{hunger:-30}}]},
-
-  {emoji:"💳",title:"Carte refusée",desc:"DECLINED. Devant tout le monde. Honte maximale.",category:'money',
-   condition:()=>game.state.money<15,
-   choices:[{text:"😰 Autre carte",effects:{patience:-16}},{text:"💵 Fouiller poches",effects:{patience:-12,energy:-4}}]},
-
-  {emoji:"🧊",title:"Coup de chaud critique",desc:"Vision floue. Tu vois des étoiles.",category:'energy',
-   condition:()=>game.state.energy<25,
-   choices:[{text:"🧊 Urgence A/C (entrer n'importe où)",effects:{energy:+16,patience:-6}},{text:"💧 Eau + ombre",effects:{energy:+10}}]},
-
-  {emoji:"💬",title:"Yamy spam URGENT",desc:"267 messages. Il panique car tu réponds pas.",category:'yamy',
-   condition:()=>game.state.yamy<30,
-   choices:[{text:"💕 CALL maintenant",effects:{yamy:+35,energy:-12,patience:+20}},{text:"💬 'Tout va bien'",effects:{yamy:+18}}]},
-
-  {emoji:"📸",title:"Storage PLEIN",desc:"'Cannot take photo'. NON. PAS MAINTENANT.",category:'photos',
-   condition:()=>game.state.photos>80,
-   choices:[{text:"🗑️ Delete 100 photos",effects:{photos:-20,patience:-14}},{text:"☁️ Buy iCloud (3$)",cost:3,effects:{patience:+8}}]},
-
-  {emoji:"😴",title:"Zombie mode",desc:"Tu marches mais tu dors en même temps.",category:'energy',
-   condition:()=>game.state.energy<20,
-   choices:[{text:"💤 Dormir MAINTENANT",effects:{energy:+30,hunger:+12,yamy:-8}},{text:"☕ Café + Red Bull (15$)",cost:15,effects:{energy:+25}}]},
-
-  {emoji:"🤯",title:"Surcharge sensorielle",desc:"Trop de bruit + monde + lumière = HELP.",category:'mood',
-   condition:()=>game.state.patience<35 && game.state.energy<50,
-   choices:[{text:"🧘 Panic breathing",effects:{patience:+12,energy:-4}},{text:"🏃‍♀️ Fuir dans Central Park",effects:{patience:+16,energy:-12}}]},
-
-  {emoji:"💸",title:"Dernier billet",desc:"Tu regardes ton dernier 20$. C'est ça ou rien.",category:'money',
-   condition:()=>game.state.money<25,
-   choices:[{text:"🍔 Manger (20$)",cost:20,effects:{hunger:-30,patience:-10}},{text:"💰 Garder pour urgence",effects:{patience:-8}}]},
-
-  {emoji:"👟",title:"Chaussures DÉTRUITES",desc:"Semelle décollée. Tu marches avec une tong.",category:'mood',
-   condition:()=>game.state.energy<45,
-   choices:[{text:"👟 Emergency shoes (60$)",cost:60,effects:{energy:+25,patience:+16}},{text:"🩹 Duct tape (5$)",cost:5,effects:{energy:+8}}]},
-
-  {emoji:"💔",title:"Manque de Yamy intense",desc:"Seeing couples = torture.",category:'yamy',
-   condition:()=>game.state.yamy<25 && game.state.patience<50,
-   choices:[{text:"💕 Long video call",effects:{yamy:+30,energy:-12,patience:+20}},{text:"😢 Pleurer un peu",effects:{yamy:+10,patience:-8}}]},
-
-  {emoji:"🚫",title:"Plus d'argent liquide",desc:"Tous les stands prennent QUE du cash.",category:'money',
-   condition:()=>game.state.money<10,
-   choices:[{text:"💳 ATM emergency",cost:-50,effects:{patience:-14}},{text:"😭 Rien acheter",effects:{patience:-16,hunger:+10}}]},
-
-  {emoji:"📱",title:"Réseau 1 barre",desc:"GPS marche pas. Maps freeze. Tu es PERDUE.",category:'other',
-   condition:()=>game.state.patience<45,
-   choices:[{text:"🗺️ Demander à 10 personnes",effects:{patience:-12,energy:-6}},{text:"🚕 Taxi (20$)",cost:20,effects:{patience:+8}}]},
-
-  {emoji:"🥵",title:"Déshydratation",desc:"Bouche sèche. Tête qui tourne. Bois NOW.",category:'energy',
-   condition:()=>game.state.energy<35,
-   choices:[{text:"💧 Acheter 3 bouteilles (9$)",cost:9,effects:{energy:+18}},{text:"🚰 Fontaine publique",effects:{energy:+10}}]},
-
-  {emoji:"😱",title:"Kevin perdu AGAIN",desc:"Il est pas au meeting point. ENCORE.",category:'mood',
-   condition:()=>game.state.patience<55,
-   choices:[{text:"📱 Appeler x10",effects:{patience:-18,energy:-6}},{text:"🚶‍♀️ Partir sans lui",effects:{patience:+10}}]}
-];
-
-const rares = [
-  {emoji:"🎬",title:"FILMING EN COURS",desc:"Tu reconnais UN ACTEUR. C'est INCROYABLE.",category:'rare',
-   choices:[{text:"📸 Photo sneaky",effects:{photos:+20,patience:+20}},{text:"😱 Fangirl mode",effects:{patience:+18,energy:-6}}],achievement:'lucky'},
-
-  {emoji:"💵",title:"100$ par terre",desc:"Un billet juste LÀ. Personne l'a vu.",category:'rare',
-   choices:[{text:"💰 PRENDRE",effects:{money:+100,patience:+16}},{text:"🚔 Rendre à police",effects:{patience:+12}}],achievement:'lucky'},
-
-  {emoji:"🎟️",title:"VIP tickets GRATUITS",desc:"Concert ce soir. Première rangée. WTF.",category:'rare',
-   choices:[{text:"🎶 Y ALLER",effects:{patience:+20,photos:+12,energy:-12}},{text:"😴 Trop fatiguée",effects:{energy:+10}}],achievement:'lucky'},
-
-  {emoji:"🍕",title:"Pizza celeb",desc:"Le pizzaiolo t'offre UNE PART. 'On the house!'",category:'rare',
-   choices:[{text:"🍕 MERCI",effects:{hunger:-20,patience:+16}},{text:"😊 Juste merci",effects:{patience:+10}}],achievement:'lucky'},
-
-  {emoji:"🌈",title:"Rainbow PARFAIT",desc:"Arc-en-ciel DOUBLE au-dessus de Manhattan.",category:'rare',
-   choices:[{text:"📸 MODE PAPARAZZI",effects:{photos:+16,patience:+18}},{text:"👀 Juste profiter",effects:{patience:+14}}],achievement:'lucky'},
-
-  {emoji:"🐶",title:"Chien influenceur",desc:"C'est LE chien Instagram. 500k followers.",category:'rare',
-   choices:[{text:"📸 Selfie avec",effects:{photos:+18,patience:+16}},{text:"😍 Le caresser",effects:{patience:+14}}],achievement:'lucky'},
-
-  {emoji:"🎁",title:"Échantillons PARTOUT",desc:"Stand qui donne des trucs gratos.",category:'rare',
-   choices:[{text:"🎁 Tout prendre",effects:{patience:+12,energy:+8}},{text:"😊 Juste un",effects:{patience:+8}}],achievement:'lucky'},
-
-  {emoji:"🚕",title:"Uber discount",desc:"Bug de l'app. Course à -90%.",category:'rare',
-   choices:[{text:"🚕 PROFITER",effects:{money:+15,patience:+14}},{text:"👍 Signaler bug",effects:{patience:+10}}],achievement:'lucky'},
-
-  {emoji:"⭐",title:"Compliment random",desc:"Quelqu'un: 'Love your outfit!' Tu brilles.",category:'rare',
-   choices:[{text:"😊 MERCI",effects:{patience:+16}},{text:"🥰 Rougir",effects:{patience:+14}}],achievement:'lucky'},
-
-  {emoji:"📸",title:"Golden hour PARFAIT",desc:"Lumière INCROYABLE. Tes photos seront FEUX.",category:'rare',
-   choices:[{text:"📸 Session 20min",effects:{photos:+20,patience:+18,energy:-8}},{text:"🤳 Quelques unes",effects:{photos:+12,patience:+12}}],achievement:'lucky'},
-
-  // === ENCORE PLUS D'ÉVÉNEMENTS (100+) ===
-  
-  // FOOD CHAOS SUITE
-  {emoji:"🥓",title:"Bacon sur TOUT",desc:"Ils mettent du bacon PARTOUT. Même sur les donuts.",category:'food',
-   choices:[{text:"🥓 Bacon donut (7$)",cost:7,effects:{hunger:-16,patience:+8}},{text:"🤢 C'est malsain",effects:{patience:-6}}]},
-
-  {emoji:"🌶️",title:"'Mild' sauce",desc:"Ils ont dit mild. Tu PLEURES. C'est de la lave.",category:'food',
-   choices:[{text:"💧 Lait d'urgence (4$)",cost:4,effects:{patience:-10,energy:-4}},{text:"😭 Souffrir",effects:{patience:-14,hunger:+8}}]},
-
-  {emoji:"🍪",title:"Cookie géant",desc:"Taille d'une ASSIETTE. 2000 calories. YOLO.",category:'food',
-   choices:[{text:"🍪 Partager (6$)",cost:6,effects:{hunger:-20,patience:+6}},{text:"🍪 Solo warrior (6$)",cost:6,effects:{hunger:-32,energy:-6}}]},
-
-  {emoji:"🥤",title:"Free water mais...",desc:"Le serveur te JUGE parce que tu prends pas de boisson.",category:'food',
-   choices:[{text:"💧 Assumer",effects:{patience:-8}},{text:"🥤 Commander par pitié (3$)",cost:3,effects:{patience:+4}}]},
-
-  {emoji:"🍳",title:"Brunch à 28$",desc:"Pour des ŒUFS. Avec un avocat. L'arnaque ultime.",category:'food',
-   choices:[{text:"🍳 'C'est tendance' (28$)",cost:28,effects:{hunger:-30,patience:-8}},{text:"💸 Deli sandwich (8$)",cost:8,effects:{hunger:-20,patience:+6}}]},
-
-  {emoji:"🌽",title:"Maïs grillé ambulant",desc:"Un mexicain te vend du elote. Ça sent INCROYABLE.",category:'food',
-   choices:[{text:"🌽 + Mayo + fromage (6$)",cost:6,effects:{hunger:-18,patience:+10}},{text:"🚫 Trop bizarre",effects:{patience:-4}}]},
-
-  {emoji:"🥟",title:"Dumpling challenge",desc:"10$ = 30 dumplings. Tu peux le faire... non?",category:'food',
-   choices:[{text:"🥟 CHALLENGE (10$)",cost:10,effects:{hunger:-40,patience:+12,energy:-8}},{text:"🥟 Portion normale (7$)",cost:7,effects:{hunger:-18}}]},
-
-  {emoji:"🧃",title:"Jus détox à 12$",desc:"'Activated charcoal'. Ça a le goût de RIEN.",category:'food',
-   choices:[{text:"🧃 Influencer mode (12$)",cost:12,effects:{energy:+6,patience:-8,photos:+4}},{text:"☕ Café normal (4$)",cost:4,effects:{energy:+10}}]},
-
-  {emoji:"🍰",title:"Cheesecake géant",desc:"La part fait 800g. C'est une BRIQUE de fromage.",category:'food',
-   choices:[{text:"🍰 To-go box (9$)",cost:9,effects:{hunger:-20,patience:+8}},{text:"🍰 Finir ici (9$)",cost:9,effects:{hunger:-28,energy:-10}}]},
-
-  {emoji:"🌮",title:"Tacos AUTHENTIQUES",desc:"Petit spot, 0 anglais parlé, queue de locaux. C'est BON SIGNE.",category:'food',
-   choices:[{text:"🌮 3 tacos (8$)",cost:8,effects:{hunger:-24,patience:+12}},{text:"🌮 Menu complet (14$)",cost:14,effects:{hunger:-35,patience:+10}}]},
-
-  {emoji:"🍿",title:"Popcorn caramélisé",desc:"Stand ambulant. Odeur qui rend fou.",category:'food',
-   choices:[{text:"🍿 Petit sac (5$)",cost:5,effects:{hunger:-10,patience:+6}},{text:"🍿 GRAND (9$)",cost:9,effects:{hunger:-18,patience:+8}}]},
-
-  {emoji:"🥙",title:"Halal cart du coin",desc:"File de 15 personnes. Si y'a la queue, c'est bon.",category:'food',
-   choices:[{text:"🥙 Chicken & rice (8$)",cost:8,effects:{hunger:-24,patience:-6}},{text:"🚫 Trop long",effects:{patience:+4}}]},
-
-  {emoji:"🍌",title:"Banana pudding hype",desc:"Magnolia Bakery. 1h de queue. Pour un DESSERT.",category:'food',
-   choices:[{text:"🍌 Attendre (9$)",cost:9,effects:{hunger:-16,patience:-14,photos:+6}},{text:"😤 Pas fou",effects:{patience:+4}}]},
-
-  {emoji:"🥨",title:"Auntie Anne's pretzels",desc:"L'odeur dans le mall. Irrésistible.",category:'food',
-   choices:[{text:"🥨 Original (6$)",cost:6,effects:{hunger:-14,patience:+6}},{text:"🥨 + Cheese dip (8$)",cost:8,effects:{hunger:-18,patience:+8}}]},
-
-  {emoji:"🍕",title:"Dollar slice VRAIE",desc:"1$ la part. C'est pas bon mais c'est CHEAP.",category:'food',
-   choices:[{text:"🍕 2 parts (2$)",cost:2,effects:{hunger:-20,patience:+8}},{text:"🍕 4 parts challenge (4$)",cost:4,effects:{hunger:-35,energy:-6}}]},
-
-  // TRANSPORT ENFER
-  {emoji:"🚇",title:"Showtime!",desc:"'IT'S SHOWTIME SHOWTIME!' Des gars font des flips dans le métro.",category:'transport',
-   choices:[{text:"😰 Prier pour survivre",effects:{patience:-12,energy:-4}},{text:"📸 Filmer (risqué)",effects:{photos:+8,patience:-8}}]},
-
-  {emoji:"🚶‍♀️",title:"Walk sign qui ment",desc:"Il dit 25 secondes. Tu as 8 secondes. COURS.",category:'transport',
-   choices:[{text:"🏃‍♀️ SPRINTEEER",effects:{energy:-10,patience:-6}},{text:"🛑 Attendre encore",effects:{patience:-10}}]},
-
-  {emoji:"🚕",title:"Taxi sent BIZARRE",desc:"Odeur non identifiée. Fenêtres bloquées. Aide.",category:'transport',
-   choices:[{text:"🤢 Tenir bon",effects:{patience:-14,energy:-4}},{text:"🚪 'ICI C'EST BON'",effects:{money:-8,energy:-6}}]},
-
-  {emoji:"🚲",title:"Citi Bike cassé",desc:"Tu débloques le vélo. La selle est PARTIE.",category:'transport',
-   choices:[{text:"🚲 Rouler debout",effects:{energy:-12,patience:-10}},{text:"🔄 Prendre un autre",effects:{patience:-6}}]},
-
-  {emoji:"🛤️",title:"Métro en panne",desc:"'Train traffic ahead'. Tout le monde soupire.",category:'transport',
-   choices:[{text:"⏰ Attendre 20min",effects:{patience:-16,energy:-4}},{text:"🚶‍♀️ Sortir marcher",effects:{energy:-12}}]},
-
-  {emoji:"🚕",title:"Taxi refuse d'aller là",desc:"'I don't go to Brooklyn'. Mais... pourquoi?!",category:'transport',
-   choices:[{text:"🙏 Négocier",effects:{patience:-10}},{text:"😤 Prendre un autre (10min)",effects:{patience:-12,energy:-4}}]},
-
-  {emoji:"🛴",title:"Scooter bug",desc:"Il s'arrête PAS de biper. Tout le monde te regarde.",category:'transport',
-   choices:[{text:"😰 Finir le trajet",effects:{patience:-12,energy:-4}},{text:"🚫 Abandonner",effects:{money:-6,energy:-6}}]},
-
-  {emoji:"🚌",title:"Bus qui pue l'essence",desc:"Fumée noire + odeur + chaleur = ENFER.",category:'transport',
-   choices:[{text:"🤢 Respirer bouche",effects:{patience:-14}},{text:"🚪 Descendre NOW",effects:{energy:-8}}]},
-
-  {emoji:"⛴️",title:"Ferry bondé",desc:"Tous les touristes ont eu la même idée. Contact physique forcé.",category:'transport',
-   choices:[{text:"⛴️ Serrage maximum",effects:{patience:-10,photos:+6}},{text:"🌊 Rester à l'extérieur",effects:{energy:-6,patience:+4}}]},
-
-  {emoji:"🚦",title:"Piéton anarchie",desc:"Personne respecte les feux. C'est le chaos total.",category:'transport',
-   choices:[{text:"🏃‍♀️ Suivre le flow",effects:{energy:-6,patience:+4}},{text:"🛑 Être la seule qui attend",effects:{patience:-10}}]},
-
-  // KEVIN & GROUPE SUITE
-  {emoji:"📱",title:"Kevin fait le vlog",desc:"Il parle FORT dans son téléphone. Tout le monde le déteste.",category:'mood',
-   choices:[{text:"😡 'Arrête ça'",effects:{patience:-10,energy:-4}},{text:"🙄 Laisser faire",effects:{patience:-12}}]},
-
-  {emoji:"🎵",title:"Kevin chante FAUX",desc:"Il massacre du Céline Dion dans le métro.",category:'mood',
-   choices:[{text:"🎧 Mettre écouteurs",effects:{patience:-8}},{text:"😤 'TA GUEULE'",effects:{patience:+4,energy:-6}}]},
-
-  {emoji:"💬",title:"Kevin raconte SA VIE",desc:"Personne a demandé mais il raconte TOUT.",category:'mood',
-   choices:[{text:"😐 Fake écouter",effects:{patience:-10,energy:-4}},{text:"📱 Regarder téléphone",effects:{patience:-6}}]},
-
-  {emoji:"🤳",title:"Kevin selfie ENCORE",desc:"'UNE DERNIÈRE' pour la 50ème fois.",category:'photos',
-   choices:[{text:"😫 Poser encore",effects:{patience:-12,photos:+4}},{text:"🚶‍♀️ 'Je vous attends là'",effects:{patience:+6}}]},
-
-  {emoji:"🍟",title:"Kevin pique tes frites",desc:"Sans demander. Il le fait JUSTE.",category:'food',
-   choices:[{text:"🍴 Taper sa main",effects:{patience:-8,hunger:-8}},{text:"😒 Laisser faire",effects:{patience:-12,hunger:-12}}]},
-
-  {emoji:"🗣️",title:"Groupe parle français FORT",desc:"Dans le métro. Tout le monde vous regarde.",category:'mood',
-   choices:[{text:"🤐 'On peut chuchoter?'",effects:{patience:-6}},{text:"😳 Gênée totale",effects:{patience:-10}}]},
-
-  {emoji:"🕐",title:"Groupe EN RETARD (x3)",desc:"C'est systématique. TOUJOURS 15min de retard.",category:'mood',
-   choices:[{text:"⏰ Mentir sur l'heure +30min",effects:{patience:+6}},{text:"😤 Attendre encore",effects:{patience:-14,energy:-6}}]},
-
-  {emoji:"🍽️",title:"Groupe peut PAS choisir",desc:"30 minutes pour décider où manger. Tu as FAIM.",category:'mood',
-   choices:[{text:"😤 'On va LÀ'",effects:{patience:-8,hunger:+6}},{text:"⏰ Attendre décision",effects:{patience:-14,hunger:+10}}]},
-
-  {emoji:"💸",title:"Kevin a 'oublié' son argent",desc:"Encore. Pour la 4ème fois.",category:'mood',
-   choices:[{text:"💰 Payer pour lui (12$)",cost:12,effects:{patience:-12}},{text:"😤 'Débrouille-toi'",effects:{patience:-8}}]},
-
-  {emoji:"🎒",title:"Kevin perd son sac",desc:"Panique totale. Vous devez revenir en arrière.",category:'mood',
-   choices:[{text:"🏃‍♀️ Aider chercher",effects:{energy:-12,patience:-14}},{text:"😤 'Tant pis pour toi'",effects:{patience:-8}}]},
-
-  // SITUATIONS ABSURDES NYC
-  {emoji:"🎅",title:"Elmo veut 40$",desc:"Pour UNE photo. Il devient agressif si tu refuses.",category:'mood',
-   choices:[{text:"📸 Payer l'arnaque (40$)",cost:40,effects:{photos:+8,patience:-14}},{text:"🏃‍♀️ FUIR",effects:{patience:-6}}]},
-
-  {emoji:"🎤",title:"Prédicateur apocalypse",desc:"Il crie que la fin est proche. Depuis 1987.",category:'mood',
-   choices:[{text:"👂 Écouter 2min",effects:{patience:-8}},{text:"🎧 Ignorer",effects:{patience:-4}}]},
-
-  {emoji:"🎸",title:"Guitariste nul",desc:"Il joue 'Wonderwall'. Très TRÈS mal.",category:'mood',
-   choices:[{text:"💵 Tip pity (1$)",cost:1,effects:{patience:+4}},{text:"🚶‍♀️ Fuir le son",effects:{patience:+2}}]},
-
-  {emoji:"🗞️",title:"New York Post headline",desc:"Titre complètement FOU. Tu dois le photographier.",category:'photos',
-   choices:[{text:"📸 Screenshot",effects:{photos:+6,patience:+6}},{text:"👀 Juste lire",effects:{patience:+4}}]},
-
-  {emoji:"🦝",title:"Raton-laveur du parc",desc:"Il te fixe. Il s'approche. Il veut ton snack.",category:'mood',
-   choices:[{text:"🍪 Lui donner",effects:{patience:+8,hunger:-6}},{text:"🏃‍♀️ Protéger ta vie",effects:{patience:-6}}]},
-
-  {emoji:"🚨",title:"Sirènes NON-STOP",desc:"Ambulance + police + pompiers. Concert de sirènes.",category:'mood',
-   choices:[{text:"🎧 Volume MAX",effects:{patience:-8}},{text:"😫 Endurer",effects:{patience:-12}}]},
-
-  {emoji:"🚧",title:"Travaux PARTOUT",desc:"Chaque rue est en construction. Pourquoi?!",category:'transport',
-   choices:[{text:"🗺️ Détour infini",effects:{energy:-10,patience:-10}},{text:"🦺 Passer dans le chantier",effects:{patience:-8}}]},
-
-  {emoji:"🏢",title:"Steam qui sort du sol",desc:"NYC classique. On dirait un film.",category:'photos',
-   choices:[{text:"📸 Photo dramatique",effects:{photos:+8,patience:+6}},{text:"🚶‍♀️ Passer",effects:{}}]},
-
-  {emoji:"🎭",title:"Naked Cowboy",desc:"LE mec en sous-vêtements avec une guitare. Iconique.",category:'culture',
-   choices:[{text:"📸 Photo touristique (5$)",cost:5,effects:{photos:+10,patience:+8}},{text:"👀 Juste regarder",effects:{patience:+4}}]},
-
-  {emoji:"🍎",title:"Big Apple symbolisme",desc:"Tu réalises ENFIN pourquoi ils disent 'Big Apple'... non attends, toujours pas.",category:'mood',
-   choices:[{text:"🤔 Réfléchir",effects:{patience:+4}},{text:"📱 Googler",effects:{patience:+2}}]},
-
-  // SHOPPING & SOUVENIRS SUITE
-  {emoji:"🗽",title:"Statue Liberty foam hat",desc:"Le chapeau de mousse vert. Peak tourist.",category:'shopping',
-   choices:[{text:"🗽 ASSUMER (12$)",cost:12,effects:{patience:+10,photos:+6,yamy:+6}},{text:"😎 Trop ridicule",effects:{patience:-4}}]},
-
-  {emoji:"💍",title:"Bijoux Canal Street",desc:"'Real gold bro'. Spoiler: c'est pas de l'or.",category:'shopping',
-   choices:[{text:"💍 Fake luxury (8$)",cost:8,effects:{patience:+6}},{text:"🙄 Arnaque évidente",effects:{patience:+2}}]},
-
-  {emoji:"🎨",title:"Print d'artiste local",desc:"Petit stand dans le parc. C'est joli VRAIMENT.",category:'shopping',
-   choices:[{text:"🎨 Acheter (25$)",cost:25,effects:{patience:+12,yamy:+8}},{text:"📸 Photo only",effects:{photos:+4}}]},
-
-  {emoji:"👟",title:"Fake Yeezys",desc:"'Original Adidas'. Vendus dans la rue. LOL.",category:'shopping',
-   choices:[{text:"👟 Pour rigoler (30$)",cost:30,effects:{patience:-8}},{text:"😂 'Non merci'",effects:{patience:+4}}]},
-
-  {emoji:"🧢",title:"Yankees cap",desc:"Casquette NY. Tu vas la porter 1 fois.",category:'shopping',
-   choices:[{text:"🧢 Souvenir classique (28$)",cost:28,effects:{patience:+8,yamy:+4}},{text:"💸 Trop cher",effects:{patience:-4}}]},
-
-  {emoji:"🛍️",title:"Century 21",desc:"Le magasin. Les prix. Les FOULES. C'est l'apocalypse.",category:'shopping',
-   choices:[{text:"🛍️ Plonger dedans",effects:{energy:-14,patience:-12,money:-35}},{text:"😰 Trop intense",effects:{patience:+4}}]},
-
-  {emoji:"📚",title:"Guidebook NYC",desc:"350 pages sur New York. Tu vas le lire... jamais.",category:'shopping',
-   choices:[{text:"📖 Acheter quand même (18$)",cost:18,effects:{patience:+6}},{text:"📱 Google suffit",effects:{patience:+2}}]},
-
-  {emoji:"🧸",title:"FAO Schwarz",desc:"Le magasin de jouets GÉANT. Tu redeviens une enfant.",category:'shopping',
-   choices:[{text:"🧸 Peluche géante (45$)",cost:45,effects:{patience:+14,yamy:+20,energy:-6}},{text:"👀 Juste regarder",effects:{patience:+8}}]},
-
-  {emoji:"🎒",title:"JanSport vintage",desc:"Sac à dos rétro. Très Brooklyn.",category:'shopping',
-   choices:[{text:"🎒 Hipster approved (35$)",cost:35,effects:{patience:+10,energy:+6}},{text:"💼 Tu as déjà un sac",effects:{patience:+2}}]},
-
-  {emoji:"🕶️",title:"Lunettes de soleil",desc:"Le gars vend 10 modèles différents. Tous à 5$.",category:'shopping',
-   choices:[{text:"🕶️ Deal suspect (5$)",cost:5,effects:{patience:+6,energy:+2}},{text:"👀 Tes yeux vont bien",effects:{}}]},
-
-  // YAMY CONTENT MAXIMUM
-  {emoji:"💕",title:"Yamy video call",desc:"Il veut te montrer son chat. Trop mignon mais long.",category:'yamy',
-   choices:[{text:"💕 30 minutes chat",effects:{energy:-10,patience:+20,yamy:+24}},{text:"⏱️ 'Suis occupée'",effects:{yamy:-16,patience:-8}}]},
-
-  {emoji:"🎁",title:"Cadeau parfait trouvé",desc:"LE truc que Yamy voulait. C'est le destin.",category:'yamy',
-   choices:[{text:"🎁 ACHETER (38$)",cost:38,effects:{yamy:+28,patience:+14}},{text:"📸 Photo 'Regarde!'",effects:{yamy:+8}}]},
-
-  {emoji:"💬",title:"Spam messages Yamy",desc:"156 messages en 2h. Il s'ennuie GRAVE.",category:'yamy',
-   choices:[{text:"💕 Répondre à tout",effects:{energy:-10,patience:+18,yamy:+22}},{text:"👀 Répondre vite",effects:{yamy:+6}}]},
-
-  {emoji:"🎵",title:"Chanson Yamy aime",desc:"Dans un magasin. C'est SA chanson.",category:'yamy',
-   choices:[{text:"🎵 Envoyer Shazam",effects:{yamy:+12,patience:+8}},{text:"🎶 Juste écouter",effects:{patience:+4}}]},
-
-  {emoji:"🌹",title:"Fleurs jolies",desc:"Bouquet pour Yamy... par anticipation?",category:'yamy',
-   choices:[{text:"🌹 Photos pour lui",effects:{yamy:+14,photos:+6}},{text:"💐 Acheter pour ramener (22$)",cost:22,effects:{yamy:+26,patience:+10}}]},
-
-  {emoji:"📍",title:"Spot Yamy parlait",desc:"Le lieu qu'il avait mentionné. Tu y es!",category:'yamy',
-   choices:[{text:"📸 Photos pour lui",effects:{yamy:+16,photos:+8,patience:+10}},{text:"💬 Lui dire",effects:{yamy:+10}}]},
-
-  {emoji:"☁️",title:"Couple mignon",desc:"Tu penses à Yamy instantanément. C'est mignon mais triste.",category:'yamy',
-   choices:[{text:"💕 Envoyer message",effects:{yamy:+18,patience:+8}},{text:"😔 Juste soupirer",effects:{yamy:+6,patience:-4}}]},
-
-  {emoji:"🌙",title:"Différence horaire",desc:"Il est 3h du mat chez lui mais il répond. Insomniac love.",category:'yamy',
-   choices:[{text:"💕 'Va dormir!'",effects:{yamy:+14,patience:+10}},{text:"💬 Parler quand même",effects:{yamy:+20,energy:-8}}]},
-
-  {emoji:"🎮",title:"Jeu vidéo Yamy joue",desc:"Shop qui vend le jeu. Limited edition.",category:'yamy',
-   choices:[{text:"🎮 Acheter (55$)",cost:55,effects:{yamy:+32,patience:+14}},{text:"💸 Trop cher",effects:{yamy:-8}}]},
-
-  {emoji:"✈️",title:"Nostalgie hit",desc:"Tu comptes les jours avant de rentrer.",category:'yamy',
-   choices:[{text:"💕 Texte romantique",effects:{yamy:+20,patience:+10,energy:-4}},{text:"😊 Profiter du moment",effects:{patience:+8}}]},
-
-  // CULTURE & ACTIVITÉS
-  {emoji:"🎨",title:"MoMA queue 2h",desc:"File INSANE. Pour voir 'Starry Night'.",category:'culture',
-   choices:[{text:"⏰ Attendre (28$)",cost:28,effects:{patience:-18,photos:+10,energy:-8}},{text:"🏃‍♀️ Autre musée",effects:{patience:+4}}]},
-
-  {emoji:"🗽",title:"Statue of Liberty stairs",desc:"354 marches. Jusqu'à la COURONNE.",category:'culture',
-   choices:[{text:"🗽 Tout monter (23$)",cost:23,effects:{energy:-20,patience:-10,photos:+14}},{text:"😰 Juste la base",effects:{photos:+6}}]},
-
-  {emoji:"🏛️",title:"Met Museum donation",desc:"'Suggested donation'. Tu peux payer 1$... mais le regard...",category:'culture',
-   choices:[{text:"💵 Full price (30$)",cost:30,effects:{patience:+8,photos:+8}},{text:"💰 Minimum (5$)",cost:5,effects:{patience:-8,photos:+8}}]},
-
-  {emoji:"📖",title:"Strand Books 3 étages",desc:"Tu te perds dans les rayons. Littéralement.",category:'culture',
-   choices:[{text:"📚 2h dedans",effects:{energy:-12,patience:+14,money:-20}},{text:"📸 Juste l'esthétique",effects:{photos:+6}}]},
-
-  {emoji:"🎭",title:"Broadway TKTS",desc:"Billets réduits mais QUELLE FILE.",category:'culture',
-   choices:[{text:"🎟️ Attendre (65$)",cost:65,effects:{patience:-16,energy:-10}},{text:"💸 Trop cher anyway",effects:{patience:-8}}]},
-
-  {emoji:"🌳",title:"Central Park immense",desc:"Tu marches depuis 1h. Tu es TOUJOURS dans le parc.",category:'culture',
-   choices:[{text:"🚶‍♀️ Continuer",effects:{energy:-14,patience:-6,photos:+8}},{text:"🛑 Pause banc",effects:{energy:+6}}]},
-
-  {emoji:"🏀",title:"Basket de rue",desc:"Game intense au parc. Ça trash-talk FORT.",category:'culture',
-   choices:[{text:"📸 Filmer",effects:{photos:+8,patience:+8}},{text:"🏀 Demander jouer",effects:{energy:-10,patience:+12}}]},
-
-  {emoji:"🎨",title:"Street art Bushwick",desc:"Murs ENTIERS de graffitis incroyables.",category:'culture',
-   choices:[{text:"📸 Session 30min",effects:{photos:+14,energy:-8,patience:+12}},{text:"🚶‍♀️ Walk rapide",effects:{photos:+6}}]},
-
-  {emoji:"📻",title:"Radio live dans la rue",desc:"Ils font une émission EN DIRECT. Tu peux passer derrière.",category:'culture',
-   choices:[{text:"👋 Faire coucou",effects:{patience:+10,photos:+6}},{text:"😳 Trop gênée",effects:{patience:+4}}]},
-
-  {emoji:"🎪",title:"Performance bizarre",desc:"Art conceptuel. Personne comprend. Y compris toi.",category:'culture',
-   choices:[{text:"🤔 Essayer comprendre",effects:{patience:+6,energy:-4}},{text:"🚶‍♀️ Next",effects:{patience:+2}}]},
-
-  // PHOTOS & RÉSEAUX SOCIAUX
-  {emoji:"📱",title:"Story Instagram 24h",desc:"Tu veux TOUT partager. Spam mode ON.",category:'photos',
-   choices:[{text:"📸 30 stories",effects:{photos:+12,energy:-8,patience:+10}},{text:"📱 Sobre (5 stories)",effects:{photos:+6}}]},
-
-  {emoji:"🤳",title:"Selfie avec skyline",desc:"L'angle est DIFFICILE. Essai #47.",category:'photos',
-   choices:[{text:"🤳 Continuer",effects:{photos:+8,energy:-6,patience:-8}},{text:"📸 Demander à quelqu'un",effects:{photos:+10,patience:+4}}]},
-
-  {emoji:"📷",title:"Touriste te demande photo",desc:"'Can you take our picture?' 15 fois aujourd'hui.",category:'photos',
-   choices:[{text:"📸 Être gentille",effects:{patience:+6}},{text:"😤 'J'ai pas le temps'",effects:{patience:-8}}]},
-
-  {emoji:"🌆",title:"Blue hour parfait",desc:"Entre jour et nuit. Lumière de OUF.",category:'photos',
-   choices:[{text:"📸 Profiter 20min",effects:{photos:+16,energy:-6,patience:+12}},{text:"🤳 Quelques photos",effects:{photos:+8}}]},
-
-  {emoji:"📱",title:"Post perfect trouvé",desc:"Carrousel de 10 photos. Ça va faire 1000 likes.",category:'photos',
-   choices:[{text:"✍️ Caption parfait (20min)",effects:{photos:+12,energy:-8,patience:+10}},{text:"⚡ Post rapide",effects:{photos:+8}}]},
-
-  {emoji:"🎥",title:"Reels inspiration",desc:"Tu vois un trend. Tu DOIS le faire.",category:'photos',
-   choices:[{text:"🎥 Filmer 30min",effects:{photos:+14,energy:-10,patience:-8}},{text:"💾 Save pour + tard",effects:{photos:+4}}]},
-
-  {emoji:"📸",title:"Grid Instagram parfait",desc:"Les couleurs matchent. L'esthétique est là.",category:'photos',
-   choices:[{text:"✨ Perfectionniste",effects:{photos:+10,energy:-6,patience:+8}},{text:"📱 Poster direct",effects:{photos:+6}}]},
-
-  {emoji:"🌅",title:"Sunrise impossible",desc:"Réveil 5h pour le lever de soleil. Worth it?",category:'photos',
-   choices:[{text:"📸 Faire l'effort",effects:{photos:+18,energy:-16,patience:+12}},{text:"😴 Dormir > photos",effects:{energy:+10}}]},
-
-  // MÉTÉO & CONDITIONS PHYSIQUES
-  {emoji:"💨",title:"Vent VIOLENT",desc:"Cheveux dans la bouche. Jupe qui s'envole. Chaos.",category:'mood',
-   choices:[{text:"😤 Bataille éléments",effects:{patience:-12,energy:-6}},{text:"🏢 Refuge magasin",effects:{patience:-6}}]},
-
-  {emoji:"☀️",title:"Soleil BRUTAL",desc:"Pas de cloud. 38°C ressenti. Tu cuits.",category:'mood',
-   choices:[{text:"🧴 Crème + casquette (15$)",cost:15,effects:{patience:+8,energy:+4}},{text:"🥵 Fondre",effects:{energy:-14,patience:-12}}]},
-
-  {emoji:"🌫️",title:"Brume matinale",desc:"Atmosphère de film. Vibe mystérieux.",category:'photos',
-   choices:[{text:"📸 Photos aesthetic",effects:{photos:+12,patience:+10}},{text:"🚶‍♀️ C'est flippant",effects:{patience:-4}}]},
-
-  {emoji:"⛈️",title:"Orage SOUDAIN",desc:"Ciel noir en 5min. Éclairs partout.",category:'mood',
-   choices:[{text:"🏃‍♀️ Courir s'abriter",effects:{energy:-12,patience:-10}},{text:"☔ Acheter parapluie VITE (18$)",cost:18,effects:{patience:+6}}]},
-
-  {emoji:"🌡️",title:"AC vs Chaleur",desc:"35° dehors, 15° dans le métro. Ton corps bug.",category:'mood',
-   choices:[{text:"🧥 Couches multiples",effects:{patience:-8}},{text:"🥶 Accepter le froid",effects:{energy:-8}}]},
-
-  // SITUATIONS PHYSIQUES
-  {emoji:"🚽",title:"Envie URGENTE",desc:"Niveau 10/10. Panique maximale.",category:'mood',
-   choices:[{text:"🏃‍♀️ Starbucks (acheter 5$)",cost:5,effects:{patience:+10}},{text:"😰 Chercher WC publics",effects:{patience:-14,energy:-8}}]},
-
-  {emoji:"🦶",title:"Chaussures NEUVES erreur",desc:"Ampoules sur ampoules. Chaque pas = douleur.",category:'mood',
-   choices:[{text:"👟 Nouvelles chaussures (45$)",cost:45,effects:{energy:+20,patience:+14}},{text:"😭 Continuer souffrir",effects:{energy:-16,patience:-16}}]},
-
-  {emoji:"💆",title:"Mal de tête arrive",desc:"Déshydratation + bruit + fatigue = migraine.",category:'mood',
-   choices:[{text:"💊 Medic (8$)",cost:8,effects:{patience:+12,energy:+6}},{text:"🧘 Massage tempes",effects:{patience:+6}}]},
-
-  {emoji:"😵",title:"Vertiges légers",desc:"Tu as trop marché. Trop chaud. Trop tout.",category:'energy',
-   choices:[{text:"🧃 Sucre rapide (5$)",cost:5,effects:{energy:+12}},{text:"🪑 S'asseoir 10min",effects:{energy:+8,patience:-6}}]},
-
-  {emoji:"🥱",title:"Yeux qui piquent",desc:"Fatigue extrême. Tu bailles en boucle.",category:'energy',
-   choices:[{text:"☕ Triple espresso (9$)",cost:9,effects:{energy:+18,patience:-4}},{text:"💤 Micro-sieste",effects:{energy:+10,yamy:-4}}]},
-
-  // RANDOM & FINAL
-  {emoji:"🎰",title:"Lucky scratch card",desc:"Stand de loto. 'You feeling lucky?'",category:'other',
-   choices:[{text:"🎫 Tenter (5$)",cost:5,effects:{patience:+6}},{text:"💸 C'est une arnaque",effects:{patience:+2}}]},
-
-  {emoji:"🪙",title:"Penny press machine",desc:"Faire une pièce souvenir écrasée.",category:'shopping',
-   choices:[{text:"🪙 Souvenir (0.51$)",cost:0.51,effects:{patience:+8,yamy:+4}},{text:"🤷 Inutile",effects:{}}]},
-
-  {emoji:"🎈",title:"Ballon gratuit",desc:"Un gars distribue des ballons. Pour... rien?",category:'mood',
-   choices:[{text:"🎈 Prendre",effects:{patience:+8,photos:+4}},{text:"👋 'Non merci'",effects:{}}]},
-
-  {emoji:"🎪",title:"Flash mob!!",desc:"Des gens commencent à DANSER. C'est NYC baby.",category:'culture',
-   choices:[{text:"🎥 FILMER",effects:{photos:+12,patience:+14}},{text:"💃 PARTICIPER",effects:{energy:-10,patience:+16}}]},
-
-  {emoji:"🍃",title:"Dollar Bill par terre",desc:"1$ sur le trottoir. Score.",category:'mood',
-   choices:[{text:"💵 Prendre",effects:{money:+1,patience:+4}},{text:"🚶‍♀️ Laisser",effects:{patience:+2}}]}
-];
-/* ================== PRICING (taxes & tips) ================== */
-function priceWithNYC(cost, category){
-  if(cost==null) return {total:0, breakdown:''};
-  let base = cost;
-  const diff = DIFFS[selectedDiff];
-  base *= diff.price;
-
-  let tax = base * TAX;
-  let tip = 0;
-  if(category==='food') tip = base * (TIP_MIN + Math.random()*(TIP_MAX-TIP_MIN));
-  const total = base + tax + tip;
-
-  return {
-    total: Math.round(total*100)/100,
-    breakdown: `≈ ${base.toFixed(2)}$ + tax ${tax.toFixed(2)}${tip?` + tip ${tip.toFixed(2)}`:''}`
-  };
-}
-
-/* ================== JOURNAL / ACHIEVEMENTS ================== */
-function moodEmoji(){
-  const s=game.state;
-  const avg=(s.energy + s.patience + (100-s.hunger) + s.yamy)/4;
-  if(avg<25) return '😭'; if(avg<40) return '😫'; if(avg<60) return '😐'; if(avg<80) return '😊'; return '😄';
-}
-function addJournal(title,category){
-  const s=game.state;
-  let q="";
-  if(s.yamy<40) q = pick(quotes.missYamy);
-  else if(s.hunger>70) q = pick(quotes.hungry);
-  else if(s.energy<30) q = pick(quotes.tired);
-  else if(s.money<50) q = pick(quotes.broke);
-  else if(s.patience<30) q = pick(quotes.impatient);
-  else if(category==='yamy') q = pick(quotes.yamy);
-  else if(category==='food') q = pick(quotes.food);
-  else if(category==='photos') q = pick(quotes.photos);
-  else q = Math.random()>0.5 ? pick(quotes.nyc) : pick(quotes.group);
-
-  game.journal.unshift({
-    day:s.day,action:s.actionCount,category:category||'general',
-    quote:q,money:fmt(s.money),energy:fmt(s.energy),hunger:fmt(s.hunger),
-    patience:fmt(s.patience),yamy:fmt(s.yamy),
-    time:new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'})
-  });
-  document.getElementById('journalBadge').textContent = game.journal.length;
-  checkAchievements();
-}
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-function updateJournalUI(){
-  const f = game.currentFilter;
-  const list = f==='all'? game.journal : game.journal.filter(e=>e.category===f);
-  const c = document.getElementById('journalEntries');
-  if(!list.length){ c.innerHTML = `<div style="text-align:center;color:#888;padding:20px">Aucune entrée</div>`; }
-  else {
-    c.innerHTML = list.map(e=>`
-      <div class="journal-entry">
-        <div class="row" style="font-weight:700;color:#667eea"><div>Jour ${e.day} · Act ${e.action}</div><div>${e.time}</div></div>
-        <div style="margin:4px 0;opacity:.9"><span>${emojiForCat(e.category)} ${e.category}</span></div>
-        <div style="font-style:italic;margin:6px 0">${e.quote}</div>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;font-size:.85em;opacity:.85">
-          <div style="text-align:center">💰${e.money}</div>
-          <div style="text-align:center">⚡${e.energy}%</div>
-          <div style="text-align:center">🍔${e.hunger}%</div>
-          <div style="text-align:center">😤${e.patience}%</div>
-          <div style="text-align:center">💕${e.yamy}%</div>
+    
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">Les Gants du Désir</a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="active">Accueil</a></li>
+                <li><a href="#philosophy">Notre Vision</a></li>
+                <li><a href="#products">Boutique</a></li>
+                <li><a href="#magazine">Magazine</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li>
+                    <div class="cart-icon" onclick="toggleCart()">
+                        🛍️
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                </li>
+            </ul>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
-      </div>`).join('');
-  }
-  document.getElementById('journalStats').innerHTML = `
-    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">🗓️ Jour <b>${game.state.day}</b></div>
-    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">📝 <b>${game.journal.length}</b> entrées</div>
-    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">💰 $<b>${fmt(game.state.money)}</b></div>
-    <div style="text-align:center;background:rgba(102,126,234,.08);padding:8px;border-radius:10px">📸 <b>${game.state.photos}</b></div>`;
-}
-function emojiForCat(cat){ const m={yamy:'💕',food:'🍔',photos:'📸',mood:'😤',transport:'🚇',spending:'💳',culture:'🎨',rare:'⭐',energy:'⚡',weather:'☔',social:'👥',fun:'🎮',money:'💰'}; return m[cat]||'📝'; }
-
-function updateAchievementsUI(){
-  const c=document.getElementById('achievementsList');
-  c.innerHTML = achievementsList.map(a=>{
-    const unlocked=game.achievements.includes(a.id);
-    return `<div style="display:flex;gap:12px;align-items:center;padding:10px;border-left:4px solid ${unlocked?'#667eea':'#999'};background:${unlocked?'rgba(102,126,234,.06)':'rgba(0,0,0,.04)'};border-radius:10px;margin-bottom:8px;opacity:${unlocked?1:.5}">
-      <div style="font-size:2em">${a.icon}</div>
-      <div><div style="font-weight:800;color:#667eea">${a.title}</div><div style="opacity:.85">${a.desc}</div></div>
-    </div>`;
-  }).join('');
-  document.getElementById('achievementsBadge').textContent = game.achievements.length;
-}
-
-function checkAchievements(){
-  achievementsList.forEach(a=>{
-    if(!game.achievements.includes(a.id) && a.condition && a.condition()){
-      game.achievements.push(a.id);
-      showNote('🏅',`Achievement: ${a.title}`); sounds.achievement();
-    }
-  });
-  updateAchievementsUI();
-}
-
-/* ================== EVENTS FLOW ================== */
-function buildPool(){
-  const pool = [];
-  // base
-  pool.push(...baseEvents);
-  // conditional
-  pool.push(...conditionals.filter(e=>!e.condition || e.condition()));
-  // rares (faible proba)
-  if(Math.random()<0.05){ // 5%
-    const diff = DIFFS[selectedDiff];
-    const r = pick(rares);
-    if(diff.rareBuff>1 && r.choices[0].effects.patience) {
-      // rendre moins "OP": on applique un petit malus sur positif si hard
-      r.choices = r.choices.map(ch=>{
-        const ef={...ch.effects};
-        if(ef.patience) ef.patience = Math.round(ef.patience / diff.rareBuff);
-        if(ef.money>0)  ef.money   = Math.round(ef.money   / diff.rareBuff);
-        return {...ch, effects:ef};
-      });
-    }
-    pool.push({...r, rare:true});
-  }
-  return pool;
-}
-
-function showEvent(){
-  const list = buildPool();
-  const e = pick(list);
-  const rareClass = e.rare ? ' event-rare' : '';
-  const catChip = `<div class="chip">${emojiForCat(e.category)} ${e.category}</div>`;
-  const cont = document.getElementById('eventContainer');
-
-  // Inject price previews with tax/tip
-  const choicesHtml = e.choices.map((ch,i)=>{
-    let effectsText = [];
-    // dynamic pricing
-    let priceLine = '';
-    if('cost' in ch){
-      const p = priceWithNYC(Math.abs(ch.cost), e.category);
-      const total = ch.cost>=0 ? p.total : -p.total; // ATM “gain”
-      priceLine = ch.cost>=0 ? ` · <span>coût réel ≈ ${total.toFixed(2)}$</span>` : ` · <span>gain net ≈ ${(-total).toFixed(2)}$</span>`;
-      ch._priced = total; // cache
-    }
-    const ef = ch.effects||{};
-    if(ef.energy) effectsText.push(`⚡${ef.energy>0?'+':''}${ef.energy}%`);
-    if(ef.hunger) effectsText.push(`🍔${ef.hunger>0?'+':''}${ef.hunger}%`);
-    if(ef.patience) effectsText.push(`😤${ef.patience>0?'+':''}${ef.patience}%`);
-    if(ef.yamy) effectsText.push(`💕${ef.yamy>0?'+':''}${ef.yamy}%`);
-    if(ef.photos) effectsText.push(`📸+${ef.photos}`);
-
-    return `<button class="choice-btn" data-idx="${i}">
-      <div class="choice-line"><div>${ch.text}</div><div class="mini">${priceLine}</div></div>
-      <div class="effects">${effectsText.join(' · ') || '—'}</div>
-    </button>`;
-  }).join('');
-
-  cont.innerHTML = `
-    <div class="event-card${rareClass}">
-      <div class="event-emoji">${e.emoji}</div>
-      <div class="event-title">${e.title}</div>
-      ${catChip}
-      <div class="event-description">${e.desc}</div>
-      <div class="choices" id="choices">${choicesHtml}</div>
-    </div>`;
-
-  const btns = [...document.querySelectorAll('.choice-btn')];
-  btns.forEach(b=>b.addEventListener('click', ()=>{
-    btns.forEach(x=>x.disabled=true); // anti double clic
-    sounds.click();
-    const idx = +b.dataset.idx;
-    resolveChoice(e, e.choices[idx]);
-  }));
-
-  // Keyboard shortcuts
-  window.onkeydown = (ev)=>{
-    if(ev.key==='1' && btns[0]) btns[0].click();
-    if(ev.key==='2' && btns[1]) btns[1].click();
-    if(ev.key.toLowerCase()==='j') toggleOverlay('journalOverlay', true);
-    if(ev.key.toLowerCase()==='a') toggleOverlay('achievementsOverlay', true);
-    if(ev.key.toLowerCase()==='s') toggleOverlay('statsOverlay', true);
-  };
-}
-
-function resolveChoice(evt, ch){
-  const s=game.state;
-  // Combo
-  if(s.lastChoiceType===evt.category){
-    s.combo++;
-    document.getElementById('comboIndicator').classList.remove('hidden');
-    document.getElementById('comboX').textContent = `x${s.combo}`;
-    if(s.combo===5 && !game.achievements.includes('combo_master')){
-      game.achievements.push('combo_master'); showNote('🔥','Achievement: Combo Master'); sounds.achievement();
-    }
-  } else {
-    s.combo=1; document.getElementById('comboIndicator').classList.add('hidden');
-  }
-  s.lastChoiceType=evt.category;
-  const comboBonus = s.combo>=2 ? 1 + (s.combo*0.05) : 1;
-  const apply = v => v ? Math.round(v * (v>0? comboBonus:1)) : 0;
-
-  // MONEY (with taxes)
-  if('_priced' in ch){
-    const delta = ch._priced; // already signed
-    s.money -= delta; // cost positive decreases money; ATM negative increases
-    // spending buckets
-    if(delta>0){
-      const amount = delta;
-      if(evt.category==='food') game.spending.food+=amount;
-      else if(evt.category==='transport') game.spending.transport+=amount;
-      else if(evt.category==='culture') game.spending.culture+=amount;
-      else if(evt.category==='spending') game.spending.shopping+=amount;
-      else game.spending.other+=amount;
-      game.daySpending += amount;
-      if(game.daySpending>=300 && !game.achievements.includes('spender')){
-        game.achievements.push('spender'); showNote('💳','Achievement: Dépensière'); sounds.achievement();
-      }
-    }
-  }
-
-  // APPLY EFFECTS
-  const ef=ch.effects||{};
-  s.energy   += apply(ef.energy||0);
-  s.hunger   += apply(ef.hunger||0);
-  s.patience += apply(ef.patience||0);
-  s.yamy     += apply((ef.yamy||0) - DIFFS[selectedDiff].yamyWear); // usure relationnelle
-  s.photos   += (ef.photos||0);
-
-  // Fatigue passive par jour
-  s.energy -= DIFFS[selectedDiff].energyDaily;
-
-  // Faim naturelle
-  if(s.actionCount%2===0) s.hunger += DIFFS[selectedDiff].hungerTick;
-
-  // Bornes
-  s.money = Math.max(0, s.money);
-  s.energy = clamp(s.energy,0,100);
-  s.hunger = clamp(s.hunger,0,100);
-  s.patience = clamp(s.patience,0,100);
-  s.yamy = clamp(s.yamy,0,100);
-
-  // Trackers
-  if((evt.title.includes('Marche')||evt.title.includes('pied')) && ch.text.includes('Marcher')){
-    game.walkCount++; if(game.walkCount>=5 && !game.achievements.includes('walker')){ game.achievements.push('walker'); showNote('🚶‍♀️','Achievement: Marcheuse'); sounds.achievement(); }
-  }
-  if((evt.title.includes('Métro')||evt.category==='transport') && ch.text.includes('Métro')){
-    game.metroCount++; if(game.metroCount>=10 && !game.achievements.includes('metro_master')){ game.achievements.push('metro_master'); showNote('🚇','Achievement: Metro Master'); sounds.achievement(); }
-  }
-
-  // Achievement direct attaché au choix
-  if(ch.achievement && !game.achievements.includes(ch.achievement)){
-    game.achievements.push(ch.achievement);
-    const a = achievementsList.find(x=>x.id===ch.achievement);
-    if(a){ showNote(a.icon,`Achievement: ${a.title}`); sounds.achievement(); }
-  }
-
-  s.actionCount++;
-  s.statsHistory.push({ action:s.actionCount, money:s.money, energy:s.energy, hunger:s.hunger, patience:s.patience, yamy:s.yamy });
-
-  addJournal(evt.title, evt.category);
-  renderState();
-
-  if(checkGameOver()) return;
-
-  // Changement de jour
-  if(s.actionCount % DAY_ACTIONS === 0){
-    s.day++;
-    if(s.day>5){ victory(); return; }
-    showNote('🗓️',`Jour ${s.day} — difficulté cumulée`);
-    game.daySpending=0; game.patienceStreak=0;
-  }
-  setTimeout(showEvent, 500);
-}
-
-/* ================== RENDER ================== */
-function renderState(){
-  const s=game.state;
-  const turnsLeft = DAY_ACTIONS - (s.actionCount % DAY_ACTIONS || DAY_ACTIONS);
-  document.getElementById('turnsLeft').textContent = turnsLeft;
-
-  document.getElementById('day').textContent = s.day;
-  document.getElementById('money').textContent = fmt(s.money);
-  document.getElementById('energy').textContent = fmt(s.energy);
-  document.getElementById('hunger').textContent = fmt(s.hunger);
-  document.getElementById('patience').textContent = fmt(s.patience);
-  document.getElementById('yamy').textContent = fmt(s.yamy);
-  document.getElementById('moodIcon').textContent = moodEmoji();
-
-  document.getElementById('moneyBar').style.width = (s.maxMoney? Math.min(100,(s.money/s.maxMoney)*100) : 100)+'%';
-  document.getElementById('energyBar').style.width = s.energy+'%';
-  document.getElementById('hungerBar').style.width = s.hunger+'%';
-  document.getElementById('patienceBar').style.width = s.patience+'%';
-  document.getElementById('yamyBar').style.width = s.yamy+'%';
-
-  // Critiques
-  const crits=[];
-  if(s.money<50) crits.push('💸 Budget critique');
-  if(s.energy<30) crits.push('😴 Énergie basse');
-  if(s.hunger>70) crits.push('🍔 Faim élevée');
-  if(s.patience<30) crits.push('😡 Patience faible');
-  if(s.yamy<30) crits.push('💔 Manque de Yamy');
-  document.getElementById('critBox').innerHTML = crits.length ? `<div class="row" style="color:#ffd700">${crits.join(' · ')}</div>` : '';
-
-  toggleCrit('moneyLabel', s.money>=50);
-  toggleCrit('energyLabel', s.energy>=30);
-  toggleCrit('hungerLabel', s.hunger<=70);
-  toggleCrit('patienceLabel', s.patience>=30);
-  toggleCrit('yamyLabel', s.yamy>=30);
-}
-function toggleCrit(id, ok){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.classList.toggle('crit', !ok);
-}
-
-/* ================== OVERLAYS & NAV ================== */
-function toggleOverlay(id, forceShow){
-  const ov = document.getElementById(id);
-  const show = forceShow ?? !ov.classList.contains('show');
-  if(show){
-    ov.classList.add('show');
-    if(id==='journalOverlay') updateJournalUI();
-    if(id==='achievementsOverlay') updateAchievementsUI();
-    if(id==='statsOverlay') updateStatsOverlay();
-    // click outside to close
-    ov.onclick = (e)=>{ if(e.target===ov) ov.classList.remove('show'); };
-  } else ov.classList.remove('show');
-}
-function updateStatsOverlay(){
-  const h = game.state.statsHistory.slice(-24);
-  document.getElementById('statsHistory').innerHTML = `
-    <div style="background:rgba(102,126,234,.08);padding:10px;border-radius:10px">
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;font-weight:800;text-align:center">
-        <div>💰</div><div>⚡</div><div>🍔</div><div>😤</div><div>💕</div>
-      </div>
-      ${h.map(x=>`
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;border-top:1px solid rgba(0,0,0,.08);padding:4px 0">
-          <div>${fmt(x.money)}</div><div>${fmt(x.energy)}</div><div>${fmt(x.hunger)}</div><div>${fmt(x.patience)}</div><div>${fmt(x.yamy)}</div>
-        </div>`).join('')}
-    </div>`;
-  const total = Object.values(game.spending).reduce((a,b)=>a+b,0);
-  const cat = {food:'🍔 Nourriture',transport:'🚇 Transport',culture:'🎨 Culture',shopping:'🛍️ Shopping',other:'📦 Autre'};
-  document.getElementById('spendingBreakdown').innerHTML = `
-    <div style="background:rgba(102,126,234,.08);padding:10px;border-radius:10px">
-    ${Object.entries(game.spending).map(([k,v])=>{
-      const p = total? Math.round(v/total*100):0;
-      return `<div style="margin:6px 0">
-        <div class="row"><span>${cat[k]}</span><span><b>${fmt(v)}</b> (${p}%)</span></div>
-        <div style="height:10px;background:rgba(0,0,0,.15);border-radius:8px;overflow:hidden"><div style="height:100%;width:${p}%;background:#667eea"></div></div>
-      </div>`;
-    }).join('')}
-    <div style="text-align:center;margin-top:8px;font-weight:800">Total: ${fmt(total)}$</div>
-    </div>`;
-  document.getElementById('generalStats').innerHTML = `
-    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.state.actionCount}</div><div>Actions</div></div>
-    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.state.photos}</div><div>Photos</div></div>
-    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.journal.length}</div><div>Journal</div></div>
-    <div style="background:rgba(102,126,234,.08);padding:12px;border-radius:10px;text-align:center"><div style="font-size:1.3em;font-weight:800;color:#667eea">${game.achievements.length}/25</div><div>Achievements</div></div>`;
-}
-
-/* ================== GAME LIFECYCLE ================== */
-function startGame(){
-  sounds.click();
-  // init difficulty
-  document.getElementById('diffLabel').textContent = DIFFS[selectedDiff].label;
-
-  document.getElementById('startScreen').classList.add('hidden');
-  document.getElementById('gameScreen').classList.remove('hidden');
-  document.getElementById('bottomNav').classList.remove('hidden');
-
-  Object.assign(game.state, { day:1, actionCount:0, money:300, energy:100, hunger:40, patience:100, yamy:100, photos:0, maxMoney:300, combo:0, lastChoiceType:null, statsHistory:[] });
-  game.journal=[]; game.achievements=[]; game.usedEvents=[]; game.currentFilter='all';
-  game.spending={ food:0, transport:0, culture:0, shopping:0, other:0 };
-  game.energyStreak=0; game.patienceStreak=0; game.daySpending=0; game.miniGamesWon=0; game.walkCount=0; game.metroCount=0; game.kevinAvoidCount=0;
-
-  renderState(); updateAchievementsUI(); showEvent();
-  showNote('🗽','Bienvenue à NYC… bonne chance !');
-}
-
-function restartGame(){
-  document.getElementById('gameOverScreen').classList.add('hidden');
-  document.getElementById('gameScreen').classList.remove('hidden');
-  document.getElementById('bottomNav').classList.remove('hidden');
-  ['journalOverlay','achievementsOverlay','statsOverlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
-  startGame();
-}
-
-function checkGameOver(){
-  const s=game.state;
-  let r='';
-  if(s.money<=0) r="💸 Fauchée — impossible de continuer.";
-  else if(s.energy<=0) r="😴 Effondrée de fatigue.";
-  else if(s.hunger>=100) r="🍔 Malaise de faim.";
-  else if(s.patience<=0) r="😡 A explosé… (social KO).";
-  else if(s.yamy<=0) r="💔 Le manque de Yamy est trop fort.";
-  if(r){ endGame(r); return true; }
-  return false;
-}
-function endGame(reason){
-  document.getElementById('gameScreen').classList.add('hidden');
-  document.getElementById('gameOverScreen').classList.remove('hidden');
-  document.getElementById('bottomNav').classList.add('hidden');
-  document.getElementById('gameOverReason').textContent = reason;
-
-  document.getElementById('finalDays').textContent=game.state.day;
-  document.getElementById('finalActions').textContent=game.state.actionCount;
-  document.getElementById('finalMoney').textContent=fmt(game.state.money);
-  document.getElementById('finalPhotos').textContent=game.state.photos;
-  document.getElementById('finalAchievements').textContent=game.achievements.length;
-
-  checkAchievements();
-}
-function victory(){
-  checkAchievements();
-  endGame(`🎉 VICTOIRE ! 5 jours à NYC — ${game.state.photos} photos et des souvenirs…`);
-}
-
-/* ================== WIRING ================== */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // difficulty select
-  document.querySelectorAll('#diffSelect .pill').forEach(btn=>{
-    if(btn.dataset.diff===selectedDiff) btn.classList.add('active');
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('#diffSelect .pill').forEach(x=>x.classList.remove('active'));
-      btn.classList.add('active');
-      selectedDiff = btn.dataset.diff;
-      localStorage.setItem('msnyc_diff', selectedDiff);
-    });
-  });
-
-  document.getElementById('startBtn').addEventListener('click', startGame);
-  document.getElementById('restartBtn').addEventListener('click', restartGame);
-
-  // bottom nav
-  document.getElementById('journalBtn').addEventListener('click', ()=>toggleOverlay('journalOverlay'));
-  document.getElementById('achievementsBtn').addEventListener('click', ()=>toggleOverlay('achievementsOverlay'));
-  document.getElementById('statsBtn').addEventListener('click', ()=>toggleOverlay('statsOverlay'));
-  document.getElementById('soundBtn').addEventListener('click', ()=>{
-    soundEnabled = !soundEnabled;
-    localStorage.setItem('msnyc_sound', JSON.stringify(soundEnabled));
-    document.getElementById('soundBtn').textContent = soundEnabled? '🔊':'🔇';
-    if(soundEnabled) sounds.success();
-  });
-  document.getElementById('soundBtn').textContent = soundEnabled? '🔊':'🔇';
-
-  // overlay close buttons
-  document.querySelectorAll('.overlay [data-close]').forEach(b=>b.addEventListener('click', (e)=> e.currentTarget.closest('.overlay').classList.remove('show')));
-
-  // filters
-  document.getElementById('filters').addEventListener('click', (e)=>{
-    const btn = e.target.closest('.filter-btn'); if(!btn) return;
-    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
-    btn.classList.add('active'); game.currentFilter = btn.dataset.filter; updateJournalUI();
-  });
-});
-</script>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">L'Art du Plaisir Sensoriel</h1>
+            <p class="hero-subtitle">Pour ceux qui savent donner</p>
+            <p class="hero-text">
+                Le plaisir qu'il donne est sa plus grande puissance.<br>
+                Découvrez une nouvelle approche de l'intimité, où chaque sensation devient une invitation au voyage des sens.
+            </p>
+            <a href="#products" class="btn-primary">Découvrir le Kit</a>
+        </div>
+    </section>
+    
+    <!-- Philosophy Section -->
+    <section class="section philosophy" id="philosophy">
+        <div class="container">
+            <h2 class="section-title">Notre Philosophie</h2>
+            <p class="section-subtitle">
+                L'érotisme est un art qui s'apprend, se cultive et se partage dans le respect et la bienveillance.
+            </p>
+            <div class="philosophy-grid">
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">✨</div>
+                    <h3>L'Éveil des Sens</h3>
+                    <p>
+                        Chaque texture, chaque température, chaque sensation est une note dans la symphonie du plaisir. 
+                        Nos kits sont conçus pour orchestrer cette expérience sensorielle unique.
+                    </p>
+                </div>
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🌹</div>
+                    <h3>Le Respect du Désir</h3>
+                    <p>
+                        Le consentement et l'écoute sont les fondements de toute expérience intime réussie. 
+                        Nous croyons en un érotisme où le plaisir de l'autre devient notre plus belle récompense.
+                    </p>
+                </div>
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">💫</div>
+                    <h3>L'Élégance du Geste</h3>
+                    <p>
+                        La sensualité n'est pas dans la précipitation mais dans la lenteur calculée, 
+                        dans l'attention portée à chaque caresse, dans la délicatesse de chaque exploration.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Products Section -->
+    <section class="section" id="products">
+        <div class="container">
+            <h2 class="section-title">Nos Coffrets d'Exception</h2>
+            <p class="section-subtitle">
+                Chaque kit est une invitation à explorer de nouveaux territoires du plaisir partagé.
+            </p>
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card" onclick="addToCart('Kit Initiation', 89)">
+                    <div class="product-image">
+                        <div class="product-badge">Best-seller</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Kit Initiation</h3>
+                        <p class="product-description">
+                            Le coffret parfait pour découvrir l'art du toucher sensoriel. 
+                            Gants de soie, huile parfumée à la rose, et guide d'exploration inclus.
+                        </p>
+                        <div class="product-price">89€</div>
+                        <button class="btn-add-cart">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card" onclick="addToCart('Kit Sensation', 129)">
+                    <div class="product-image">
+                        <div class="product-badge">Premium</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Kit Sensation</h3>
+                        <p class="product-description">
+                            L'expérience ultime du contraste. Glaçons sculptés, bonbons à la menthe forte, 
+                            gants de satin et accessoires pour jouer avec les températures.
+                        </p>
+                        <div class="product-price">129€</div>
+                        <button class="btn-add-cart">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card" onclick="addToCart('Kit Prestige', 189)">
+                    <div class="product-image">
+                        <div class="product-badge">Luxe</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Kit Prestige</h3>
+                        <p class="product-description">
+                            La collection complète pour les connaisseurs. Gants de cuir doux, ensemble complet de textures, 
+                            huiles essentielles rares et guide avancé d'exploration érotique.
+                        </p>
+                        <div class="product-price">189€</div>
+                        <button class="btn-add-cart">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card" onclick="addToCart('Les Gants Signature', 59)">
+                    <div class="product-image">
+                        <div class="product-badge">Nouveau</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Les Gants Signature</h3>
+                        <p class="product-description">
+                            Notre paire de gants iconique en soie naturelle. 
+                            L'accessoire essentiel pour transformer chaque caresse en moment d'exception.
+                        </p>
+                        <div class="product-price">59€</div>
+                        <button class="btn-add-cart">Ajouter au panier</button>
+                    </div>
+                </div>
+                
+                <!-- Product 5 -->
+                <div class="product-card" onclick="addToCart('Collection Huiles', 45)">
+                    <div class="product-image">
+                        <div class="product-badge">Essentiel</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Collection Huiles</h3>
+                        <p class="product-description">
+                            Trio d'huiles de massage aux essences rares. 
+                            Ylang-ylang, bois de santal et jasmin pour éveiller tous les sens.
+                        </p>
+                        <div class="product-price">45€</div>
+                        <button class="btn-add-cart">Ajouter au panier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Magazine Section -->
+    <section class="section magazine" id="magazine">
+        <div class="container">
+            <h2 class="section-title">Le Magazine du Plaisir</h2>
+            <p class="section-subtitle">
+                Explorez l'art de la sensualité à travers nos articles et guides exclusifs.
+            </p>
+            <div class="magazine-grid">
+                <article class="article-card">
+                    <div class="article-image"></div>
+                    <div class="article-content">
+                        <div class="article-category">Technique</div>
+                        <h3 class="article-title">Les 7 Zones Oubliées du Plaisir</h3>
+                        <p class="article-excerpt">
+                            Découvrez ces territoires méconnus du corps féminin qui, une fois explorés avec délicatesse, 
+                            peuvent déclencher des sensations intenses et inattendues.
+                        </p>
+                        <a href="#" class="article-link">Lire l'article →</a>
+                    </div>
+                </article>
+                
+                <article class="article-card">
+                    <div class="article-image"></div>
+                    <div class="article-content">
+                        <div class="article-category">Psychologie</div>
+                        <h3 class="article-title">L'Art de l'Anticipation</h3>
+                        <p class="article-excerpt">
+                            Comment la montée du désir, savamment orchestrée, peut transformer une simple caresse 
+                            en expérience transcendante. Guide pratique de la patience érotique.
+                        </p>
+                        <a href="#" class="article-link">Lire l'article →</a>
+                    </div>
+                </article>
+                
+                <article class="article-card">
+                    <div class="article-image"></div>
+                    <div class="article-content">
+                        <div class="article-category">Bien-être</div>
+                        <h3 class="article-title">Le Massage Tantrique Moderne</h3>
+                        <p class="article-excerpt">
+                            Redécouvrez cette pratique millénaire adaptée au couple moderne. 
+                            Techniques, postures et rituels pour une connexion profonde.
+                        </p>
+                        <a href="#" class="article-link">Lire l'article →</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Restons en Contact</h2>
+            <p class="section-subtitle">
+                Une question, une suggestion, ou simplement envie de partager votre expérience ?
+            </p>
+            <form class="contact-form" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="name">Nom</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Envoyer</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>Les Gants du Désir</h4>
+                    <p>
+                        Ce n'est pas un simple coffret.<br>
+                        C'est une initiation à l'art d'offrir du plaisir.
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="#products">Boutique</a></li>
+                        <li><a href="#philosophy">Notre Vision</a></li>
+                        <li><a href="#magazine">Magazine</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Informations</h4>
+                    <ul>
+                        <li><a href="#">Livraison discrète</a></li>
+                        <li><a href="#">Paiement sécurisé</a></li>
+                        <li><a href="#">Retours & échanges</a></li>
+                        <li><a href="#">Confidentialité</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Newsletter</h4>
+                    <p>
+                        Recevez nos guides exclusifs et découvrez en avant-première nos nouvelles collections.
+                    </p>
+                    <form onsubmit="handleNewsletter(event)" style="margin-top: 20px;">
+                        <input type="email" placeholder="Votre email" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                        <button type="submit" class="btn-primary" style="padding: 10px 20px; font-size: 14px;">S'inscrire</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Les Gants du Désir. Tous droits réservés. | Fait avec passion pour le plaisir partagé.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3>Votre Panier</h3>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p style="text-align: center; color: #999;">Votre panier est vide</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">0€</span>
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="checkout()">Procéder au paiement</button>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    
+    <script>
+        // Cart functionality
+        let cart = [];
+        let isCartOpen = false;
+        
+        function addToCart(productName, price) {
+            const existingItem = cart.find(item => item.name === productName);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+            showNotification('Produit ajouté au panier');
+        }
+        
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align: center; color: #999;">Votre panier est vide</p>';
+                cartTotal.textContent = '0€';
+            } else {
+                let html = '';
+                let total = 0;
+                
+                cart.forEach(item => {
+                    html += `
+                        <div class="cart-item">
+                            <div class="cart-item-image"></div>
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">${item.price}€</div>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn" onclick="updateQuantity('${item.name}', -1)">-</button>
+                                    <span>${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="updateQuantity('${item.name}', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    total += item.price * item.quantity;
+                });
+                
+                cartItems.innerHTML = html;
+                cartTotal.textContent = total + '€';
+            }
+        }
+        
+        function updateQuantity(productName, change) {
+            const item = cart.find(item => item.name === productName);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.name !== productName);
+                }
+                updateCartDisplay();
+            }
+        }
+        
+        function toggleCart() {
+            const cartModal = document.getElementById('cartModal');
+            const overlay = document.getElementById('overlay');
+            
+            isCartOpen = !isCartOpen;
+            
+            if (isCartOpen) {
+                cartModal.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                cartModal.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Votre panier est vide');
+                return;
+            }
+            
+            showNotification('Redirection vers le paiement sécurisé...');
+            
+            // Simulate payment integration
+            setTimeout(() => {
+                alert('Intégration Stripe/PayPal à configurer ici');
+            }, 1500);
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: var(--noir-profond);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 0;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Close mobile menu if open
+                    document.getElementById('navMenu').classList.remove('active');
+                    
+                    // Update active nav link
+                    document.querySelectorAll('.nav-menu a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Form submissions
+        function handleSubmit(event) {
+            event.preventDefault();
+            showNotification('Message envoyé avec succès !');
+            event.target.reset();
+        }
+        
+        function handleNewsletter(event) {
+            event.preventDefault();
+            showNotification('Inscription réussie !');
+            event.target.reset();
+        }
+        
+        // Loading screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1500);
+        });
+        
+        // Parallax effect on scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.hero');
+            if (parallax) {
+                const speed = 0.5;
+                parallax.style.transform = `translateY(${scrolled * speed}px)`;
+            }
+        });
+        
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.product-card, .article-card, .philosophy-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>
