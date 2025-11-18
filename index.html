@@ -1587,6 +1587,35 @@
     color: var(--primary);
     font-family: 'JetBrains Mono', monospace;
 }
+
+/* Ajout d'une texture "Noise" pour un effet cinéma/pro */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+}
+
+/* Remplacer les bordures solides par des bordures "Glass" subtiles */
+.bento-item, .terminal-container, .demo-tool {
+    background: rgba(20, 24, 32, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Effet de lueur plus sophistiqué au survol */
+.bento-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.15), inset 0 0 20px rgba(255, 107, 53, 0.05);
+    transform: translateY(-2px) scale(1.01);
+}
     </style>
 </head>
 <body>
@@ -2794,44 +2823,98 @@ Type 'matrix' pour activer le mode Matrix... 👀
             });
         });
 
-        // ==================== 3D CANVAS (Three.js) ====================
-        try {
-            if (typeof THREE !== 'undefined') {
-                const canvas = document.getElementById('three-canvas');
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        // ==================== 3D PARTICLE NETWORK (Top 0.1%) ====================
+try {
+    if (typeof THREE !== 'undefined') {
+        const canvas = document.getElementById('three-canvas');
+        const scene = new THREE.Scene();
+        
+        // Brouillard pour la profondeur
+        scene.fog = new THREE.FogExp2(0x0a0e14, 0.002);
 
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                camera.position.z = 5;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 
-                // Create rotating torus (representing security shield)
-                const geometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
-                const material = new THREE.MeshBasicMaterial({ 
-                    color: 0xFF6B35,
-                    wireframe: true
-                });
-                const torus = new THREE.Mesh(geometry, material);
-                scene.add(torus);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        camera.position.z = 20;
 
-                function animate() {
-                    requestAnimationFrame(animate);
-                    torus.rotation.x += 0.001;
-                    torus.rotation.y += 0.002;
-                    renderer.render(scene, camera);
-                }
+        // Création des particules
+        const particleGeometry = new THREE.BufferGeometry();
+        const particlesCount = 700; // Nombre de points
+        const posArray = new Float32Array(particlesCount * 3);
 
-                animate();
-
-                window.addEventListener('resize', () => {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                });
-            }
-        } catch (error) {
-            console.log('Three.js not loaded - 3D background disabled');
+        for(let i = 0; i < particlesCount * 3; i++) {
+            // Dispersion large
+            posArray[i] = (Math.random() - 0.5) * 45; 
         }
+
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        // Matériau "Tech"
+        const material = new THREE.PointsMaterial({
+            size: 0.15,
+            color: 0xFF6B35, // Ta couleur primaire
+            transparent: true,
+            opacity: 0.8,
+        });
+
+        // Le maillage de points
+        const particlesMesh = new THREE.Points(particleGeometry, material);
+        scene.add(particlesMesh);
+        
+        // Lignes de connexion (optionnel - lourd en CPU, on fait simple ici avec rotation)
+        // Ajout d'un icosaèdre filaire "Cyber Core" au centre
+        const geometryCore = new THREE.IcosahedronGeometry(10, 1);
+        const materialCore = new THREE.MeshBasicMaterial({ 
+            color: 0x00D9FF, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.05 
+        });
+        const core = new THREE.Mesh(geometryCore, materialCore);
+        scene.add(core);
+
+        // Interaction Souris
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotation douce du nuage de points
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = mouseY * 0.5;
+            particlesMesh.rotation.y += mouseX * 0.5;
+
+            // Respiration du Core
+            core.rotation.x -= 0.002;
+            core.rotation.y -= 0.002;
+            const scale = 1 + Math.sin(elapsedTime) * 0.1;
+            core.scale.set(scale, scale, scale);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    }
+} catch (error) {
+    console.log('Three.js error', error);
+}
 
         // ==================== GSAP ANIMATIONS ====================
         try {
