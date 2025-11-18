@@ -665,37 +665,68 @@
             margin: var(--space-3xl) 0;
         }
         
-        .bento-item {
-            background: var(--dark-800);
-            border: 1px solid var(--dark-700);
-            border-radius: var(--radius-2xl);
-            padding: var(--space-2xl);
-            transition: all var(--transition-base);
-            position: relative;
-            overflow: hidden;
+        /* Nouveau style pour les cartes */
+.bento-item {
+    background: rgba(20, 24, 32, 0.6); /* Plus transparent */
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Bordure quasi invisible */
+    border-radius: var(--radius-2xl);
+    padding: var(--space-2xl);
+    position: relative;
+    overflow: hidden;
+    /* Pas de transition globale pour éviter le lag avec le JS */
+}
+
+/* L'effet de lumière (géré par JS) */
+.bento-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--radius-2xl);
+    padding: 1.5px; /* Épaisseur de la bordure lumineuse */
+    width: 100%;
+    background: radial-gradient(
+        800px circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 107, 53, 0.4),
+        transparent 40%
+    );
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+        .bento-item:hover::before {
+            opacity: 1;
         }
         
-        .bento-item::before {
-            content: '';
+        /* Effet de lueur interne au survol */
+        .bento-item::after {
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform var(--transition-base);
+            bottom: 0;
+            background: radial-gradient(
+                600px circle at var(--mouse-x) var(--mouse-y),
+                rgba(255, 107, 53, 0.06),
+                transparent 40%
+            );
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: -1;
         }
         
-        .bento-item:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-        }
-        
-        .bento-item:hover::before {
-            transform: scaleX(1);
+        .bento-item:hover::after {
+            opacity: 1;
         }
         
         .bento-large {
@@ -1589,19 +1620,37 @@
 }
 
 /* Ajout d'une texture "Noise" pour un effet cinéma/pro */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.03;
-}
-
+/* Remplacer le body::before existant par ceci */
+    body::after {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(18, 16, 16, 0) 50%,
+            rgba(0, 0, 0, 0.1) 50%
+        );
+        background-size: 100% 4px;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+    
+    /* Ajout d'un vignetage sombre sur les bords */
+    .overlay-vignette {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 0 200px rgba(0,0,0,0.9) inset;
+        pointer-events: none;
+        z-index: 9998;
+    }
 /* Remplacer les bordures solides par des bordures "Glass" subtiles */
 .bento-item, .terminal-container, .demo-tool {
     background: rgba(20, 24, 32, 0.7);
@@ -3457,6 +3506,83 @@ franquevilleanthony.pro@gmail.com
 
     // Focus auto
     document.querySelector('.terminal-container').addEventListener('click', () => termInput.focus());
+
+    // GESTION DE L'EFFET SPOTLIGHT
+const cards = document.querySelectorAll('.bento-item, .demo-tool, .terminal-container');
+
+document.getElementById('lab').onmousemove = e => {
+    for(const card of cards) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+    }
+};
+
+        // Appliquer aussi sur la section About et Expertise
+        document.getElementById('about').onmousemove = e => {
+            for(const card of cards) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            }
+        };
+
+       // EFFET DE DÉCHIFFREMENT DE TEXTE
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
+
+document.querySelectorAll('h2, h3, .highlight').forEach(element => {
+    element.dataset.value = element.innerText;
+    
+    element.addEventListener('mouseover', event => {
+        let iterations = 0;
+        const interval = setInterval(() => {
+            event.target.innerText = event.target.innerText
+                .split("")
+                .map((letter, index) => {
+                    if(index < iterations) {
+                        return event.target.dataset.value[index];
+                    }
+                    return letters[Math.floor(Math.random() * 26)];
+                })
+                .join("");
+            
+            if(iterations >= event.target.dataset.value.length){ 
+                clearInterval(interval);
+            }
+            
+            iterations += 1 / 3; // Vitesse de décryptage
+        }, 30);
+    });
+});
+
+    // BOUTONS MAGNÉTIQUES
+const magnets = document.querySelectorAll('.btn, .nav-cta, .social-link');
+
+magnets.forEach((magnet) => {
+    magnet.addEventListener('mousemove', (e) => {
+        const position = magnet.getBoundingClientRect();
+        const x = e.clientX - position.left - position.width / 2;
+        const y = e.clientY - position.top - position.height / 2;
+
+        // Déplace le bouton vers la souris (effet d'attraction)
+        magnet.style.transform = `translate(${x * 0.3}px, ${y * 0.5}px)`;
+        // Déplace le contenu (texte/icone) un peu moins vite pour effet de parallaxe
+        magnet.children[0].style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
+    });
+
+    magnet.addEventListener('mouseleave', (e) => {
+        magnet.style.transform = 'translate(0px, 0px)';
+        magnet.children[0].style.transform = 'translate(0px, 0px)';
+        // Ajoute une transition douce au retour
+        magnet.style.transition = 'all 0.3s ease';
+        setTimeout(() => { magnet.style.transition = ''; }, 300);
+    });
+});
 
 </script>
 </body>
